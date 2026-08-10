@@ -1,0 +1,159 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { projectImageSrcSet } from "../../lib/media";
+import { getProjects } from "../../lib/projects";
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project, projects }
+  }));
+}
+
+interface Props {
+  project: CollectionEntry<"projects">;
+  projects: CollectionEntry<"projects">[];
+}
+
+const { project, projects } = Astro.props;
+const { Content } = await render(project);
+const { data } = project;
+const currentIndex = projects.findIndex((item) => item.id === project.id);
+const nextProject = projects[(currentIndex + 1) % projects.length];
+const ownership = data.ownership === "personal" ? "개인 프로젝트" : "팀 프로젝트";
+---
+
+<BaseLayout
+  title={`${data.displayTitle} | 유병현 프로젝트`}
+  description={data.summary}
+  image={data.cover}
+  type="article"
+>
+  <article>
+    <header class="page-shell detail-hero">
+      <div class="detail-head">
+        <div data-reveal>
+          <p class="detail-kicker">{String(data.order).padStart(2, "0")} / {data.category}</p>
+          <h1 class="detail-title">{data.displayTitle}</h1>
+          <p class="detail-lead">{data.summary}</p>
+        </div>
+        <dl class="detail-facts" data-reveal>
+          <div>
+            <dt>구분</dt>
+            <dd>{ownership}</dd>
+          </div>
+          <div>
+            <dt>노출 등급</dt>
+            <dd>{data.tier === "featured" ? "대표 사례" : data.tier === "supporting" ? "주요 사례" : "아카이브"}</dd>
+          </div>
+          {data.period && (
+            <div>
+              <dt>기간</dt>
+              <dd>{data.period}</dd>
+            </div>
+          )}
+          {data.teamSize && (
+            <div>
+              <dt>팀 규모</dt>
+              <dd>{data.teamSize}명</dd>
+            </div>
+          )}
+          {data.role && (
+            <div>
+              <dt>검증된 역할</dt>
+              <dd>{data.role}</dd>
+            </div>
+          )}
+        </dl>
+      </div>
+      <div class="detail-cover" data-reveal>
+        <img
+          src={data.cover}
+          srcset={projectImageSrcSet(data.cover)}
+          sizes="(max-width: 48rem) calc(100vw - 2.3rem), (max-width: 64rem) calc(100vw - 4rem), min(100vw - 9rem, 86rem)"
+          alt={data.coverAlt}
+          width="1600"
+          height="1000"
+          fetchpriority="high"
+        />
+      </div>
+    </header>
+
+    <section class="section" aria-label="프로젝트 상세 내용">
+      <div class="page-shell detail-content">
+        <aside class="detail-aside" data-reveal>
+          <p class="fact-label">사용 기술</p>
+          <div class="tech-list">
+            {data.technologies.map((technology) => <span>{technology}</span>)}
+          </div>
+          <div class="detail-links">
+            {data.links.repository && <a class="button" href={data.links.repository} target="_blank" rel="noreferrer">원본 저장소</a>}
+            {data.links.demo && <a class="button button--ghost" href={data.links.demo} target="_blank" rel="noreferrer">데모</a>}
+            {data.links.report && <a class="button button--ghost" href={data.links.report} target="_blank" rel="noreferrer">공동 산출물</a>}
+          </div>
+        </aside>
+
+        <div class="detail-story">
+          <section class="story-block" data-reveal>
+            <p class="eyebrow">Problem</p>
+            <h2>해결하려던 문제</h2>
+            <p>{data.problem}</p>
+          </section>
+
+          <section class="story-block" data-reveal>
+            <p class="eyebrow">Decision and action</p>
+            <h2>판단과 실행</h2>
+            <ul>
+              {data.actions.map((action) => <li>{action}</li>)}
+            </ul>
+          </section>
+
+          <section class="story-block" data-reveal>
+            <p class="eyebrow">Outcome</p>
+            <h2>확인된 결과</h2>
+            <ul>
+              {data.outcomes.map((outcome) => <li>{outcome}</li>)}
+            </ul>
+            {data.metrics.length > 0 && (
+              <div class="metric-evidence">
+                {data.metrics.map((metric) => (
+                  <article>
+                    <strong>{metric.value}</strong>
+                    <p>
+                      {metric.label}
+                      <small>{metric.scope === "personal" ? "개인 결과" : "팀 전체"} · {metric.evidence}</small>
+                    </p>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section class="story-block" data-reveal>
+            <p class="eyebrow">Boundary</p>
+            <h2>한계와 공개 범위</h2>
+            <p>{data.limitation}</p>
+          </section>
+
+          {project.body?.trim() && (
+            <section class="story-block prose" data-reveal>
+              <Content />
+            </section>
+          )}
+        </div>
+      </div>
+    </section>
+  </article>
+
+  <nav class="section" aria-label="다음 프로젝트">
+    <div class="page-shell">
+      <a class="next-project" href={`/projects/${nextProject.id}/`}>
+        <span>다음 프로젝트</span>
+        <strong>{nextProject.data.displayTitle}</strong>
+        <b aria-hidden="true">→</b>
+      </a>
+    </div>
+  </nav>
+</BaseLayout>

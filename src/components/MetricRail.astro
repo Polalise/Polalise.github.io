@@ -1,0 +1,30 @@
+---
+interface Metric {
+  value: string;
+  label: string;
+  scope: "personal" | "team";
+  evidence: string;
+}
+
+interface Props {
+  metrics: Metric[];
+  compact?: boolean;
+}
+
+const { metrics, compact = false } = Astro.props;
+---
+
+{metrics.length > 0 && (
+  <dl class:list={["metric-rail", { "metric-rail--compact": compact }]}>
+    {metrics.map((metric) => (
+      <div class="metric-item">
+        <dt>{metric.label}</dt>
+        <dd>
+          <strong>{metric.value}</strong>
+          <span>{metric.scope === "personal" ? "개인 결과" : "팀 전체"}</span>
+          <small>{metric.evidence}</small>
+        </dd>
+      </div>
+    ))}
+  </dl>
+)}

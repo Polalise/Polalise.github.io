@@ -1,0 +1,53 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ProjectCard from "../../components/ProjectCard.astro";
+import { getProjects } from "../../lib/projects";
+
+const projects = await getProjects();
+const featured = projects.filter((project) => project.data.tier === "featured");
+const supporting = projects.filter((project) => project.data.tier === "supporting");
+const archive = projects.filter((project) => project.data.tier === "archive");
+---
+
+<BaseLayout
+  title="프로젝트 | 유병현"
+  description="AI 서비스, 머신러닝 검증, 풀스택 웹 구축 경험을 사실과 근거 중심으로 정리한 프로젝트 목록입니다."
+>
+  <header class="page-shell page-intro">
+    <div data-reveal>
+      <p class="eyebrow">Selected work and archive</p>
+      <h1>프로젝트를 결과가 아닌 판단의 흐름으로.</h1>
+    </div>
+    <div data-reveal>
+      <p>대표 사례는 문제, 판단, 구현, 검증 순서로 깊게 다루고 초기 작업은 확인된 역할만 기록했습니다.</p>
+      <p class="project-count"><strong>{projects.length}</strong><span>공개 프로젝트</span></p>
+    </div>
+  </header>
+
+  <section class="section" aria-labelledby="featured-list-title">
+    <div class="page-shell">
+      <h2 class="tier-divider" id="featured-list-title"><span>대표 사례</span><span>01 - 03</span></h2>
+      <div class="projects-grid">
+        {featured.map((project, index) => <ProjectCard project={project} variant={index === 0 ? "wide" : "standard"} eager={index === 0} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="supporting-list-title">
+    <div class="page-shell">
+      <h2 class="tier-divider" id="supporting-list-title"><span>주요 풀스택 사례</span><span>04</span></h2>
+      <div class="projects-grid">
+        {supporting.map((project) => <ProjectCard project={project} variant="wide" />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="archive-list-title">
+    <div class="page-shell">
+      <h2 class="tier-divider" id="archive-list-title"><span>보조 및 아카이브</span><span>05 - 09</span></h2>
+      <div class="projects-grid">
+        {archive.map((project) => <ProjectCard project={project} variant="compact" />)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

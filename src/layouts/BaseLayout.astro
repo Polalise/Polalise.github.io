@@ -1,0 +1,93 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: "website" | "article";
+  canonicalPath?: string;
+}
+
+const {
+  title = "유병현 | AI 연동형 풀스택 개발자",
+  description = "검증 가능한 AI 기능을 화면, API, 데이터베이스 흐름으로 연결하는 풀스택 개발자 유병현의 포트폴리오입니다.",
+  image = "/media/og/portfolio.webp",
+  type = "website",
+  canonicalPath
+} = Astro.props;
+
+const canonical = new URL(canonicalPath ?? Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site);
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "유병현",
+  alternateName: "Polalise",
+  url: "https://polalise.github.io",
+  sameAs: ["https://github.com/Polalise"],
+  jobTitle: "AI 연동형 풀스택 개발자",
+  knowsAbout: ["React", "Spring Boot", "Python", "LLM", "RAG", "Machine Learning"]
+};
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f2f0ea" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#171411" media="(prefers-color-scheme: dark)" />
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <title>{title}</title>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+    <script is:inline>
+      (() => {
+        const saved = localStorage.getItem("portfolio-theme");
+        const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = saved || (systemDark ? "dark" : "light");
+        if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          document.documentElement.classList.add("reveal-ready");
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 이동</a>
+    <Header />
+    <main id="main-content">
+      <slot />
+    </main>
+    <Footer />
+    <script>
+      const revealItems = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        revealItems.forEach((item) => item.dataset.visible = "true");
+      } else {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            (entry.target as HTMLElement).dataset.visible = "true";
+            observer.unobserve(entry.target);
+          });
+        }, { threshold: 0.14 });
+        revealItems.forEach((item) => observer.observe(item));
+      }
+    </script>
+  </body>
+</html>
