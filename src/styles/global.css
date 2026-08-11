@@ -275,6 +275,22 @@ button {
   color: var(--accent);
 }
 
+.line-unit {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.line-unit-wide {
+  display: contents;
+}
+
+@media (min-width: 48rem) {
+  .line-unit-wide {
+    display: inline-block;
+    white-space: nowrap;
+  }
+}
+
 .section-head h2,
 .page-intro h1,
 .detail-title {
@@ -283,6 +299,9 @@ button {
   font-weight: 760;
   letter-spacing: -.055em;
   line-height: .95;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+  word-break: keep-all;
 }
 
 .section-head p,
@@ -293,6 +312,9 @@ button {
   color: var(--ink-soft);
   font-size: clamp(1rem, 1.7vw, 1.28rem);
   line-height: 1.72;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+  word-break: keep-all;
 }
 
 .hero {
@@ -310,18 +332,21 @@ button {
 }
 
 .hero h1 {
-  max-width: 11ch;
+  max-width: 13ch;
   margin: 1.4rem 0 1.5rem;
-  font-size: clamp(3.5rem, 8vw, 8.4rem);
+  font-size: clamp(3.5rem, 6vw, 7.2rem);
   font-weight: 790;
   letter-spacing: -.075em;
   line-height: .88;
+  overflow-wrap: break-word;
   text-wrap: balance;
+  word-break: keep-all;
 }
 
 .hero h1 em {
   color: var(--accent);
   font-style: normal;
+  white-space: nowrap;
 }
 
 .hero-lead {
@@ -330,6 +355,9 @@ button {
   color: var(--ink-soft);
   font-size: clamp(1.02rem, 1.7vw, 1.26rem);
   line-height: 1.68;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+  word-break: keep-all;
 }
 
 .hero-actions,
@@ -432,6 +460,8 @@ button {
   color: var(--ink-soft);
   font-size: .86rem;
   line-height: 1.4;
+  text-wrap: pretty;
+  word-break: keep-all;
 }
 
 .metric-item dd {
@@ -461,6 +491,9 @@ button {
   color: var(--ink-soft);
   font-size: .72rem;
   line-height: 1.45;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+  word-break: keep-all;
 }
 
 .featured-grid {
@@ -522,6 +555,9 @@ button {
   font-size: clamp(1.8rem, 4vw, 3.9rem);
   letter-spacing: -.045em;
   line-height: 1;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+  word-break: keep-all;
 }
 
 .project-card h3 a {
@@ -534,6 +570,9 @@ button {
   color: var(--ink-soft);
   font-size: 1rem;
   line-height: 1.65;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+  word-break: keep-all;
 }
 
 .project-card__metric {
@@ -700,14 +739,18 @@ button {
 
 .principle h3 {
   margin: 0 0 .8rem;
-  font-size: clamp(1.35rem, 2.5vw, 2.15rem);
+  font-size: clamp(1.3rem, 1.8vw, 1.7rem);
   letter-spacing: -.035em;
+  text-wrap: balance;
+  word-break: keep-all;
 }
 
 .principle p {
   margin: 0;
   color: var(--ink-soft);
   line-height: 1.65;
+  text-wrap: pretty;
+  word-break: keep-all;
 }
 
 .contact-band {
@@ -727,6 +770,9 @@ button {
   font-size: clamp(2.6rem, 6vw, 6.3rem);
   letter-spacing: -.06em;
   line-height: .95;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+  word-break: keep-all;
 }
 
 .contact-band a {
@@ -747,6 +793,17 @@ button {
 
 .page-intro h1 {
   max-width: 10ch;
+}
+
+.page-intro h1 span {
+  display: block;
+}
+
+.page-intro h1 span + span {
+  max-width: 18ch;
+  margin-top: .28em;
+  font-size: .68em;
+  line-height: 1.04;
 }
 
 .project-count {
@@ -858,7 +915,7 @@ button {
 .detail-story {
   min-width: 0;
   max-width: 47rem;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .story-block + .story-block {
@@ -870,6 +927,8 @@ button {
   margin: 0 0 1rem;
   font-size: clamp(1.7rem, 3vw, 2.6rem);
   letter-spacing: -.04em;
+  text-wrap: balance;
+  word-break: keep-all;
 }
 
 .story-block p,
@@ -879,6 +938,9 @@ button {
   color: var(--ink-soft);
   font-size: 1.04rem;
   line-height: 1.8;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+  word-break: keep-all;
 }
 
 .story-block ul,
@@ -906,6 +968,10 @@ button {
   border-bottom: 1px solid var(--line);
 }
 
+.metric-evidence article > * {
+  min-width: 0;
+}
+
 .metric-evidence strong {
   color: var(--accent);
   font-family: "IBM Plex Mono", monospace;
@@ -915,12 +981,17 @@ button {
 .metric-evidence p {
   margin: 0;
   font-size: .92rem;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+  word-break: keep-all;
 }
 
 .metric-evidence small {
   display: block;
   margin-top: .35rem;
   color: var(--ink-soft);
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 .next-project {
@@ -942,6 +1013,9 @@ button {
   font-size: clamp(2.4rem, 7vw, 7rem);
   letter-spacing: -.06em;
   line-height: 1;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+  word-break: keep-all;
 }
 
 .next-project b {
@@ -997,12 +1071,17 @@ button {
 .resume-entry h3 {
   margin: 0;
   font-size: 1.35rem;
+  text-wrap: balance;
+  word-break: keep-all;
 }
 
 .resume-entry p,
 .resume-entry li {
   color: var(--ink-soft);
   line-height: 1.7;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+  word-break: keep-all;
 }
 
 .resume-entry ul {
@@ -1090,6 +1169,10 @@ button {
 }
 
 @media (max-width: 47.99rem) {
+  .section-head h2 {
+    font-size: clamp(2.25rem, 6vw, 3.25rem);
+  }
+
   .header-inner {
     grid-template-columns: 1fr auto;
     min-height: 4.25rem;
@@ -1114,7 +1197,7 @@ button {
   }
 
   .hero h1 {
-    font-size: clamp(3.25rem, 16vw, 5.8rem);
+    font-size: clamp(3.25rem, 15vw, 5.8rem);
   }
 
   .hero-visual {
@@ -1172,6 +1255,10 @@ button {
 
   .contact-band a {
     justify-self: start;
+  }
+
+  .contact-band {
+    padding: 2.5rem 1.5rem 2.75rem;
   }
 
   .detail-facts,
