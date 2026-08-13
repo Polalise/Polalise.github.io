@@ -49,6 +49,17 @@ cover:
   evidence:
     source: "metric"
     index: 0
+visuals:
+  - id: "actual-vs-pred"
+    alt: "2022년부터 2025년까지 실제 CPI 상승률과 선형회귀 예측값 및 월별 잔차를 비교한 그래프"
+    caption: "48개월 테스트 구간의 실제값·예측값과 월별 잔차 비교"
+    scope: "personal"
+    evidence: "최종 발표 자료의 2022년부터 2025년 시계열 테스트 결과"
+  - id: "feature-contribution"
+    alt: "유가와 환율 및 금리 특성의 CPI 예측 기여 방향을 보여주는 계수 그래프"
+    caption: "선형회귀 특성별 기여 방향을 확인하는 모델 해석 그래프"
+    scope: "personal"
+    evidence: "최종 발표 자료의 표준화 계수 기반 특성 기여도"
 ---
 
 ## 가설을 변수 비교로 검증했습니다

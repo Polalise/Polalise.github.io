@@ -31,8 +31,83 @@ export const PROJECT_MEDIA_VARIANTS = Object.freeze({
   "cover-og.webp": { width: 1200, height: 630, maxBytes: 180_000, source: "desktop", fit: "cover" }
 });
 
-const SCREEN_PROJECTS = new Set(["machine-learning-oil", "bmi-calculator"]);
-const MEDIA_MANIFEST_VERSION = 2;
+const SCREEN_PROJECTS = new Set([
+  "machine-learning-oil",
+  "bmi-calculator",
+  "hajacheck",
+  "ml-economics-answers",
+  "deep-learning-sleep"
+]);
+const MEDIA_MANIFEST_VERSION = 4;
+export const PROJECT_DETAIL_MEDIA = Object.freeze({
+  hajacheck: [
+    { id: "dashboard", source: "dashboard.jpg" },
+    { id: "ai-detection", source: "ai-detection.jpg" }
+  ],
+  "ml-economics-answers": [
+    { id: "app", source: "app.jpg" },
+    { id: "rag-relevance", source: "rag-relevance.jpg" }
+  ],
+  "machine-learning-oil": [
+    { id: "actual-vs-pred", source: "actual-vs-pred.jpg" },
+    { id: "feature-contribution", source: "feature-contribution.jpg" }
+  ],
+  "deep-learning-sleep": [
+    { id: "forecast-app", source: "forecast-app.png" },
+    { id: "roc-pr", source: "roc-pr.webp" },
+    { id: "bootstrap-ci", source: "bootstrap-ci.webp" }
+  ],
+  "bmi-calculator": [
+    { id: "history", source: "history.png" },
+    { id: "statistics", source: "statistics.webp" }
+  ]
+});
+// SCREEN_PROJECTS 대표 커버의 원본 이미지·오버레이 문구. machine-learning-oil·bmi-calculator는
+// 기존 public/media/projects/ 아래 평면 webp를 그대로 쓰고, 나머지는 PROJECT_DETAIL_MEDIA와
+// 같은 실제 화면(source/project-visuals/)을 커버로도 재사용한다.
+const SCREEN_EVIDENCE = Object.freeze({
+  "machine-learning-oil": {
+    input: path.join(publicRoot, "machine-learning-oil-dashboard.webp"),
+    title: "48개월 테스트 · R² 0.9278",
+    desktopSubtitle: "실제 Streamlit 대시보드 · 과거 테스트 성능",
+    mobileSubtitle: "실제 Streamlit 대시보드",
+    mobilePosition: "north"
+  },
+  "bmi-calculator": {
+    input: path.join(publicRoot, "bmi-calculator-example-result.webp"),
+    title: "실제 UI · 3계층 · 주요 라우트 11개",
+    desktopSubtitle: "예시 입력값만 사용 · routes → services → models",
+    mobileSubtitle: "예시 입력값만 사용",
+    mobilePosition: "centre"
+  },
+  hajacheck: {
+    input: path.join(projectRoot, "source", "project-visuals", "hajacheck", "dashboard.jpg"),
+    title: "실제 대시보드 화면",
+    desktopSubtitle: "시설물 현황 · AI 주간 브리핑 · 처리 대기 하자",
+    mobileSubtitle: "시설물 현황 · AI 주간 브리핑",
+    mobilePosition: "north"
+  },
+  "ml-economics-answers": {
+    input: path.join(projectRoot, "source", "project-visuals", "ml-economics-answers", "app.jpg"),
+    title: "실제 Streamlit 실행 화면",
+    desktopSubtitle: "질문 입력부터 근거가 포함된 답변까지",
+    mobileSubtitle: "질문부터 근거 포함 답변까지",
+    mobilePosition: "north"
+  },
+  "deep-learning-sleep": {
+    input: path.join(projectRoot, "source", "project-visuals", "deep-learning-sleep", "forecast-app.png"),
+    title: "실제 Streamlit 실행 화면",
+    desktopSubtitle: "취침 전 입력만으로 오늘 밤 수면 예측",
+    mobileSubtitle: "취침 전 입력으로 수면 예측",
+    mobilePosition: "north"
+  }
+});
+
+export const PROJECT_DETAIL_VARIANTS = Object.freeze({
+  ".webp": { width: 1600, height: 1000, maxBytes: 300_000 },
+  "-960w.webp": { width: 960, height: 600, maxBytes: 180_000 },
+  "-480w.webp": { width: 480, height: 300, maxBytes: 90_000 }
+});
 const palette = { paper: "#F2F0EA", ink: "#161914", muted: "#696B64", rule: "#C9C7BE", accent: "#C2410C", soft: "#E9DED1", white: "#FFFFFF" };
 const PROJECT_NUMBERS = Object.fromEntries(PROJECT_COVER_SLUGS.map((slug, index) => [slug, String(index + 1).padStart(2, "0")]));
 
@@ -186,13 +261,11 @@ async function buildDiagramSources(slug,builder){
 }
 
 async function buildScreenSources(slug){
-  const isOil=slug==="machine-learning-oil";
-  const input=path.join(publicRoot,isOil?"machine-learning-oil-dashboard.webp":"bmi-calculator-example-result.webp");
-  const title=isOil?"48개월 테스트 · R² 0.9278":"실제 UI · 3계층 · 주요 라우트 11개";
-  const desktopOverlay=Buffer.from(`<svg width="1600" height="1000" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="850" width="1600" height="150" fill="#161914" fill-opacity=".94"/><text x="64" y="920" font-family="Pretendard,Arial,sans-serif" font-size="34" font-weight="700" fill="#F2F0EA">${title}</text><text x="64" y="962" font-family="Pretendard,Arial,sans-serif" font-size="20" fill="#C7C8C1">${isOil?"실제 Streamlit 대시보드 · 과거 테스트 성능":"예시 입력값만 사용 · routes → services → models"}</text></svg>`);
-  const mobileOverlay=Buffer.from(`<svg width="960" height="720" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="590" width="960" height="130" fill="#161914" fill-opacity=".94"/><text x="40" y="650" font-family="Pretendard,Arial,sans-serif" font-size="28" font-weight="700" fill="#F2F0EA">${title}</text><text x="40" y="690" font-family="Pretendard,Arial,sans-serif" font-size="17" fill="#C7C8C1">${isOil?"실제 Streamlit 대시보드":"예시 입력값만 사용"}</text></svg>`);
+  const {input,title,desktopSubtitle,mobileSubtitle,mobilePosition}=SCREEN_EVIDENCE[slug];
+  const desktopOverlay=Buffer.from(`<svg width="1600" height="1000" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="850" width="1600" height="150" fill="#161914" fill-opacity=".94"/><text x="64" y="920" font-family="Pretendard,Arial,sans-serif" font-size="34" font-weight="700" fill="#F2F0EA">${escapeXml(title)}</text><text x="64" y="962" font-family="Pretendard,Arial,sans-serif" font-size="20" fill="#C7C8C1">${escapeXml(desktopSubtitle)}</text></svg>`);
+  const mobileOverlay=Buffer.from(`<svg width="960" height="720" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="590" width="960" height="130" fill="#161914" fill-opacity=".94"/><text x="40" y="650" font-family="Pretendard,Arial,sans-serif" font-size="28" font-weight="700" fill="#F2F0EA">${escapeXml(title)}</text><text x="40" y="690" font-family="Pretendard,Arial,sans-serif" font-size="17" fill="#C7C8C1">${escapeXml(mobileSubtitle)}</text></svg>`);
   const desktop=await sharp(input).resize(1600,1000,{fit:"cover",position:"north"}).composite([{input:desktopOverlay}]).png({compressionLevel:9}).toBuffer();
-  const mobile=await sharp(input).resize(960,720,{fit:"cover",position:isOil?"north":"centre"}).composite([{input:mobileOverlay}]).png({compressionLevel:9}).toBuffer();
+  const mobile=await sharp(input).resize(960,720,{fit:"cover",position:mobilePosition}).composite([{input:mobileOverlay}]).png({compressionLevel:9}).toBuffer();
   await writeIfChanged(path.join(sourceRoot,slug,"desktop.png"),desktop); await writeIfChanged(path.join(sourceRoot,slug,"mobile.png"),mobile);
 }
 
@@ -203,15 +276,7 @@ function projectSourceFiles(root, slug) {
     path.join(root, "source", "project-covers", slug, `mobile.${extension}`)
   ];
   if (SCREEN_PROJECTS.has(slug)) {
-    files.push(path.join(
-      root,
-      "public",
-      "media",
-      "projects",
-      slug === "machine-learning-oil"
-        ? "machine-learning-oil-dashboard.webp"
-        : "bmi-calculator-example-result.webp"
-    ));
+    files.push(SCREEN_EVIDENCE[slug].input);
   }
   return files;
 }
@@ -221,7 +286,10 @@ async function mediaFingerprint(root = projectRoot) {
   hash.update(`project-media-manifest-v${MEDIA_MANIFEST_VERSION}\0`);
   const inputs = [
     path.join(root, "scripts", "project-media.mjs"),
-    ...PROJECT_COVER_SLUGS.flatMap((slug) => projectSourceFiles(root, slug))
+    ...PROJECT_COVER_SLUGS.flatMap((slug) => projectSourceFiles(root, slug)),
+    ...Object.entries(PROJECT_DETAIL_MEDIA).flatMap(([slug, visuals]) =>
+      visuals.map(({ source }) => path.join(root, "source", "project-visuals", slug, source))
+    )
   ];
   for (const input of inputs) {
     hash.update(`${path.relative(root, input).split(path.sep).join("/")}\0`);
@@ -238,7 +306,7 @@ async function mediaFingerprint(root = projectRoot) {
 }
 
 function mediaOutputFiles(root = projectRoot) {
-  return PROJECT_COVER_SLUGS.flatMap((slug) =>
+  const covers = PROJECT_COVER_SLUGS.flatMap((slug) =>
     Object.keys(PROJECT_MEDIA_VARIANTS).map((name) => path.join(
       root,
       "public",
@@ -248,6 +316,18 @@ function mediaOutputFiles(root = projectRoot) {
       name
     ))
   );
+  const details = Object.entries(PROJECT_DETAIL_MEDIA).flatMap(([slug, visuals]) =>
+    visuals.flatMap(({ id }) => Object.keys(PROJECT_DETAIL_VARIANTS).map((suffix) => path.join(
+      root,
+      "public",
+      "media",
+      "projects",
+      slug,
+      "visuals",
+      `${id}${suffix}`
+    )))
+  );
+  return [...covers, ...details];
 }
 
 async function fileSha256(file) {
@@ -288,6 +368,19 @@ export async function buildProjectMedia(root=projectRoot){
       await writeFile(path.join(destination,name),await pipeline.toBuffer());
     }
   }
+  for(const [slug,visuals] of Object.entries(PROJECT_DETAIL_MEDIA)){
+    const destination=path.join(publicRoot,slug,"visuals"); await mkdir(destination,{recursive:true});
+    for(const {id,source} of visuals){
+      const input=path.join(projectRoot,"source","project-visuals",slug,source);
+      for(const [suffix,spec] of Object.entries(PROJECT_DETAIL_VARIANTS)){
+        const output=path.join(destination,`${id}${suffix}`);
+        await writeFile(output,await sharp(input)
+          .resize(spec.width,spec.height,{fit:"contain",position:"centre",background:palette.paper})
+          .webp({quality:84,effort:6})
+          .toBuffer());
+      }
+    }
+  }
   await writeMediaManifest(root);
   const errors=await validateProjectMedia(root); if(errors.length) throw new Error(`Generated project media failed validation:\n${errors.join("\n")}`);
 }
@@ -316,11 +409,20 @@ export async function validateProjectMedia(root=projectRoot){
     const ext=SCREEN_PROJECTS.has(slug)?"png":"svg"; const sources=[path.join(rootSource,slug,`desktop.${ext}`),path.join(rootSource,slug,`mobile.${ext}`)];
     for(const suffix of [".webp","-960w.webp","-480w.webp"]){const legacy=path.join(rootPublic,`${slug}${suffix}`);try{if((await stat(legacy)).isFile())errors.push(`${path.relative(root,legacy)}: legacy flat cover must be removed`)}catch{}}
     if(SCREEN_PROJECTS.has(slug)){
-      const evidence=path.join(rootPublic,slug==="machine-learning-oil"?"machine-learning-oil-dashboard.webp":"bmi-calculator-example-result.webp");
+      const evidence=SCREEN_EVIDENCE[slug].input;
       try{await stat(evidence)}catch(error){errors.push(`${path.relative(root,evidence)}: missing screen evidence (${error.code??error.message})`)}
     }
     for(const source of sources){try{const meta=await sharp(source).metadata();const expected=source.includes("mobile")?[960,720]:[1600,1000];if(meta.width!==expected[0]||meta.height!==expected[1])errors.push(`${path.relative(root,source)}: expected ${expected.join("x")}, got ${meta.width}x${meta.height}`)}catch(error){errors.push(`${path.relative(root,source)}: missing or unreadable source (${error.code??error.message})`)}}
     for(const [name,spec] of Object.entries(PROJECT_MEDIA_VARIANTS)){const file=path.join(rootPublic,slug,name);try{const s=await stat(file);const meta=await sharp(file).metadata();const manifestKey=path.relative(root,file).split(path.sep).join("/");if(meta.format!=="webp")errors.push(`${path.relative(root,file)}: expected WebP, got ${meta.format??"unknown"}`);if(meta.width!==spec.width||meta.height!==spec.height)errors.push(`${path.relative(root,file)}: expected ${spec.width}x${spec.height}, got ${meta.width}x${meta.height}`);if(s.size>spec.maxBytes)errors.push(`${path.relative(root,file)}: ${s.size} bytes exceeds ${spec.maxBytes} byte limit`);if(manifest?.outputs?.[manifestKey]&&manifest.outputs[manifestKey]!==await fileSha256(file))errors.push(`${path.relative(root,file)}: content hash differs from source/project-covers/manifest.json`)}catch(error){errors.push(`${path.relative(root,file)}: missing or unreadable output (${error.code??error.message})`)}}
+  }
+  for(const [slug,visuals] of Object.entries(PROJECT_DETAIL_MEDIA)){
+    for(const {id,source} of visuals){
+      try{await sharp(path.join(root,"source","project-visuals",slug,source)).metadata()}catch(error){errors.push(`source/project-visuals/${slug}/${source}: missing or unreadable source (${error.code??error.message})`)}
+      for(const [suffix,spec] of Object.entries(PROJECT_DETAIL_VARIANTS)){
+        const file=path.join(rootPublic,slug,"visuals",`${id}${suffix}`);
+        try{const s=await stat(file);const meta=await sharp(file).metadata();const manifestKey=path.relative(root,file).split(path.sep).join("/");if(meta.format!=="webp")errors.push(`${path.relative(root,file)}: expected WebP, got ${meta.format??"unknown"}`);if(meta.width!==spec.width||meta.height!==spec.height)errors.push(`${path.relative(root,file)}: expected ${spec.width}x${spec.height}, got ${meta.width}x${meta.height}`);if(s.size>spec.maxBytes)errors.push(`${path.relative(root,file)}: ${s.size} bytes exceeds ${spec.maxBytes} byte limit`);if(manifest?.outputs?.[manifestKey]&&manifest.outputs[manifestKey]!==await fileSha256(file))errors.push(`${path.relative(root,file)}: content hash differs from source/project-covers/manifest.json`)}catch(error){errors.push(`${path.relative(root,file)}: missing or unreadable output (${error.code??error.message})`)}
+      }
+    }
   }
   return errors;
 }

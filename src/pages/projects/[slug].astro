@@ -2,6 +2,7 @@
 import { render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ProjectCover from "../../components/ProjectCover.astro";
+import ProjectGallery from "../../components/ProjectGallery.astro";
 import { getProjects } from "../../lib/projects";
 import { projectCoverMedia } from "../../lib/media";
 
@@ -142,6 +143,10 @@ const socialCover = projectCoverMedia(project.id).og;
         </div>
       </div>
     </section>
+
+    <div class="page-shell">
+      <ProjectGallery slug={project.id} visuals={data.visuals} />
+    </div>
   </article>
 
   <nav class="section" aria-label="다음 프로젝트">

@@ -1,7 +1,7 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { validateProjectMedia } from "./project-media.mjs";
+import { PROJECT_DETAIL_MEDIA, validateProjectMedia } from "./project-media.mjs";
 
 export const siteOrigin = "https://polalise.github.io";
 export const approvedEmail = "qudgus182@naver.com";
@@ -160,6 +160,24 @@ function parseCover(frontmatter) {
   };
 }
 
+function parseVisuals(frontmatter) {
+  const visuals = [];
+  const lines = blockFromFrontmatter(frontmatter, "visuals");
+  let currentVisual;
+  for (const line of lines) {
+    const idMatch = line.match(/^\s{2}-\s+id:\s*(.*?)\s*$/);
+    if (idMatch) {
+      currentVisual = { id: cleanScalar(idMatch[1]), alt: "", caption: "", scope: "", evidence: "" };
+      visuals.push(currentVisual);
+      continue;
+    }
+    if (!currentVisual) continue;
+    const propertyMatch = line.match(/^\s{4}(alt|caption|scope|evidence):\s*(.*?)\s*$/);
+    if (propertyMatch) currentVisual[propertyMatch[1]] = cleanScalar(propertyMatch[2]);
+  }
+  return visuals;
+}
+
 export function parseProjectDocument(text, slug = "unknown") {
   if (!text.startsWith("---")) {
     throw new Error(`${slug}: frontmatter opening marker is missing`);
@@ -216,6 +234,7 @@ export function parseProjectDocument(text, slug = "unknown") {
     outcomes: listFromFrontmatter(frontmatter, "outcomes"),
     cover: parseCover(frontmatter),
     metrics,
+    visuals: parseVisuals(frontmatter),
     frontmatter
   };
 }
@@ -405,6 +424,17 @@ export async function validateProjectCollection(root) {
         errors.push(`${metricLabel} must declare personal or team scope`);
       }
       if (!metric.evidence) errors.push(`${metricLabel} must include evidence`);
+    }
+
+    const expectedVisualIds = (PROJECT_DETAIL_MEDIA[expected.slug] ?? []).map(({ id }) => id);
+    const actualVisualIds = document.visuals.map(({ id }) => id);
+    if (JSON.stringify(actualVisualIds) !== JSON.stringify(expectedVisualIds)) {
+      errors.push(`${expected.slug}: visual ids do not match the generated detail media contract`);
+    }
+    for (const [index, visual] of document.visuals.entries()) {
+      const visualLabel = `${expected.slug}: visual ${index + 1}`;
+      if (!visual.alt || !visual.caption || !visual.evidence) errors.push(`${visualLabel} must include alt, caption, and evidence`);
+      if (!new Set(["personal", "team"]).has(visual.scope)) errors.push(`${visualLabel} must declare personal or team scope`);
     }
   }
 

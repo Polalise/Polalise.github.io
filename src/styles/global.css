@@ -1183,6 +1183,128 @@ button {
   gap: clamp(3rem, 10vw, 10rem);
 }
 
+.project-gallery {
+  padding-top: clamp(2rem, 5vw, 4.5rem);
+  padding-bottom: clamp(4rem, 9vw, 8rem);
+  border-top: 1px solid var(--line);
+}
+
+.project-gallery__head {
+  display: grid;
+  grid-template-columns: minmax(12rem, .52fr) minmax(0, 1.48fr);
+  column-gap: clamp(3rem, 10vw, 10rem);
+  margin-bottom: clamp(2rem, 5vw, 4rem);
+}
+
+.project-gallery__head .eyebrow {
+  grid-row: 1 / span 2;
+}
+
+.project-gallery__head h2 {
+  margin: 0;
+  font-size: clamp(1.9rem, 4vw, 3.4rem);
+  letter-spacing: -.045em;
+}
+
+.project-gallery__head > p:last-child {
+  max-width: 48rem;
+  margin: .9rem 0 0;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+
+.project-gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(2rem, 5vw, 4.5rem) clamp(1rem, 3vw, 2.2rem);
+}
+
+.project-visual {
+  grid-column: span 6;
+  min-width: 0;
+  margin: 0;
+}
+
+.project-visual--lead {
+  grid-column: 1 / -1;
+}
+
+.project-visual:nth-child(3n) {
+  transform: translateY(clamp(0rem, 3vw, 2.5rem));
+}
+
+.project-visual picture {
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-strong);
+  box-shadow: var(--shadow);
+}
+
+.project-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.project-visual figcaption {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, auto) 1fr;
+  gap: .35rem 1rem;
+  padding-top: 1rem;
+}
+
+.project-visual figcaption span {
+  grid-row: 1 / span 2;
+  color: var(--accent);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.project-visual figcaption strong {
+  font-size: .95rem;
+  line-height: 1.5;
+}
+
+.project-visual figcaption small {
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+
+@media (max-width: 48rem) {
+  .project-gallery__head {
+    display: block;
+  }
+
+  .project-gallery__head h2 {
+    margin-top: .8rem;
+  }
+
+  .project-visual,
+  .project-visual--lead {
+    grid-column: 1 / -1;
+  }
+
+  .project-visual:nth-child(3n) {
+    transform: none;
+  }
+
+  .project-visual figcaption {
+    display: block;
+  }
+
+  .project-visual figcaption strong,
+  .project-visual figcaption small {
+    display: block;
+    margin-top: .4rem;
+  }
+}
+
 .resume-layout--single {
   grid-template-columns: minmax(0, 1fr);
   max-width: 68rem;

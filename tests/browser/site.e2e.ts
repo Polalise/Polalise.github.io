@@ -259,6 +259,23 @@ test.describe("responsive themes and accessibility", () => {
     expect(desktopSources.every((source) => !source.includes("cover-mobile"))).toBe(true);
   });
 
+  test("detail evidence galleries expose responsive images and scope labels", async ({ page }) => {
+    await page.goto("/projects/hajacheck/", { waitUntil: "networkidle" });
+    const images = page.locator(".project-gallery .project-visual img");
+    await expect(images).toHaveCount(2);
+    await images.last().scrollIntoViewIfNeeded();
+    await images.evaluateAll(async (nodes) => {
+      for (const image of nodes) {
+        const node = image as HTMLImageElement;
+        if (!node.complete) await new Promise((resolve) => node.addEventListener("load", resolve, { once: true }));
+        await node.decode();
+      }
+    });
+    expect(await images.evaluateAll((nodes) => nodes.every((node) => (node as HTMLImageElement).naturalWidth > 0))).toBe(true);
+    await expect(page.locator(".project-visual figcaption span")).toHaveText(["개인 구현·분석", "팀 산출물"]);
+    await expect(page.locator('.project-gallery source[srcset*="-480w.webp"]')).toHaveCount(2);
+  });
+
   test("all mobile controls meet the 44 by 44 target", async ({ page }) => {
     test.setTimeout(60_000);
     await page.setViewportSize({ width: 390, height: 844 });

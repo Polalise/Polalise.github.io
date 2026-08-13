@@ -44,6 +44,17 @@ cover:
   evidence:
     source: "metric"
     index: 0
+visuals:
+  - id: "history"
+    alt: "개인을 식별할 수 없는 예시 BMI 기록 목록 화면"
+    caption: "로그인 사용자의 BMI 기록 조회와 삭제 흐름"
+    scope: "personal"
+    evidence: "예시 입력값으로 생성한 실제 Flask 서비스 화면"
+  - id: "statistics"
+    alt: "BMI 평균과 범위 및 분류별 비율을 보여주는 전체 통계 화면"
+    caption: "저장된 기록을 평균과 분류 비율로 집계한 통계 화면"
+    scope: "personal"
+    evidence: "예시 데이터만 사용한 실제 Flask 통계 화면"
 ---
 
 ## 계산기를 작은 서비스로 확장했습니다

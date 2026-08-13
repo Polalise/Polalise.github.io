@@ -41,12 +41,28 @@ metrics:
     evidence: "집계된 참가자와 수면 episode 수를 기록한 최종 데이터 보고서"
 links: {}
 cover:
-  kind: "validation"
+  kind: "product"
   tone: "ink"
-  alt: "수면 시작 이후의 누수 특성을 제거하고 참가자 단위로 분리한 모델 검증 구조"
+  alt: "취침 전 입력만으로 오늘 밤 수면 예측 결과를 보여주는 실제 Streamlit 실행 화면"
   evidence:
     source: "metric"
     index: 0
+visuals:
+  - id: "forecast-app"
+    alt: "취침 전 입력으로 수면 품질을 예측하는 Streamlit 애플리케이션 화면"
+    caption: "수면 시작 전에 알 수 있는 정보만 받는 추론 화면"
+    scope: "personal"
+    evidence: "최종 모델을 연결한 Streamlit 실행 화면"
+  - id: "roc-pr"
+    alt: "held-out 참가자 평가의 ROC 곡선과 정밀도 재현율 곡선"
+    caption: "참가자 단위 held-out ROC와 정밀도-재현율 평가"
+    scope: "personal"
+    evidence: "최종 MLP의 held-out 참가자 평가 산출물"
+  - id: "bootstrap-ci"
+    alt: "참가자 bootstrap으로 계산한 수면 예측 지표의 신뢰구간 그래프"
+    caption: "작은 held-out 표본의 불확실성을 드러낸 bootstrap 신뢰구간"
+    scope: "personal"
+    evidence: "참가자 단위 bootstrap 평가 산출물"
 ---
 
 ## 성능보다 예측 시점을 먼저 바로잡았습니다

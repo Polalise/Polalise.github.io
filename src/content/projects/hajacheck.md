@@ -45,12 +45,23 @@ links:
   demo: "https://www.youtube.com/watch?v=IagMc_vZxpA"
   report: "https://github.com/Polalise/HajaCheck_report"
 cover:
-  kind: "workflow"
+  kind: "scope"
   tone: "accent"
-  alt: "사진 업로드, AI 탐지와 등급화, 사람 검수와 LLM 보고서 초안으로 이어지는 하자 처리 흐름"
+  alt: "시설물 현황과 AI 주간 브리핑, 처리 대기 하자를 보여주는 HajaCheck 대시보드 실제 화면"
   evidence:
     source: "action"
-    index: 1
+    index: 0
+visuals:
+  - id: "dashboard"
+    alt: "하자 현황과 등급별 통계를 보여주는 HajaCheck 대시보드"
+    caption: "하자 현황과 통계를 한 화면에서 확인하는 운영 대시보드"
+    scope: "personal"
+    evidence: "최종보고서의 실제 서비스 화면, 개인 담당인 하자 관리와 통계 범위"
+  - id: "ai-detection"
+    alt: "시공 사진에서 탐지한 하자 위치와 판정 정보를 보여주는 분석 화면"
+    caption: "시공 사진의 탐지 결과를 사람이 검수하는 AI 분석 상세"
+    scope: "team"
+    evidence: "최종보고서의 실제 서비스 화면, AI 탐지는 팀 전체 산출물"
 ---
 
 ## 서비스 안에서 AI를 통제하는 방법

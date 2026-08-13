@@ -43,6 +43,14 @@ const coverSchema = z.object({
   evidence: coverEvidenceSchema
 });
 
+const visualSchema = z.object({
+  id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  alt: z.string().min(1),
+  caption: z.string().min(1),
+  scope: z.enum(["personal", "team"]),
+  evidence: z.string().min(1)
+});
+
 const projects = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/projects" }),
   schema: z.object({
@@ -63,7 +71,8 @@ const projects = defineCollection({
     limitation: z.string().min(1),
     metrics: z.array(metricSchema),
     links: linkSchema,
-    cover: coverSchema
+    cover: coverSchema,
+    visuals: z.array(visualSchema).default([])
   }).superRefine((project, context) => {
     const { source, index } = project.cover.evidence;
     const indexedCollections = {

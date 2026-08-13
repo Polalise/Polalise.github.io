@@ -46,12 +46,23 @@ metrics:
 links:
   repository: "https://github.com/Polalise/ML_economics_answers"
 cover:
-  kind: "routing"
+  kind: "validation"
   tone: "ink"
-  alt: "경제 질문을 일곱 가지 처리 모드로 분류하고 필요한 파이프라인으로 연결하는 라우팅 구조"
+  alt: "경제 질문에 근거가 포함된 답변을 보여주는 실제 Streamlit 실행 화면"
   evidence:
     source: "metric"
     index: 0
+visuals:
+  - id: "app"
+    alt: "경제 질문과 근거가 포함된 답변을 보여주는 Streamlit 질의응답 화면"
+    caption: "질문 유형에 맞는 경로를 실행하고 근거와 함께 답하는 서비스 화면"
+    scope: "personal"
+    evidence: "발표 자료에 수록된 실제 Streamlit 실행 화면"
+  - id: "rag-relevance"
+    alt: "RAG 검색 결과의 관련성 평가를 질문 유형별로 비교한 막대 그래프"
+    caption: "근거 검색이 필요한 질문에서 확인한 RAG 관련성 평가"
+    scope: "personal"
+    evidence: "프로젝트 평가 산출물의 질문별 RAG relevance 집계"
 ---
 
 ## 100%라는 숫자를 의심했습니다

@@ -15,9 +15,10 @@ import {
   validatePublicAssets,
   validateSourcePrivacy
 } from "../../scripts/audit-public.mjs";
-import { PROJECT_MEDIA_VARIANTS } from "../../scripts/project-media.mjs";
+import { PROJECT_DETAIL_MEDIA, PROJECT_DETAIL_VARIANTS, PROJECT_MEDIA_VARIANTS } from "../../scripts/project-media.mjs";
 
 const root = path.resolve(import.meta.dirname, "..", "..");
+const detailMedia = PROJECT_DETAIL_MEDIA as Record<string, readonly { id: string; source: string }[]>;
 
 describe("public project contract", () => {
   it("keeps the exact nine projects in the approved order and tiers", async () => {
@@ -77,6 +78,21 @@ describe("public project contract", () => {
       "cover-mobile-480w.webp",
       "cover-og.webp"
     ]);
+  });
+
+  it("keeps detail gallery content aligned with responsive generated media", async () => {
+    expect(Object.keys(PROJECT_DETAIL_VARIANTS)).toEqual([".webp", "-960w.webp", "-480w.webp"]);
+    for (const { slug } of expectedProjects) {
+      const text = await readFile(path.join(root, "src", "content", "projects", `${slug}.md`), "utf8");
+      const project = parseProjectDocument(text, slug);
+      expect(project.visuals.map(({ id }) => id)).toEqual((detailMedia[slug] ?? []).map(({ id }) => id));
+      for (const visual of project.visuals) {
+        expect(visual.alt.trim().length).toBeGreaterThan(0);
+        expect(visual.caption.trim().length).toBeGreaterThan(0);
+        expect(["personal", "team"]).toContain(visual.scope);
+        expect(visual.evidence.trim().length).toBeGreaterThan(0);
+      }
+    }
   });
 
   it("keeps the public information architecture contracts visible in source", async () => {

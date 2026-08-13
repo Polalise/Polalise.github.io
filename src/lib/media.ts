@@ -26,6 +26,16 @@ export function projectCoverMedia(slug: string) {
   } as const;
 }
 
+export function projectVisualMedia(slug: string, id: string) {
+  const directory = `/media/projects/${slug}/visuals`;
+  return {
+    src: `${directory}/${id}.webp`,
+    srcset: `${directory}/${id}-480w.webp 480w, ${directory}/${id}-960w.webp 960w, ${directory}/${id}.webp 1600w`,
+    width: 1600,
+    height: 1000
+  } as const;
+}
+
 export function projectCoverEvidenceText(project: CollectionEntry<"projects">) {
   const { source, index } = project.data.cover.evidence;
   if (source === "metric") {
