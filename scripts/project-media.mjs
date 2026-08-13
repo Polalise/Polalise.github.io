@@ -1,4 +1,5 @@
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
@@ -7,6 +8,7 @@ const scriptPath = fileURLToPath(import.meta.url);
 export const projectRoot = path.resolve(path.dirname(scriptPath), "..");
 export const sourceRoot = path.join(projectRoot, "source", "project-covers");
 export const publicRoot = path.join(projectRoot, "public", "media", "projects");
+export const manifestPath = path.join(sourceRoot, "manifest.json");
 
 export const PROJECT_COVER_SLUGS = Object.freeze([
   "hajacheck",
@@ -30,6 +32,7 @@ export const PROJECT_MEDIA_VARIANTS = Object.freeze({
 });
 
 const SCREEN_PROJECTS = new Set(["machine-learning-oil", "bmi-calculator"]);
+const MEDIA_MANIFEST_VERSION = 2;
 const palette = { paper: "#F2F0EA", ink: "#161914", muted: "#696B64", rule: "#C9C7BE", accent: "#C2410C", soft: "#E9DED1", white: "#FFFFFF" };
 const PROJECT_NUMBERS = Object.fromEntries(PROJECT_COVER_SLUGS.map((slug, index) => [slug, String(index + 1).padStart(2, "0")]));
 
@@ -193,6 +196,84 @@ async function buildScreenSources(slug){
   await writeIfChanged(path.join(sourceRoot,slug,"desktop.png"),desktop); await writeIfChanged(path.join(sourceRoot,slug,"mobile.png"),mobile);
 }
 
+function projectSourceFiles(root, slug) {
+  const extension = SCREEN_PROJECTS.has(slug) ? "png" : "svg";
+  const files = [
+    path.join(root, "source", "project-covers", slug, `desktop.${extension}`),
+    path.join(root, "source", "project-covers", slug, `mobile.${extension}`)
+  ];
+  if (SCREEN_PROJECTS.has(slug)) {
+    files.push(path.join(
+      root,
+      "public",
+      "media",
+      "projects",
+      slug === "machine-learning-oil"
+        ? "machine-learning-oil-dashboard.webp"
+        : "bmi-calculator-example-result.webp"
+    ));
+  }
+  return files;
+}
+
+async function mediaFingerprint(root = projectRoot) {
+  const hash = createHash("sha256");
+  hash.update(`project-media-manifest-v${MEDIA_MANIFEST_VERSION}\0`);
+  const inputs = [
+    path.join(root, "scripts", "project-media.mjs"),
+    ...PROJECT_COVER_SLUGS.flatMap((slug) => projectSourceFiles(root, slug))
+  ];
+  for (const input of inputs) {
+    hash.update(`${path.relative(root, input).split(path.sep).join("/")}\0`);
+    const extension = path.extname(input).toLowerCase();
+    const contents = await readFile(input);
+    hash.update(
+      extension === ".mjs" || extension === ".svg"
+        ? Buffer.from(contents.toString("utf8").replace(/\r\n?/g, "\n"))
+        : contents
+    );
+    hash.update("\0");
+  }
+  return hash.digest("hex").match(/.{2}/g).join(":");
+}
+
+function mediaOutputFiles(root = projectRoot) {
+  return PROJECT_COVER_SLUGS.flatMap((slug) =>
+    Object.keys(PROJECT_MEDIA_VARIANTS).map((name) => path.join(
+      root,
+      "public",
+      "media",
+      "projects",
+      slug,
+      name
+    ))
+  );
+}
+
+async function fileSha256(file) {
+  return createHash("sha256")
+    .update(await readFile(file))
+    .digest("hex")
+    .match(/.{2}/g)
+    .join(":");
+}
+
+async function writeMediaManifest(root = projectRoot) {
+  const outputs = {};
+  for (const output of mediaOutputFiles(root)) {
+    outputs[path.relative(root, output).split(path.sep).join("/")] = await fileSha256(output);
+  }
+  const manifest = {
+    version: MEDIA_MANIFEST_VERSION,
+    inputFingerprint: await mediaFingerprint(root),
+    outputs
+  };
+  await writeFile(
+    path.join(root, "source", "project-covers", "manifest.json"),
+    `${JSON.stringify(manifest, null, 2)}\n`
+  );
+}
+
 export async function buildProjectMedia(root=projectRoot){
   if(path.resolve(root)!==projectRoot) throw new Error("Custom build roots are not supported; validation roots are supported.");
   for(const slug of PROJECT_COVER_SLUGS){
@@ -207,21 +288,39 @@ export async function buildProjectMedia(root=projectRoot){
       await writeFile(path.join(destination,name),await pipeline.toBuffer());
     }
   }
+  await writeMediaManifest(root);
   const errors=await validateProjectMedia(root); if(errors.length) throw new Error(`Generated project media failed validation:\n${errors.join("\n")}`);
 }
 
 export async function validateProjectMedia(root=projectRoot){
   const errors=[]; const rootSource=path.join(root,"source","project-covers"); const rootPublic=path.join(root,"public","media","projects");
-  let scriptMtime=0; try{scriptMtime=(await stat(path.join(root,"scripts","project-media.mjs"))).mtimeMs}catch{errors.push("scripts/project-media.mjs: missing validator/build script")}
+  let manifest;
+  try {
+    manifest = JSON.parse(await readFile(path.join(rootSource, "manifest.json"), "utf8"));
+    if (manifest.version !== MEDIA_MANIFEST_VERSION || manifest.inputFingerprint !== await mediaFingerprint(root)) {
+      errors.push("source/project-covers/manifest.json: stale; run npm run media:build");
+    }
+    const expectedOutputs = mediaOutputFiles(root)
+      .map((file) => path.relative(root, file).split(path.sep).join("/"))
+      .sort();
+    const declaredOutputs = manifest.outputs && typeof manifest.outputs === "object"
+      ? Object.keys(manifest.outputs).sort()
+      : [];
+    if (JSON.stringify(declaredOutputs) !== JSON.stringify(expectedOutputs)) {
+      errors.push("source/project-covers/manifest.json: output set does not match the media contract");
+    }
+  } catch (error) {
+    errors.push(`source/project-covers/manifest.json: missing or unreadable manifest (${error.code??error.message})`);
+  }
   for(const slug of PROJECT_COVER_SLUGS){
-    const ext=SCREEN_PROJECTS.has(slug)?"png":"svg"; const sources=[path.join(rootSource,slug,`desktop.${ext}`),path.join(rootSource,slug,`mobile.${ext}`)]; let newestSource=scriptMtime;
+    const ext=SCREEN_PROJECTS.has(slug)?"png":"svg"; const sources=[path.join(rootSource,slug,`desktop.${ext}`),path.join(rootSource,slug,`mobile.${ext}`)];
     for(const suffix of [".webp","-960w.webp","-480w.webp"]){const legacy=path.join(rootPublic,`${slug}${suffix}`);try{if((await stat(legacy)).isFile())errors.push(`${path.relative(root,legacy)}: legacy flat cover must be removed`)}catch{}}
     if(SCREEN_PROJECTS.has(slug)){
       const evidence=path.join(rootPublic,slug==="machine-learning-oil"?"machine-learning-oil-dashboard.webp":"bmi-calculator-example-result.webp");
-      try{newestSource=Math.max(newestSource,(await stat(evidence)).mtimeMs)}catch(error){errors.push(`${path.relative(root,evidence)}: missing screen evidence (${error.code??error.message})`)}
+      try{await stat(evidence)}catch(error){errors.push(`${path.relative(root,evidence)}: missing screen evidence (${error.code??error.message})`)}
     }
-    for(const source of sources){try{const s=await stat(source);newestSource=Math.max(newestSource,s.mtimeMs);const meta=await sharp(source).metadata();const expected=source.includes("mobile")?[960,720]:[1600,1000];if(meta.width!==expected[0]||meta.height!==expected[1])errors.push(`${path.relative(root,source)}: expected ${expected.join("x")}, got ${meta.width}x${meta.height}`)}catch(error){errors.push(`${path.relative(root,source)}: missing or unreadable source (${error.code??error.message})`)}}
-    for(const [name,spec] of Object.entries(PROJECT_MEDIA_VARIANTS)){const file=path.join(rootPublic,slug,name);try{const s=await stat(file);const meta=await sharp(file).metadata();if(meta.format!=="webp")errors.push(`${path.relative(root,file)}: expected WebP, got ${meta.format??"unknown"}`);if(meta.width!==spec.width||meta.height!==spec.height)errors.push(`${path.relative(root,file)}: expected ${spec.width}x${spec.height}, got ${meta.width}x${meta.height}`);if(s.size>spec.maxBytes)errors.push(`${path.relative(root,file)}: ${s.size} bytes exceeds ${spec.maxBytes} byte limit`);if(s.mtimeMs+1<newestSource)errors.push(`${path.relative(root,file)}: stale; run npm run media:build`)}catch(error){errors.push(`${path.relative(root,file)}: missing or unreadable output (${error.code??error.message})`)}}
+    for(const source of sources){try{const meta=await sharp(source).metadata();const expected=source.includes("mobile")?[960,720]:[1600,1000];if(meta.width!==expected[0]||meta.height!==expected[1])errors.push(`${path.relative(root,source)}: expected ${expected.join("x")}, got ${meta.width}x${meta.height}`)}catch(error){errors.push(`${path.relative(root,source)}: missing or unreadable source (${error.code??error.message})`)}}
+    for(const [name,spec] of Object.entries(PROJECT_MEDIA_VARIANTS)){const file=path.join(rootPublic,slug,name);try{const s=await stat(file);const meta=await sharp(file).metadata();const manifestKey=path.relative(root,file).split(path.sep).join("/");if(meta.format!=="webp")errors.push(`${path.relative(root,file)}: expected WebP, got ${meta.format??"unknown"}`);if(meta.width!==spec.width||meta.height!==spec.height)errors.push(`${path.relative(root,file)}: expected ${spec.width}x${spec.height}, got ${meta.width}x${meta.height}`);if(s.size>spec.maxBytes)errors.push(`${path.relative(root,file)}: ${s.size} bytes exceeds ${spec.maxBytes} byte limit`);if(manifest?.outputs?.[manifestKey]&&manifest.outputs[manifestKey]!==await fileSha256(file))errors.push(`${path.relative(root,file)}: content hash differs from source/project-covers/manifest.json`)}catch(error){errors.push(`${path.relative(root,file)}: missing or unreadable output (${error.code??error.message})`)}}
   }
   return errors;
 }
