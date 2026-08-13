@@ -411,51 +411,131 @@ button {
   color: var(--ink);
 }
 
-.hero-visual {
+.hero-evidence {
+  align-self: end;
+  margin-bottom: clamp(1rem, 5vw, 5rem);
+  border-top: 2px solid var(--ink);
+}
+
+.hero-evidence__head {
   position: relative;
-  min-height: min(43rem, 70vw);
+  padding: 1.2rem 0 clamp(2.5rem, 6vw, 5rem);
+  border-bottom: 1px solid var(--line);
 }
 
-.hero--project .hero-visual {
-  min-height: 0;
-}
-
-.hero--project .project-cover {
-  overflow: hidden;
-  aspect-ratio: 16 / 10;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--paper-strong);
-  box-shadow: var(--shadow);
-}
-
-.hero--project .project-cover picture,
-.hero--project .project-cover img {
-  height: 100%;
-}
-
-.hero--project .project-cover img {
-  object-fit: cover;
-}
-
-.hero-project {
-  max-width: 36rem;
-  margin-top: clamp(2rem, 5vw, 4rem);
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--line);
-}
-
-.hero-project h2 {
-  margin: .8rem 0 .7rem;
-  font-size: clamp(1.9rem, 3vw, 3rem);
-  letter-spacing: -.045em;
-  line-height: 1;
-}
-
-.hero-project > p {
+.hero-evidence__head p {
+  display: flex;
+  justify-content: space-between;
   margin: 0;
+  color: var(--accent);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.hero-evidence__head p span {
+  color: var(--ink);
+  font-size: clamp(2.5rem, 6vw, 5.5rem);
+  letter-spacing: -.08em;
+  line-height: .8;
+}
+
+.hero-evidence__head h2 {
+  max-width: 11ch;
+  margin: clamp(2rem, 5vw, 4rem) 0 .65rem;
+  font-size: clamp(2.8rem, 5vw, 5rem);
+  letter-spacing: -.065em;
+  line-height: .9;
+}
+
+.hero-evidence__head small,
+.hero-evidence__scope dt,
+.hero-evidence__flow > p {
   color: var(--ink-soft);
-  line-height: 1.65;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.hero-evidence__scope {
+  display: grid;
+  grid-template-columns: 1.5fr repeat(2, .75fr);
+  margin: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.hero-evidence__scope div {
+  min-width: 0;
+  padding: 1.25rem 1rem 1.35rem 0;
+}
+
+.hero-evidence__scope div + div {
+  padding-left: 1rem;
+  border-left: 1px solid var(--line);
+}
+
+.hero-evidence__scope dd {
+  margin: .75rem 0 0;
+  font-size: .92rem;
+  font-weight: 680;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+.hero-evidence__scope strong {
+  color: var(--accent);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: clamp(1.6rem, 3vw, 2.5rem);
+  line-height: .8;
+}
+
+.hero-evidence__flow {
+  padding-top: 1.25rem;
+}
+
+.hero-evidence__flow > p {
+  margin: 0 0 1rem;
+}
+
+.hero-evidence__flow ol {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.4rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  counter-reset: flow;
+}
+
+.hero-evidence__flow li {
+  position: relative;
+  padding-top: 1.9rem;
+  counter-increment: flow;
+  font-size: .8rem;
+  font-weight: 700;
+  word-break: keep-all;
+}
+
+.hero-evidence__flow li::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--accent);
+  content: "0" counter(flow);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .68rem;
+}
+
+.hero-evidence__flow li:not(:last-child)::after {
+  position: absolute;
+  top: 1.95rem;
+  right: -.9rem;
+  color: var(--line-strong);
+  content: "→";
 }
 
 .hero-frame {
@@ -1438,14 +1518,9 @@ button {
     grid-template-columns: 1fr;
   }
 
-  .hero-visual {
-    min-height: 38rem;
-    overflow: hidden;
-    contain: paint;
-  }
-
-  .hero--project .hero-visual {
-    min-height: 0;
+  .hero-evidence {
+    align-self: auto;
+    margin: 0;
   }
 
   .hero-frame:nth-child(2) {
@@ -1539,21 +1614,18 @@ button {
     font-size: clamp(3.25rem, 15vw, 5.8rem);
   }
 
-  .hero-visual {
-    min-height: 26rem;
+  .hero-evidence__scope {
+    grid-template-columns: 1fr 1fr;
   }
 
-  .hero--project .hero-visual {
-    min-height: 0;
+  .hero-evidence__scope div:first-child {
+    grid-column: 1 / -1;
+    border-bottom: 1px solid var(--line);
   }
 
-  .hero--project .project-cover {
-    aspect-ratio: 4 / 3;
-  }
-
-  .hero--project .project-cover picture,
-  .hero--project .project-cover img {
-    height: 100%;
+  .hero-evidence__scope div:nth-child(2) {
+    padding-left: 0;
+    border-left: 0;
   }
 
   .tech-list span {

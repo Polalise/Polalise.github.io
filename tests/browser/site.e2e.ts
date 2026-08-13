@@ -259,29 +259,13 @@ test.describe("responsive themes and accessibility", () => {
     expect(desktopSources.every((source) => !source.includes("cover-mobile"))).toBe(true);
   });
 
-  test("home hero cover preserves its generated aspect ratio", async ({ page }) => {
-    for (const viewport of [
-      { width: 390, height: 844, expectedRatio: 4 / 3 },
-      { width: 1440, height: 900, expectedRatio: 16 / 10 },
-      { width: 1904, height: 937, expectedRatio: 16 / 10 }
-    ]) {
-      await page.setViewportSize({ width: viewport.width, height: viewport.height });
-      await page.goto("/", { waitUntil: "networkidle" });
-      const dimensions = await page.locator(".hero--project .project-cover").evaluate((element) => {
-        const rect = element.getBoundingClientRect();
-        const image = element.querySelector("img") as HTMLImageElement;
-        return {
-          width: rect.width,
-          height: rect.height,
-          imageWidth: image.getBoundingClientRect().width,
-          imageHeight: image.getBoundingClientRect().height,
-          objectFit: getComputedStyle(image).objectFit
-        };
-      });
-      expect(dimensions.width / dimensions.height).toBeCloseTo(viewport.expectedRatio, 2);
-      expect(dimensions.imageWidth / dimensions.imageHeight).toBeCloseTo(viewport.expectedRatio, 2);
-      expect(dimensions.objectFit).toBe("cover");
-    }
+  test("home hero uses a source-backed evidence index instead of a project image", async ({ page }) => {
+    await page.goto("/", { waitUntil: "networkidle" });
+    await expect(page.locator(".hero--project img")).toHaveCount(0);
+    await expect(page.locator(".hero-evidence")).toHaveCount(1);
+    await expect(page.locator(".hero-evidence__head h2")).toHaveText("HajaCheck");
+    await expect(page.locator(".hero-evidence__scope dt")).toHaveText(["My scope", "Flyway", "Merged PR"]);
+    await expect(page.locator(".hero-evidence__flow li")).toHaveText(["사진", "AI 분석", "사람 검수", "보고서"]);
   });
 
   test("detail evidence galleries expose responsive images and scope labels", async ({ page }) => {
@@ -297,7 +281,7 @@ test.describe("responsive themes and accessibility", () => {
       }
     });
     expect(await images.evaluateAll((nodes) => nodes.every((node) => (node as HTMLImageElement).naturalWidth > 0))).toBe(true);
-    await expect(page.locator(".project-visual figcaption span")).toHaveText(["개인 구현·분석", "팀 산출물"]);
+    await expect(page.locator(".project-visual figcaption span")).toHaveText(["팀 산출물", "팀 산출물"]);
     await expect(page.locator('.project-gallery source[srcset*="-480w.webp"]')).toHaveCount(2);
   });
 

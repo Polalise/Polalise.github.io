@@ -47,21 +47,21 @@ links:
 cover:
   kind: "scope"
   tone: "accent"
-  alt: "시설물 현황과 AI 주간 브리핑, 처리 대기 하자를 보여주는 HajaCheck 대시보드 실제 화면"
+  alt: "시설물 현황과 AI 주간 브리핑, 처리 대기 하자를 구성한 HajaCheck 화면 설계 스토리보드"
   evidence:
     source: "action"
     index: 0
 visuals:
   - id: "dashboard"
-    alt: "하자 현황과 등급별 통계를 보여주는 HajaCheck 대시보드"
-    caption: "하자 현황과 통계를 한 화면에서 확인하는 운영 대시보드"
-    scope: "personal"
-    evidence: "최종보고서의 실제 서비스 화면, 개인 담당인 하자 관리와 통계 범위"
-  - id: "ai-detection"
-    alt: "시공 사진에서 탐지한 하자 위치와 판정 정보를 보여주는 분석 화면"
-    caption: "시공 사진의 탐지 결과를 사람이 검수하는 AI 분석 상세"
+    alt: "하자 현황과 등급별 통계 구성을 보여주는 HajaCheck 대시보드 스토리보드"
+    caption: "하자 현황과 통계의 정보 구조를 정리한 화면 설계 스토리보드"
     scope: "team"
-    evidence: "최종보고서의 실제 서비스 화면, AI 탐지는 팀 전체 산출물"
+    evidence: "팀 최종보고서에 수록된 화면 설계 산출물"
+  - id: "ai-detection"
+    alt: "시공 사진의 하자 위치와 판정 정보 구성을 보여주는 AI 분석 화면 스토리보드"
+    caption: "AI 탐지 결과와 사람 검수 흐름을 정리한 화면 설계 스토리보드"
+    scope: "team"
+    evidence: "팀 최종보고서에 수록된 화면 설계 산출물"
 ---
 
 ## 서비스 안에서 AI를 통제하는 방법

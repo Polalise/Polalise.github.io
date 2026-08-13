@@ -82,9 +82,9 @@ const SCREEN_EVIDENCE = Object.freeze({
   },
   hajacheck: {
     input: path.join(projectRoot, "source", "project-visuals", "hajacheck", "dashboard.jpg"),
-    title: "실제 대시보드 화면",
-    desktopSubtitle: "시설물 현황 · AI 주간 브리핑 · 처리 대기 하자",
-    mobileSubtitle: "시설물 현황 · AI 주간 브리핑",
+    title: "화면 설계 스토리보드",
+    desktopSubtitle: "시설물 현황 · AI 주간 브리핑 · 처리 대기 하자 구성",
+    mobileSubtitle: "대시보드 정보 구조 설계",
     mobilePosition: "north"
   },
   "ml-economics-answers": {
@@ -338,7 +338,7 @@ async function fileSha256(file) {
     .join(":");
 }
 
-async function writeMediaManifest(root = projectRoot) {
+export async function writeMediaManifest(root = projectRoot) {
   const outputs = {};
   for (const output of mediaOutputFiles(root)) {
     outputs[path.relative(root, output).split(path.sep).join("/")] = await fileSha256(output);

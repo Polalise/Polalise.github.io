@@ -2,7 +2,6 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import MetricRail from "../components/MetricRail.astro";
 import ProjectCard from "../components/ProjectCard.astro";
-import ProjectCover from "../components/ProjectCover.astro";
 import { getProjects } from "../lib/projects";
 
 const projects = await getProjects();
@@ -27,25 +26,46 @@ const impactMetrics = [
       <h1 id="hero-title"><span class="line-unit">검증 가능한</span> AI를 <em>서비스로</em> 연결합니다.</h1>
       <p class="hero-lead">모델 성능을 다시 확인하고, 화면과 API와 데이터베이스가 끊기지 않는 제품 흐름을 만듭니다.</p>
       {hajaCheck && (
-        <div class="hero-project">
-          <div class="project-meta">
-            <span>{hajaCheck.data.category}</span>
-            <span>팀 프로젝트</span>
-          </div>
-          <h2>{hajaCheck.data.displayTitle}</h2>
-          <p>{hajaCheck.data.summary}</p>
-          <div class="hero-actions">
-            <a class="button" href={`/projects/${hajaCheck.id}/`}>HajaCheck 사례 보기</a>
-            <a class="button button--ghost" href="/resume/">이력서</a>
-          </div>
+        <div class="hero-actions">
+          <a class="button" href={`/projects/${hajaCheck.id}/`}>HajaCheck 사례 보기</a>
+          <a class="button button--ghost" href="/resume/">이력서</a>
         </div>
       )}
     </div>
 
     {hajaCheck && (
-      <div class="hero-visual" aria-label={`${hajaCheck.data.displayTitle} 프로젝트 커버`}>
-        <ProjectCover project={hajaCheck} context="hero" eager />
-      </div>
+      <aside class="hero-evidence" aria-labelledby="hero-evidence-title">
+        <header class="hero-evidence__head">
+          <p>Featured case <span>01</span></p>
+          <h2 id="hero-evidence-title">{hajaCheck.data.displayTitle}</h2>
+          <small>{hajaCheck.data.category} / 팀 프로젝트</small>
+        </header>
+
+        <dl class="hero-evidence__scope">
+          <div>
+            <dt>My scope</dt>
+            <dd>DB·API 계약, 하자 관리, 통계</dd>
+          </div>
+          <div>
+            <dt>Flyway</dt>
+            <dd><strong>8</strong>건</dd>
+          </div>
+          <div>
+            <dt>Merged PR</dt>
+            <dd><strong>66</strong>건</dd>
+          </div>
+        </dl>
+
+        <div class="hero-evidence__flow" aria-label="HajaCheck 서비스 처리 흐름">
+          <p>Service flow</p>
+          <ol>
+            <li>사진</li>
+            <li>AI 분석</li>
+            <li>사람 검수</li>
+            <li>보고서</li>
+          </ol>
+        </div>
+      </aside>
     )}
   </section>
 
