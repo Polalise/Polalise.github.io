@@ -44,9 +44,13 @@ links:
   repository: "https://github.com/luma-team-ai/HajaCheck"
   demo: "https://www.youtube.com/watch?v=IagMc_vZxpA"
   report: "https://github.com/Polalise/HajaCheck_report"
-cover: "/media/projects/hajacheck.webp"
-coverAlt: "HajaCheck 프로젝트명과 React, Spring Boot, PostgreSQL 기술을 배치한 에디토리얼 커버"
-coverTone: "accent"
+cover:
+  kind: "workflow"
+  tone: "accent"
+  alt: "사진 업로드, AI 탐지와 등급화, 사람 검수와 LLM 보고서 초안으로 이어지는 하자 처리 흐름"
+  evidence:
+    source: "action"
+    index: 1
 ---
 
 ## 서비스 안에서 AI를 통제하는 방법

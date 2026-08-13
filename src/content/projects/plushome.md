@@ -28,9 +28,12 @@ limitation: "팀 프로젝트의 서비스 전체 기능을 개인 성과로 주
 metrics: []
 links:
   repository: "https://github.com/HayoungMo/PlusHome"
-cover: "/media/projects/plushome.webp"
-coverAlt: "PlusHome 프로젝트명과 React, Spring Boot, Oracle 기술을 배치한 에디토리얼 커버"
-coverTone: "accent"
+cover:
+  kind: "workflow"
+  tone: "accent"
+  alt: "기업 회원 대시보드에서 주문, 예약, 견적과 통계 데이터를 처리하는 업무 흐름"
+  evidence:
+    source: "role"
 ---
 
 ## 화면에서 데이터까지 이어지는 업무 흐름

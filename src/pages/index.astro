@@ -2,93 +2,51 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import MetricRail from "../components/MetricRail.astro";
 import ProjectCard from "../components/ProjectCard.astro";
+import ProjectCover from "../components/ProjectCover.astro";
 import { getProjects } from "../lib/projects";
-import { projectImageSrcSet } from "../lib/media";
 
 const projects = await getProjects();
-const featured = projects.filter((project) => project.data.tier === "featured");
-const plusHome = projects.find((project) => project.data.order === 4);
-const archive = projects.filter((project) => project.data.tier === "archive");
-
-const heroVisuals = [
-  {
-    src: "/media/projects/machine-learning-oil-dashboard.webp",
-    width: 1660,
-    height: 840,
-    alt: "다음 달 소비자물가 예측과 유가 시나리오를 보여주는 실제 대시보드 화면",
-    href: "/projects/machine-learning-oil/"
-  },
-  {
-    src: "/media/projects/deep-learning-sleep-roc-pr.webp",
-    width: 1800,
-    height: 965,
-    alt: "취침 전 수면 품질 예측 모델의 집계 ROC와 PR 곡선",
-    href: "/projects/deep-learning-sleep/"
-  },
-  {
-    src: "/media/projects/bmi-calculator-example-result.webp",
-    width: 1280,
-    height: 800,
-    alt: "예시 입력값으로 계산한 BMI 결과 화면",
-    href: "/projects/bmi-calculator/"
-  }
-];
+const hajaCheck = projects.find((project) => project.id === "hajacheck");
+const mlEconomics = projects.find((project) => project.id === "ml-economics-answers");
+const machineLearningOil = projects.find((project) => project.id === "machine-learning-oil");
+const selectedProjects = [mlEconomics, machineLearningOil].filter(
+  (project): project is NonNullable<typeof project> => Boolean(project)
+);
 
 const impactMetrics = [
   { value: "1년 4개월", label: "웹 개발 실무", scope: "personal" as const, evidence: "공개 이력서 경력 기간" },
   { value: "30분 이상", label: "인증 업무 건당 단축", scope: "personal" as const, evidence: "기존 수작업 대비 업무 기록" },
   { value: "약 20%", label: "AVAS 조회 응답 개선", scope: "personal" as const, evidence: "약 2.0초에서 1.6초로 측정" }
 ];
-
-const evidenceDefinitions = [
-  { tech: "React", technologies: ["React"] },
-  { tech: "Spring Boot", technologies: ["Spring Boot"] },
-  { tech: "Python", technologies: ["Python"] },
-  { tech: "LLM / RAG", technologies: ["LLM", "RAG"] },
-  { tech: "데이터베이스 / Flyway", technologies: ["PostgreSQL", "Oracle", "MariaDB", "MongoDB", "Flyway"] },
-  { tech: "모델 검증", technologies: ["scikit-learn", "PyTorch", "XGBoost"] }
-];
-
-const evidence = evidenceDefinitions.map((definition) => ({
-  tech: definition.tech,
-  projects: projects.filter((project) =>
-    project.data.technologies.some((technology) => definition.technologies.includes(technology))
-  )
-}));
 ---
 
 <BaseLayout>
-  <section class="page-shell hero" aria-labelledby="hero-title">
+  <section class="page-shell hero hero--project" aria-labelledby="hero-title">
     <div class="hero-copy">
       <p class="eyebrow">AI connected full stack developer</p>
       <h1 id="hero-title"><span class="line-unit">검증 가능한</span> AI를 <em>서비스로</em> 연결합니다.</h1>
       <p class="hero-lead">모델 성능을 다시 확인하고, 화면과 API와 데이터베이스가 끊기지 않는 제품 흐름을 만듭니다.</p>
-      <div class="hero-actions">
-        <a class="button" href="#featured">대표 작업</a>
-        <a class="button button--ghost" href="/resume/">이력서</a>
-      </div>
+      {hajaCheck && (
+        <div class="hero-project">
+          <div class="project-meta">
+            <span>{hajaCheck.data.category}</span>
+            <span>팀 프로젝트</span>
+          </div>
+          <h2>{hajaCheck.data.displayTitle}</h2>
+          <p>{hajaCheck.data.summary}</p>
+          <div class="hero-actions">
+            <a class="button" href={`/projects/${hajaCheck.id}/`}>HajaCheck 사례 보기</a>
+            <a class="button button--ghost" href="/resume/">이력서</a>
+          </div>
+        </div>
+      )}
     </div>
 
-    <div class="hero-visual" aria-label="프로젝트 실제 화면과 집계 그래프 모음">
-      {heroVisuals.map((visual, index) => (
-        <a class="hero-frame" href={visual.href}>
-          <img
-            src={visual.src}
-            srcset={projectImageSrcSet(visual.src, visual.width)}
-            sizes={index === 0
-              ? "(max-width: 64rem) 85vw, min(41vw, 580px)"
-              : index === 1
-                ? "(max-width: 64rem) 48vw, min(22vw, 310px)"
-                : "(max-width: 64rem) 37vw, min(18vw, 255px)"}
-            alt={visual.alt}
-            width={visual.width}
-            height={visual.height}
-            loading={index === 0 ? "eager" : "lazy"}
-            fetchpriority={index === 0 ? "high" : "auto"}
-          />
-        </a>
-      ))}
-    </div>
+    {hajaCheck && (
+      <div class="hero-visual" aria-label={`${hajaCheck.data.displayTitle} 프로젝트 커버`}>
+        <ProjectCover project={hajaCheck} context="hero" eager />
+      </div>
+    )}
   </section>
 
   <section class="section" aria-labelledby="impact-title">
@@ -101,6 +59,7 @@ const evidence = evidenceDefinitions.map((definition) => ({
         </div>
       </div>
       <MetricRail metrics={impactMetrics} />
+      <a class="text-link impact-link" href="/resume/#experience">공개 이력서에서 측정 맥락 확인 <span aria-hidden="true">→</span></a>
     </div>
   </section>
 
@@ -110,95 +69,21 @@ const evidence = evidenceDefinitions.map((definition) => ({
         <p class="section-index">02 / 대표 사례</p>
         <div>
           <h2 id="featured-title">구현보다 먼저 <span class="line-unit">검증 기준을 세웁니다.</span></h2>
-          <p>AI 서비스 계약, 누수 없는 평가, 비교 실험을 서로 다른 세 프로젝트로 보여드립니다.</p>
         </div>
       </div>
-      <div class="featured-grid">
-        {featured[0] && <ProjectCard project={featured[0]} variant="wide" />}
-        <div class="featured-stack">
-          {featured.slice(1).map((project) => <ProjectCard project={project} />)}
-        </div>
-      </div>
-    </div>
-  </section>
-
-  {plusHome && (
-    <section class="section" aria-labelledby="plushome-title">
-      <div class="page-shell">
-        <div class="section-head" data-reveal>
-          <p class="section-index">03 / 주요 풀스택 사례</p>
-          <div>
-            <h2 id="plushome-title">운영 화면부터 <span class="line-unit">통계 API까지.</span></h2>
-            <p>사용자 화면에 그치지 않고 업체와 관리자 운영 흐름을 함께 설계한 사례입니다.</p>
-          </div>
-        </div>
-        <div class="plus-feature">
-          <a class="project-card__visual" href={`/projects/${plusHome.id}/`} aria-label={`${plusHome.data.displayTitle} 상세 보기`} data-reveal>
-            <img
-              src={plusHome.data.cover}
-              srcset={projectImageSrcSet(plusHome.data.cover)}
-              sizes="(max-width: 48rem) calc(100vw - 2.3rem), (max-width: 64rem) calc(100vw - 4rem), 50vw"
-              alt={plusHome.data.coverAlt}
-              width="1600"
-              height="1000"
-              loading="lazy"
-            />
-          </a>
-          <div class="project-card__body" data-reveal>
-            <div class="project-meta">
-              <span>{plusHome.data.category}</span>
-              <span>팀 프로젝트</span>
-            </div>
-            <h3>{plusHome.data.displayTitle}</h3>
-            <p>{plusHome.data.summary}</p>
-            <a class="text-link" href={`/projects/${plusHome.id}/`}>풀스택 사례 보기 <span aria-hidden="true">→</span></a>
-          </div>
-        </div>
-      </div>
-    </section>
-  )}
-
-  <section class="section" aria-labelledby="archive-title">
-    <div class="page-shell">
-      <div class="section-head" data-reveal>
-        <p class="section-index">04 / 보조 사례</p>
-        <div>
-          <h2 id="archive-title">검증과 구축의 <span class="line-unit">작업 연혁.</span></h2>
-          <p>분석 프로젝트와 초기 웹 프로젝트는 확인된 범위만 간결하게 기록했습니다.</p>
-        </div>
-      </div>
-      <div class="archive-grid">
-        {archive.map((project) => <ProjectCard project={project} variant="compact" />)}
-      </div>
-    </div>
-  </section>
-
-  <section class="section" aria-labelledby="evidence-title">
-    <div class="page-shell">
-      <div class="section-head" data-reveal>
-        <p class="section-index">05 / 기술과 근거</p>
-        <div>
-          <h2 id="evidence-title">기술 이름보다 <span class="line-unit">사용한 맥락.</span></h2>
-          <p>각 기술을 실제로 적용한 프로젝트와 바로 연결했습니다.</p>
-        </div>
-      </div>
-      <dl class="evidence-list" data-reveal>
-        {evidence.map((row) => (
-          <div class="evidence-row">
-            <dt>{row.tech}</dt>
-            <dd>
-              {row.projects.map((project) => <a href={`/projects/${project.id}/`}>{project.data.displayTitle}</a>)}
-            </dd>
-          </div>
+      <div class="featured-grid featured-grid--pair">
+        {selectedProjects.map((project, index) => (
+          <ProjectCard project={project} variant={index === 0 ? "wide" : "standard"} />
         ))}
-      </dl>
+      </div>
+      <a class="button button--ghost section-action" href="/projects/">전체 프로젝트</a>
     </div>
   </section>
 
   <section class="section" aria-labelledby="principles-title">
     <div class="page-shell">
       <div class="section-head" data-reveal>
-        <p class="section-index">06 / 일하는 방식</p>
+        <p class="section-index">03 / 일하는 방식</p>
         <div>
           <h2 id="principles-title">결과를 믿을 수 있는 <span class="line-unit">구조를 만듭니다.</span></h2>
         </div>
@@ -220,13 +105,11 @@ const evidence = evidenceDefinitions.map((definition) => ({
           <p>화면, API, 데이터베이스의 변경 경계를 명확히 관리합니다.</p>
         </article>
       </div>
-    </div>
-  </section>
-
-  <section class="page-shell" aria-labelledby="contact-title">
-    <div class="contact-band" data-reveal>
-      <h2 id="contact-title">함께 만들 <span class="line-unit">문제를 들려주세요.</span></h2>
-      <a href="mailto:qudgus182@naver.com">qudgus182@naver.com</a>
+      <div class="hero-actions portfolio-actions" data-reveal>
+        <a class="button" href="/resume/resume.pdf">PDF 이력서</a>
+        <a class="button button--ghost" href="https://github.com/Polalise" target="_blank" rel="noreferrer">GitHub</a>
+        <a class="button button--ghost" href="mailto:qudgus182@naver.com">이메일</a>
+      </div>
     </div>
   </section>
 </BaseLayout>

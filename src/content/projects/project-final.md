@@ -25,9 +25,12 @@ limitation: "2022년 팀 프로젝트로 현재 대표 기술 역량보다는 �
 metrics: []
 links:
   repository: "https://github.com/Polalise/Project_Final"
-cover: "/media/projects/project-final.webp"
-coverAlt: "Project Final 프로젝트명을 배치한 에디토리얼 커버"
-coverTone: "ink"
+cover:
+  kind: "workflow"
+  tone: "ink"
+  alt: "마이페이지에서 찜, 신고, 거래 목록과 리뷰 이력을 관리하는 사용자 흐름"
+  evidence:
+    source: "role"
 ---
 
 ## 사용자 활동을 한 계정 흐름으로 묶었습니다

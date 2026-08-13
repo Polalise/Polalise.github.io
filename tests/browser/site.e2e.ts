@@ -86,6 +86,26 @@ async function expectVisibleKeyboardFocus(page: Page) {
   expect(checked.size).toBeGreaterThan(1);
 }
 
+async function expectMinimumTouchTargets(page: Page) {
+  await page.evaluate(() => document.fonts.ready);
+  const undersized = await page.locator("a[href], button:not([disabled])").evaluateAll((elements) =>
+    elements.flatMap((element) => {
+      const node = element as HTMLElement;
+      const style = getComputedStyle(node);
+      const bounds = node.getBoundingClientRect();
+      const visible = style.display !== "none" && style.visibility !== "hidden" && bounds.width > 0 && bounds.height > 0;
+      if (!visible || (bounds.width >= 44 && bounds.height >= 44)) return [];
+      return [{
+        label: (node.textContent ?? node.getAttribute("aria-label") ?? node.tagName).trim().slice(0, 60),
+        width: Math.round(bounds.width * 10) / 10,
+        height: Math.round(bounds.height * 10) / 10,
+        className: node.className
+      }];
+    })
+  );
+  expect(undersized, `undersized touch targets: ${JSON.stringify(undersized)}`).toEqual([]);
+}
+
 test.describe("static route contract", () => {
   for (const route of htmlRoutes) {
     test(`${route} is directly accessible`, async ({ page }) => {
@@ -174,8 +194,110 @@ test.describe("responsive themes and accessibility", () => {
     await page.reload({ waitUntil: "networkidle" });
     await page.locator(".theme-toggle").click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    await expect(page.locator(".theme-toggle")).toHaveAttribute("aria-label", "라이트 모드로 전환");
     expect(await page.evaluate(() => localStorage.getItem("portfolio-theme"))).toBe("dark");
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  });
+
+  test("home keeps the four-section hiring narrative and bounded mobile length", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/", { waitUntil: "networkidle" });
+    await expect(page.locator("main > section")).toHaveCount(4);
+    expect(await page.locator("main a").count()).toBeLessThanOrEqual(12);
+    for (const slug of ["hajacheck", "ml-economics-answers", "machine-learning-oil"]) {
+      await expect(page.locator(`main a[href="/projects/${slug}/"]`)).toHaveCount(1);
+    }
+    const height = await page.evaluate(() => document.documentElement.scrollHeight);
+    expect(height).toBeLessThanOrEqual(6_500);
+  });
+
+  test("project index exposes exactly one detail link per project", async ({ page }) => {
+    await page.goto("/projects/", { waitUntil: "networkidle" });
+    const cards = page.locator("main .project-card");
+    await expect(cards).toHaveCount(9);
+    for (let index = 0; index < 9; index += 1) {
+      await expect(cards.nth(index).locator("a[href]")).toHaveCount(1);
+    }
+    await expect(page.locator('main a[href^="/projects/"]')).toHaveCount(9);
+  });
+
+  test("responsive project art direction and image decoding work", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/projects/", { waitUntil: "networkidle" });
+    await page.locator(".project-cover img").evaluateAll(async (images) => {
+      for (const image of images) {
+        const node = image as HTMLImageElement;
+        node.loading = "eager";
+        if (!node.complete) await new Promise((resolve) => node.addEventListener("load", resolve, { once: true }));
+        await node.decode();
+      }
+    });
+    const mobileSources = await page.locator(".project-cover img").evaluateAll((images) =>
+      images.map((image) => ({
+        currentSrc: (image as HTMLImageElement).currentSrc,
+        naturalWidth: (image as HTMLImageElement).naturalWidth
+      }))
+    );
+    expect(mobileSources).toHaveLength(9);
+    expect(mobileSources.every(({ currentSrc }) => currentSrc.includes("cover-mobile"))).toBe(true);
+    expect(mobileSources.every(({ naturalWidth }) => naturalWidth > 0)).toBe(true);
+
+    await page.setViewportSize({ width: 768, height: 900 });
+    await page.reload({ waitUntil: "networkidle" });
+    await page.locator(".project-cover img").evaluateAll(async (images) => {
+      for (const image of images) {
+        const node = image as HTMLImageElement;
+        node.loading = "eager";
+        if (!node.complete) await new Promise((resolve) => node.addEventListener("load", resolve, { once: true }));
+        await node.decode();
+      }
+    });
+    const desktopSources = await page.locator(".project-cover img").evaluateAll((images) =>
+      images.map((image) => (image as HTMLImageElement).currentSrc)
+    );
+    expect(desktopSources.every((source) => !source.includes("cover-mobile"))).toBe(true);
+  });
+
+  test("all mobile controls meet the 44 by 44 target", async ({ page }) => {
+    test.setTimeout(60_000);
+    await page.setViewportSize({ width: 390, height: 844 });
+    for (const route of htmlRoutes) {
+      await page.goto(route, { waitUntil: "domcontentloaded" });
+      await expectMinimumTouchTargets(page);
+    }
+  });
+
+  test("all routes retain WCAG 2.2 AA automated coverage", async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.emulateMedia({ colorScheme: "light", reducedMotion: "reduce" });
+    for (const route of htmlRoutes) {
+      await page.goto(route, { waitUntil: "domcontentloaded" });
+      await page.evaluate(() => document.fonts.ready);
+      const accessibility = await new AxeBuilder({ page: page as never })
+        .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+        .analyze();
+      expect(accessibility.violations, route).toEqual([]);
+    }
+  });
+
+  test("project pages expose complete social image metadata", async ({ page }) => {
+    await page.goto("/projects/hajacheck/", { waitUntil: "networkidle" });
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", /\/media\/projects\/hajacheck\/cover-og\.webp$/);
+    await expect(page.locator('meta[property="og:image:alt"]')).toHaveAttribute("content", /\S+/);
+    await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1200");
+    await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "630");
+    await expect(page.locator('meta[name="twitter:image:alt"]')).toHaveAttribute("content", /\S+/);
+  });
+
+  test("resume print keeps content and removes navigation actions", async ({ page }) => {
+    await page.goto("/resume/", { waitUntil: "networkidle" });
+    await page.locator("#experience").scrollIntoViewIfNeeded();
+    await page.emulateMedia({ media: "print" });
+    await expect(page.locator(".site-header")).toBeHidden();
+    await expect(page.locator(".site-footer")).toBeHidden();
+    await expect(page.locator(".resume-actions")).toBeHidden();
+    await expect(page.locator("#experience")).toBeVisible();
   });
 });

@@ -40,9 +40,13 @@ metrics:
     scope: "personal"
     evidence: "집계된 참가자와 수면 episode 수를 기록한 최종 데이터 보고서"
 links: {}
-cover: "/media/projects/deep-learning-sleep.webp"
-coverAlt: "개인을 식별할 수 없는 집계 수면 예측 성능 그래프"
-coverTone: "ink"
+cover:
+  kind: "validation"
+  tone: "ink"
+  alt: "수면 시작 이후의 누수 특성을 제거하고 참가자 단위로 분리한 모델 검증 구조"
+  evidence:
+    source: "metric"
+    index: 0
 ---
 
 ## 성능보다 예측 시점을 먼저 바로잡았습니다

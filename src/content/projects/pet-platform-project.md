@@ -27,9 +27,13 @@ limitation: "개인 담당 범위와 정량 성과가 공개 문서에서 분리
 metrics: []
 links:
   repository: "https://github.com/Polalise/pet_platform_project"
-cover: "/media/projects/pet-platform-project.webp"
-coverAlt: "Pet Platform Project 프로젝트명과 Java, Servlet, JSP, Oracle 기술을 배치한 에디토리얼 커버"
-coverTone: "accent"
+cover:
+  kind: "architecture"
+  tone: "accent"
+  alt: "Servlet 요청 처리, JSP 화면과 Oracle 데이터 저장을 연결한 Java 웹 구조"
+  evidence:
+    source: "action"
+    index: 0
 ---
 
 ## Servlet과 JSP로 구성한 통합 서비스

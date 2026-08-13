@@ -88,35 +88,39 @@ try {
     userDataDir: browserProfile,
     chromeFlags: ["--headless=new", "--disable-gpu", "--no-sandbox"]
   });
-  const run = await lighthouse(`http://${host}:${port}/`, {
-    port: chrome.port,
-    logLevel: "error",
-    output: "json",
-    onlyCategories: ["performance", "accessibility", "best-practices", "seo"]
-  });
-  if (!run) throw new Error("Lighthouse did not return a result");
-
-  const scores = Object.fromEntries(
-    Object.entries(run.lhr.categories).map(([key, category]) => [key, Math.round((category.score ?? 0) * 100)])
-  );
   const thresholds = { performance: 90, accessibility: 95, "best-practices": 95, seo: 95 };
-  for (const [key, threshold] of Object.entries(thresholds)) {
-    const score = scores[key] ?? 0;
-    console.log(`${key}: ${score}`);
-    if (score < threshold) process.exitCode = 1;
-  }
-  if ((scores.performance ?? 0) < thresholds.performance) {
-    await writeFile(path.join(projectRoot, "tmp", "lighthouse-result.json"), JSON.stringify(run.lhr));
-    const weightedAudits = run.lhr.categories.performance.auditRefs.filter((reference) => reference.weight > 0);
-    for (const reference of weightedAudits) {
-      const audit = run.lhr.audits[reference.id];
-      console.log(`${reference.id}: ${Math.round((audit.score ?? 0) * 100)}${audit.displayValue ? `, ${audit.displayValue}` : ""}`);
+  const routes = ["/", "/projects/", "/projects/hajacheck/"];
+  for (const route of routes) {
+    const run = await lighthouse(`http://${host}:${port}${route}`, {
+      port: chrome.port,
+      logLevel: "error",
+      output: "json",
+      onlyCategories: ["performance", "accessibility", "best-practices", "seo"]
+    });
+    if (!run) throw new Error(`Lighthouse did not return a result for ${route}`);
+
+    const scores = Object.fromEntries(
+      Object.entries(run.lhr.categories).map(([key, category]) => [key, Math.round((category.score ?? 0) * 100)])
+    );
+    for (const [key, threshold] of Object.entries(thresholds)) {
+      const score = scores[key] ?? 0;
+      console.log(`${route} ${key}: ${score}`);
+      if (score < threshold) process.exitCode = 1;
     }
-    const diagnostics = Object.values(run.lhr.audits)
-      .filter((audit) => audit.score !== null && audit.score < 1 && audit.displayValue)
-      .sort((left, right) => (right.details?.overallSavingsMs ?? 0) - (left.details?.overallSavingsMs ?? 0))
-      .slice(0, 15);
-    for (const audit of diagnostics) console.log(`${audit.id}: ${audit.displayValue}`);
+    if ((scores.performance ?? 0) < thresholds.performance) {
+      const routeKey = route === "/" ? "home" : route.replace(/^\/+|\/+$/g, "").replaceAll("/", "-");
+      await writeFile(path.join(projectRoot, "tmp", `lighthouse-result-${routeKey}.json`), JSON.stringify(run.lhr));
+      const weightedAudits = run.lhr.categories.performance.auditRefs.filter((reference) => reference.weight > 0);
+      for (const reference of weightedAudits) {
+        const audit = run.lhr.audits[reference.id];
+        console.log(`${route} ${audit.id}: ${Math.round((audit.score ?? 0) * 100)}${audit.displayValue ? `, ${audit.displayValue}` : ""}`);
+      }
+      const diagnostics = Object.values(run.lhr.audits)
+        .filter((audit) => audit.score !== null && audit.score < 1 && audit.displayValue)
+        .sort((left, right) => (right.details?.overallSavingsMs ?? 0) - (left.details?.overallSavingsMs ?? 0))
+        .slice(0, 15);
+      for (const audit of diagnostics) console.log(`${route} ${audit.id}: ${audit.displayValue}`);
+    }
   }
 } finally {
   if (chrome) chrome.kill();

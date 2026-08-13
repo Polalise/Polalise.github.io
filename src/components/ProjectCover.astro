@@ -1,0 +1,78 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { projectCoverEvidenceText, projectCoverMedia } from "../lib/media";
+
+interface Props {
+  project: CollectionEntry<"projects">;
+  context: "hero" | "card" | "detail";
+  eager?: boolean;
+}
+
+const { project, context, eager = false } = Astro.props;
+const { cover } = project.data;
+const media = projectCoverMedia(project.id);
+const alt = context === "card" ? "" : cover.alt;
+const sizes = context === "card"
+  ? "(max-width: 47.99rem) calc(100vw - 2.3rem), (max-width: 64rem) calc(100vw - 4rem), 50vw"
+  : context === "hero"
+    ? "(max-width: 47.99rem) 100vw, min(100vw - 4rem, 86rem)"
+    : "(max-width: 47.99rem) calc(100vw - 2.3rem), (max-width: 64rem) calc(100vw - 4rem), min(100vw - 9rem, 86rem)";
+
+const evidence = projectCoverEvidenceText(project);
+
+---
+
+{context === "detail" ? (
+  <figure
+    class:list={["project-cover", "project-cover--detail", `project-cover--${cover.kind}`, `tone-${cover.tone}`]}
+    data-cover-kind={cover.kind}
+  >
+    <picture>
+      <source
+        media="(max-width: 767px)"
+        srcset={media.mobile.srcset}
+        sizes={sizes}
+        width={media.mobile.width}
+        height={media.mobile.height}
+      />
+      <img
+        src={media.desktop.src}
+        srcset={media.desktop.srcset}
+        sizes={sizes}
+        alt={alt}
+        width={media.desktop.width}
+        height={media.desktop.height}
+        loading={eager ? "eager" : "lazy"}
+        fetchpriority={eager ? "high" : "auto"}
+        decoding="async"
+      />
+    </picture>
+    <figcaption>{evidence}</figcaption>
+  </figure>
+) : (
+  <div
+    class:list={["project-cover", `project-cover--${context}`, `project-cover--${cover.kind}`, `tone-${cover.tone}`]}
+    data-cover-kind={cover.kind}
+  >
+    <picture>
+      <source
+        media="(max-width: 767px)"
+        srcset={media.mobile.srcset}
+        sizes={sizes}
+        width={media.mobile.width}
+        height={media.mobile.height}
+      />
+      <img
+        src={media.desktop.src}
+        srcset={media.desktop.srcset}
+        sizes={sizes}
+        alt={alt}
+        width={media.desktop.width}
+        height={media.desktop.height}
+        loading={eager ? "eager" : "lazy"}
+        fetchpriority={eager ? "high" : "auto"}
+        decoding="async"
+      />
+    </picture>
+  </div>
+)}

@@ -1,6 +1,7 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { validateProjectMedia } from "./project-media.mjs";
 
 export const siteOrigin = "https://polalise.github.io";
 export const approvedEmail = "qudgus182@naver.com";
@@ -16,6 +17,18 @@ export const expectedProjects = [
   { slug: "project-final", order: 8, tier: "archive" },
   { slug: "bmi-calculator", order: 9, tier: "archive" }
 ];
+
+export const projectCoverKinds = new Set([
+  "workflow",
+  "routing",
+  "product",
+  "validation",
+  "architecture",
+  "scope"
+]);
+
+export const projectCoverTones = new Set(["paper", "ink", "accent"]);
+export const projectCoverEvidenceSources = new Set(["metric", "action", "outcome", "role", "limitation"]);
 
 const textExtensions = new Set([
   ".astro",
@@ -105,6 +118,48 @@ function scalarFromFrontmatter(frontmatter, key) {
   return match ? cleanScalar(match[1]) : undefined;
 }
 
+function blockFromFrontmatter(frontmatter, key) {
+  const lines = frontmatter.split(/\r?\n/);
+  const start = lines.findIndex((line) => new RegExp(`^${key}:\\s*$`).test(line));
+  if (start < 0) return [];
+
+  const block = [];
+  for (let index = start + 1; index < lines.length; index += 1) {
+    if (/^\S/.test(lines[index])) break;
+    block.push(lines[index]);
+  }
+  return block;
+}
+
+function listFromFrontmatter(frontmatter, key) {
+  return blockFromFrontmatter(frontmatter, key)
+    .map((line) => line.match(/^\s{2}-\s+(.*?)\s*$/)?.[1])
+    .filter(Boolean)
+    .map(cleanScalar);
+}
+
+function parseCover(frontmatter) {
+  const block = blockFromFrontmatter(frontmatter, "cover");
+  if (block.length === 0) return scalarFromFrontmatter(frontmatter, "cover");
+
+  const property = (key, indent = 2) => {
+    const expression = new RegExp(`^\\s{${indent}}${key}:\\s*(.*?)\\s*$`);
+    const match = block.map((line) => line.match(expression)).find(Boolean);
+    return match ? cleanScalar(match[1]) : undefined;
+  };
+  const rawIndex = property("index", 4);
+
+  return {
+    kind: property("kind"),
+    tone: property("tone"),
+    alt: property("alt"),
+    evidence: {
+      source: property("source", 4),
+      index: rawIndex === undefined ? undefined : Number(rawIndex)
+    }
+  };
+}
+
 export function parseProjectDocument(text, slug = "unknown") {
   if (!text.startsWith("---")) {
     throw new Error(`${slug}: frontmatter opening marker is missing`);
@@ -151,9 +206,15 @@ export function parseProjectDocument(text, slug = "unknown") {
   return {
     slug,
     title: scalarFromFrontmatter(frontmatter, "title"),
+    displayTitle: scalarFromFrontmatter(frontmatter, "displayTitle"),
     order: Number(scalarFromFrontmatter(frontmatter, "order")),
     tier: scalarFromFrontmatter(frontmatter, "tier"),
-    cover: scalarFromFrontmatter(frontmatter, "cover"),
+    ownership: scalarFromFrontmatter(frontmatter, "ownership"),
+    role: scalarFromFrontmatter(frontmatter, "role"),
+    limitation: scalarFromFrontmatter(frontmatter, "limitation"),
+    actions: listFromFrontmatter(frontmatter, "actions"),
+    outcomes: listFromFrontmatter(frontmatter, "outcomes"),
+    cover: parseCover(frontmatter),
     metrics,
     frontmatter
   };
@@ -295,8 +356,46 @@ export async function validateProjectCollection(root) {
     if (document.tier !== expected.tier) {
       errors.push(`${expected.slug}: tier must be ${expected.tier}, found ${document.tier}`);
     }
-    if (!document.cover?.startsWith("/media/projects/")) {
-      errors.push(`${expected.slug}: cover must use the public project media directory`);
+    if (!document.cover || typeof document.cover === "string") {
+      errors.push(`${expected.slug}: cover must use the structured cover contract`);
+    } else {
+      const { kind, tone, alt, evidence } = document.cover;
+      if (!projectCoverKinds.has(kind)) errors.push(`${expected.slug}: invalid cover kind`);
+      if (!projectCoverTones.has(tone)) errors.push(`${expected.slug}: invalid cover tone`);
+      if (!alt?.trim()) errors.push(`${expected.slug}: cover alt is required`);
+      if (!evidence || typeof evidence !== "object") {
+        errors.push(`${expected.slug}: cover evidence is required`);
+      } else if (!projectCoverEvidenceSources.has(evidence.source)) {
+        errors.push(`${expected.slug}: invalid cover evidence source`);
+      } else if (new Set(["metric", "action", "outcome"]).has(evidence.source)) {
+        if (!Number.isInteger(evidence.index) || evidence.index < 0) {
+          errors.push(`${expected.slug}: ${evidence.source} cover evidence needs a non-negative index`);
+        } else {
+          const values = evidence.source === "metric"
+            ? document.metrics
+            : evidence.source === "action"
+              ? document.actions
+              : document.outcomes;
+          if (evidence.index >= values.length) {
+            errors.push(`${expected.slug}: cover evidence index is outside ${evidence.source} bounds`);
+          }
+          if (
+            document.ownership === "team" &&
+            evidence.source === "metric" &&
+            document.metrics[evidence.index]?.scope === "personal"
+          ) {
+            errors.push(`${expected.slug}: a team project cover cannot use a personal metric`);
+          }
+        }
+      } else {
+        if (evidence.index !== undefined) {
+          errors.push(`${expected.slug}: ${evidence.source} cover evidence cannot declare an index`);
+        }
+        if (evidence.source === "role" && !document.role) errors.push(`${expected.slug}: role cover evidence is empty`);
+        if (evidence.source === "limitation" && !document.limitation) {
+          errors.push(`${expected.slug}: limitation cover evidence is empty`);
+        }
+      }
     }
 
     for (const [index, metric] of document.metrics.entries()) {
@@ -370,19 +469,7 @@ export async function validatePublicAssets(root) {
 
   const projectErrors = await validateProjectCollection(root);
   errors.push(...projectErrors);
-  const contentDirectory = path.join(root, "src", "content", "projects");
-  for (const expected of expectedProjects) {
-    try {
-      const text = await readFile(path.join(contentDirectory, `${expected.slug}.md`), "utf8");
-      const document = parseProjectDocument(text, expected.slug);
-      if (!document.cover) continue;
-      const coverPath = path.join(publicDirectory, document.cover.replace(/^\//, ""));
-      const coverStat = await stat(coverPath);
-      if (!coverStat.isFile() || coverStat.size === 0) errors.push(`${expected.slug}: cover is empty`);
-    } catch {
-      errors.push(`${expected.slug}: cover asset is missing`);
-    }
-  }
+  errors.push(...(await validateProjectMedia(root)));
 
   return errors;
 }
@@ -509,6 +596,20 @@ export async function validateBuiltSite(root) {
     if ((html.match(/<h1\b/gi) ?? []).length !== 1) errors.push(`${label}: exactly one h1 is required`);
     if (!/<meta\b[^>]*\bname=["']description["'][^>]*\bcontent=["'][^"']+["']/i.test(html)) {
       errors.push(`${label}: meta description is missing`);
+    }
+
+    const requiredSocialMeta = [
+      ["property", "og:image:alt"],
+      ["property", "og:image:width"],
+      ["property", "og:image:height"],
+      ["name", "twitter:image:alt"]
+    ];
+    for (const [attribute, value] of requiredSocialMeta) {
+      const pattern = new RegExp(
+        `<meta\\b(?=[^>]*\\b${attribute}=["']${value}["'])(?=[^>]*\\bcontent=["'][^"']+["'])[^>]*>`,
+        "i"
+      );
+      if (!pattern.test(html)) errors.push(`${label}: ${value} metadata is missing`);
     }
 
     const canonicalTags = (html.match(/<link\b[^>]*>/gi) ?? []).filter(

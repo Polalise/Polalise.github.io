@@ -15,6 +15,34 @@ const linkSchema = z.object({
   report: z.url().optional()
 });
 
+const coverEvidenceSchema = z.object({
+  source: z.enum(["metric", "action", "outcome", "role", "limitation"]),
+  index: z.number().int().nonnegative().optional()
+}).superRefine((evidence, context) => {
+  const indexedSource = ["metric", "action", "outcome"].includes(evidence.source);
+  if (indexedSource && evidence.index === undefined) {
+    context.addIssue({
+      code: "custom",
+      path: ["index"],
+      message: `${evidence.source} cover evidence requires an index`
+    });
+  }
+  if (!indexedSource && evidence.index !== undefined) {
+    context.addIssue({
+      code: "custom",
+      path: ["index"],
+      message: `${evidence.source} cover evidence must not declare an index`
+    });
+  }
+});
+
+const coverSchema = z.object({
+  kind: z.enum(["workflow", "routing", "product", "validation", "architecture", "scope"]),
+  tone: z.enum(["paper", "ink", "accent"]),
+  alt: z.string().min(1),
+  evidence: coverEvidenceSchema
+});
+
 const projects = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/projects" }),
   schema: z.object({
@@ -35,9 +63,46 @@ const projects = defineCollection({
     limitation: z.string().min(1),
     metrics: z.array(metricSchema),
     links: linkSchema,
-    cover: z.string().startsWith("/media/projects/"),
-    coverAlt: z.string().min(1),
-    coverTone: z.enum(["paper", "ink", "accent"]).default("paper")
+    cover: coverSchema
+  }).superRefine((project, context) => {
+    const { source, index } = project.cover.evidence;
+    const indexedCollections = {
+      metric: project.metrics,
+      action: project.actions,
+      outcome: project.outcomes
+    } as const;
+
+    if (source === "role" && !project.role) {
+      context.addIssue({
+        code: "custom",
+        path: ["cover", "evidence", "source"],
+        message: "role cover evidence requires the project role field"
+      });
+    }
+
+    if (
+      project.ownership === "team" &&
+      source === "metric" &&
+      index !== undefined &&
+      project.metrics[index]?.scope === "personal"
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["cover", "evidence", "index"],
+        message: "team project covers cannot use a personal metric as their primary evidence"
+      });
+    }
+
+    if (source === "metric" || source === "action" || source === "outcome") {
+      const collection = indexedCollections[source];
+      if (index !== undefined && index >= collection.length) {
+        context.addIssue({
+          code: "custom",
+          path: ["cover", "evidence", "index"],
+          message: `${source} cover evidence index ${index} is outside the ${collection.length}-item collection`
+        });
+      }
+    }
   })
 });
 

@@ -42,9 +42,13 @@ metrics:
     evidence: "target_date 2022-01부터 2025-12까지의 월별 평가 행을 재확인"
 links:
   repository: "https://github.com/Polalise/MachineLearning_oil"
-cover: "/media/projects/machine-learning-oil.webp"
-coverAlt: "다음 달 CPI 예측과 유가 시나리오를 보여주는 Streamlit 대시보드"
-coverTone: "paper"
+cover:
+  kind: "product"
+  tone: "paper"
+  alt: "다음 달 CPI 예측과 유가, 환율, 금리 시나리오를 비교하는 Streamlit 대시보드"
+  evidence:
+    source: "metric"
+    index: 0
 ---
 
 ## 가설을 변수 비교로 검증했습니다

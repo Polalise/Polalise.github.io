@@ -1,44 +1,40 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { projectImageSrcSet } from "../lib/media";
+import ProjectCover from "./ProjectCover.astro";
+import { projectCoverEvidenceText } from "../lib/media";
 
 interface Props {
   project: CollectionEntry<"projects">;
-  variant?: "wide" | "standard" | "compact";
+  variant?: "wide" | "standard" | "supporting" | "compact";
   eager?: boolean;
 }
 
 const { project, variant = "standard", eager = false } = Astro.props;
 const { data } = project;
+const coverEvidence = projectCoverEvidenceText(project);
 ---
 
-<article class:list={["project-card", `project-card--${variant}`, `tone-${data.coverTone}`]} data-reveal>
-  <a class="project-card__visual" href={`/projects/${project.id}/`} aria-label={`${data.displayTitle} 상세 보기`}>
-    <img
-      src={data.cover}
-      srcset={projectImageSrcSet(data.cover)}
-      sizes="(max-width: 48rem) calc(100vw - 2.3rem), (max-width: 64rem) calc(100vw - 4rem), 50vw"
-      alt={data.coverAlt}
-      width="1600"
-      height="1000"
-      loading={eager ? "eager" : "lazy"}
-      fetchpriority={eager ? "high" : "auto"}
-    />
-  </a>
-  <div class="project-card__body">
-    <div class="project-meta">
-      <span>{data.category}</span>
-      <span>{data.ownership === "personal" ? "개인 프로젝트" : "팀 프로젝트"}</span>
+<article class:list={["project-card", `project-card--${variant}`, `tone-${data.cover.tone}`]} data-reveal>
+  <a class="project-card__link" href={`/projects/${project.id}/`}>
+    <div class="project-card__visual">
+      <ProjectCover project={project} context="card" eager={eager} />
     </div>
-    <h3><a href={`/projects/${project.id}/`}>{data.displayTitle}</a></h3>
-    <p>{data.summary}</p>
-    {data.metrics[0] && (
-      <p class="project-card__metric">
-        <strong>{data.metrics[0].value}</strong>
-        <span>{data.metrics[0].label}</span>
-        <small>{data.metrics[0].scope === "personal" ? "개인 결과" : "팀 전체"}</small>
-      </p>
-    )}
-    <a class="text-link" href={`/projects/${project.id}/`}>사례 보기 <span aria-hidden="true">→</span></a>
-  </div>
+    <div class="project-card__body">
+      <div class="project-meta">
+        <span>{String(data.order).padStart(2, "0")} / {data.category}</span>
+        <span>{data.ownership === "personal" ? "개인 프로젝트" : "팀 프로젝트"}</span>
+      </div>
+      <h3>{data.displayTitle}</h3>
+      <p>{data.summary}</p>
+      {data.metrics[0] && (
+        <p class="project-card__metric">
+          <strong>{data.metrics[0].value}</strong>
+          <span>{data.metrics[0].label}</span>
+          <small>{data.metrics[0].scope === "personal" ? "개인 결과" : "팀 전체"}</small>
+        </p>
+      )}
+      <p class="project-card__evidence"><span>대표 근거</span>{coverEvidence}</p>
+      <span class="text-link">사례 보기 <span aria-hidden="true">→</span></span>
+    </div>
+  </a>
 </article>

@@ -1,8 +1,9 @@
 ---
 import { render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { projectImageSrcSet } from "../../lib/media";
+import ProjectCover from "../../components/ProjectCover.astro";
 import { getProjects } from "../../lib/projects";
+import { projectCoverMedia } from "../../lib/media";
 
 export async function getStaticPaths() {
   const projects = await getProjects();
@@ -23,16 +24,21 @@ const { data } = project;
 const currentIndex = projects.findIndex((item) => item.id === project.id);
 const nextProject = projects[(currentIndex + 1) % projects.length];
 const ownership = data.ownership === "personal" ? "개인 프로젝트" : "팀 프로젝트";
+const socialCover = projectCoverMedia(project.id).og;
 ---
 
 <BaseLayout
   title={`${data.displayTitle} | 유병현 프로젝트`}
   description={data.summary}
-  image={data.cover}
+  image={socialCover.src}
+  imageAlt={data.cover.alt}
+  imageWidth={socialCover.width}
+  imageHeight={socialCover.height}
   type="article"
 >
   <article>
     <header class="page-shell detail-hero">
+      <a class="text-link detail-back-link" href="/projects/"><span aria-hidden="true">←</span> 전체 프로젝트</a>
       <div class="detail-head">
         <div data-reveal>
           <p class="detail-kicker">{String(data.order).padStart(2, "0")} / {data.category}</p>
@@ -43,10 +49,6 @@ const ownership = data.ownership === "personal" ? "개인 프로젝트" : "팀 �
           <div>
             <dt>구분</dt>
             <dd>{ownership}</dd>
-          </div>
-          <div>
-            <dt>노출 등급</dt>
-            <dd>{data.tier === "featured" ? "대표 사례" : data.tier === "supporting" ? "주요 사례" : "아카이브"}</dd>
           </div>
           {data.period && (
             <div>
@@ -69,15 +71,7 @@ const ownership = data.ownership === "personal" ? "개인 프로젝트" : "팀 �
         </dl>
       </div>
       <div class="detail-cover" data-reveal>
-        <img
-          src={data.cover}
-          srcset={projectImageSrcSet(data.cover)}
-          sizes="(max-width: 48rem) calc(100vw - 2.3rem), (max-width: 64rem) calc(100vw - 4rem), min(100vw - 9rem, 86rem)"
-          alt={data.coverAlt}
-          width="1600"
-          height="1000"
-          fetchpriority="high"
-        />
+        <ProjectCover project={project} context="detail" eager />
       </div>
     </header>
 
@@ -87,11 +81,6 @@ const ownership = data.ownership === "personal" ? "개인 프로젝트" : "팀 �
           <p class="fact-label">사용 기술</p>
           <div class="tech-list">
             {data.technologies.map((technology) => <span>{technology}</span>)}
-          </div>
-          <div class="detail-links">
-            {data.links.repository && <a class="button" href={data.links.repository} target="_blank" rel="noreferrer">원본 저장소</a>}
-            {data.links.demo && <a class="button button--ghost" href={data.links.demo} target="_blank" rel="noreferrer">데모</a>}
-            {data.links.report && <a class="button button--ghost" href={data.links.report} target="_blank" rel="noreferrer">공동 산출물</a>}
           </div>
         </aside>
 
@@ -122,7 +111,7 @@ const ownership = data.ownership === "personal" ? "개인 프로젝트" : "팀 �
                   <article>
                     <strong>{metric.value}</strong>
                     <p>
-                      {metric.label}
+                      <span>{metric.label}</span>
                       <small>{metric.scope === "personal" ? "개인 결과" : "팀 전체"} · {metric.evidence}</small>
                     </p>
                   </article>
@@ -138,9 +127,17 @@ const ownership = data.ownership === "personal" ? "개인 프로젝트" : "팀 �
           </section>
 
           {project.body?.trim() && (
-            <section class="story-block prose" data-reveal>
+            <section class="story-block prose detail-notes" aria-label="추가 설명" data-reveal>
               <Content />
             </section>
+          )}
+
+          {(data.links.repository || data.links.demo || data.links.report) && (
+            <div class="detail-links" data-reveal>
+              {data.links.repository && <a class="button" href={data.links.repository} target="_blank" rel="noreferrer">원본 저장소</a>}
+              {data.links.demo && <a class="button button--ghost" href={data.links.demo} target="_blank" rel="noreferrer">데모</a>}
+              {data.links.report && <a class="button button--ghost" href={data.links.report} target="_blank" rel="noreferrer">공동 산출물</a>}
+            </div>
           )}
         </div>
       </div>

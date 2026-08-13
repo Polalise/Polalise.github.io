@@ -6,13 +6,15 @@
   "scripts": {
     "dev": "cross-env ASTRO_TELEMETRY_DISABLED=1 astro dev",
     "check": "cross-env ASTRO_TELEMETRY_DISABLED=1 astro check",
-    "build": "npm run check && cross-env ASTRO_TELEMETRY_DISABLED=1 astro build && node scripts/audit-public.mjs",
+    "build": "npm run media:check && npm run check && cross-env ASTRO_TELEMETRY_DISABLED=1 astro build && node scripts/audit-public.mjs",
     "preview": "cross-env ASTRO_TELEMETRY_DISABLED=1 astro preview",
     "test": "vitest run",
     "test:browser": "playwright test",
     "test:lighthouse": "npm run build && node scripts/lighthouse-check.mjs",
     "font:characters": "node scripts/collect-font-characters.mjs",
-    "audit": "node scripts/audit-public.mjs"
+    "audit": "node scripts/audit-public.mjs",
+    "media:build": "node scripts/project-media.mjs --build",
+    "media:check": "node scripts/project-media.mjs --check"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.3",

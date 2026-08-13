@@ -20,19 +20,13 @@ const selected = projects.slice(0, 4);
       <div class="resume-actions">
         <a class="button" href="/resume/resume.pdf" download>PDF 내려받기</a>
         <a class="button button--ghost" href="mailto:qudgus182@naver.com">이메일</a>
+        <a class="button button--ghost" href="https://github.com/Polalise" target="_blank" rel="noreferrer">GitHub</a>
       </div>
     </div>
   </header>
 
   <section class="section" aria-label="공개 이력서 내용">
-    <div class="page-shell resume-layout">
-      <aside class="resume-sidebar" data-reveal>
-        <strong>유병현</strong>
-        <p>검증 가능한 AI 기능을 웹 서비스로 연결합니다.</p>
-        <p><a href="mailto:qudgus182@naver.com">qudgus182@naver.com</a></p>
-        <p><a href="https://github.com/Polalise" target="_blank" rel="noreferrer">github.com/Polalise</a></p>
-      </aside>
-
+    <div class="page-shell resume-layout resume-layout--single">
       <div>
         <section class="resume-section" data-reveal>
           <h2>Profile</h2>
@@ -42,7 +36,7 @@ const selected = projects.slice(0, 4);
           </div>
         </section>
 
-        <section class="resume-section" data-reveal>
+        <section class="resume-section" id="experience" data-reveal>
           <h2>Experience</h2>
           <div class="resume-entry">
             <h3>LKSYS · 웹 개발</h3>

@@ -45,9 +45,13 @@ metrics:
     evidence: "원본 1,200문항과 검수된 증강 5,065문항으로 구성된 모델 학습 이력"
 links:
   repository: "https://github.com/Polalise/ML_economics_answers"
-cover: "/media/projects/ml-economics-answers.webp"
-coverAlt: "ML Economics Answers 프로젝트명과 Streamlit, scikit-learn, sentence-transformers 기술을 배치한 에디토리얼 커버"
-coverTone: "ink"
+cover:
+  kind: "routing"
+  tone: "ink"
+  alt: "경제 질문을 일곱 가지 처리 모드로 분류하고 필요한 파이프라인으로 연결하는 라우팅 구조"
+  evidence:
+    source: "metric"
+    index: 0
 ---
 
 ## 100%라는 숫자를 의심했습니다

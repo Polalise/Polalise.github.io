@@ -1,15 +1,23 @@
+---
+const path = Astro.url.pathname;
+const isHome = path === "/";
+const isHajaCheck = path === "/projects/hajacheck/";
+const isProjects = path === "/projects/" || (path.startsWith("/projects/") && !isHajaCheck);
+const isResume = path === "/resume/";
+---
+
 <header class="site-header">
   <div class="header-inner">
-    <a class="wordmark" href="/" aria-label="유병현 포트폴리오 홈">
+    <a class="wordmark" href="/" aria-label="유병현 포트폴리오 홈" aria-current={isHome ? "page" : undefined}>
       <span aria-hidden="true">P</span>
       <strong>Polalise</strong>
     </a>
     <nav aria-label="주요 탐색">
-      <a href="/#featured">대표 작업</a>
-      <a href="/projects/">전체 프로젝트</a>
-      <a href="/resume/">이력서</a>
+      <a href="/projects/hajacheck/" aria-current={isHajaCheck ? "page" : undefined}>대표 사례</a>
+      <a href="/projects/" aria-current={isProjects ? "page" : undefined}>전체 프로젝트</a>
+      <a href="/resume/" aria-current={isResume ? "page" : undefined}>이력서</a>
     </nav>
-    <button class="theme-toggle" type="button" aria-label="색상 테마 전환" aria-live="polite">
+    <button class="theme-toggle" type="button" aria-label="색상 테마 전환" aria-live="polite" aria-pressed="false">
       <span data-theme-label>테마</span>
     </button>
   </div>
@@ -20,8 +28,12 @@
   const label = button?.querySelector<HTMLElement>("[data-theme-label]");
 
   const updateLabel = () => {
-    if (!label) return;
-    label.textContent = document.documentElement.dataset.theme === "dark" ? "라이트" : "다크";
+    if (!button || !label) return;
+    const isDark = document.documentElement.dataset.theme === "dark";
+    const nextTheme = isDark ? "라이트" : "다크";
+    label.textContent = nextTheme;
+    button.setAttribute("aria-label", `${nextTheme} 모드로 전환`);
+    button.setAttribute("aria-pressed", String(isDark));
   };
 
   updateLabel();

@@ -29,9 +29,12 @@ limitation: "공개 README에는 개인 담당 기능이 구분되어 있지 않
 metrics: []
 links:
   repository: "https://github.com/Polalise/Advanced_project"
-cover: "/media/projects/advanced-project.webp"
-coverAlt: "Advanced Project 프로젝트명과 React, Express 기술을 배치한 에디토리얼 커버"
-coverTone: "paper"
+cover:
+  kind: "scope"
+  tone: "paper"
+  alt: "지도 기반 매물 탐색과 상담 관리 기능을 팀 산출물 범위로 구분한 프로젝트 지도"
+  evidence:
+    source: "limitation"
 ---
 
 ## 지도 탐색과 거래 데이터를 한 화면 흐름으로

@@ -37,9 +37,13 @@ metrics:
     evidence: "tableSetting.sql의 members, bmi_records, activity_logs 스키마"
 links:
   repository: "https://github.com/Polalise/BMI_Calculator"
-cover: "/media/projects/bmi-calculator.webp"
-coverAlt: "예시 입력값으로 구성한 BMI 결과와 기록 통계 화면"
-coverTone: "paper"
+cover:
+  kind: "architecture"
+  tone: "paper"
+  alt: "Flask 요청을 routes, services, models 계층과 활동 로그로 분리한 백엔드 구조"
+  evidence:
+    source: "metric"
+    index: 0
 ---
 
 ## 계산기를 작은 서비스로 확장했습니다
