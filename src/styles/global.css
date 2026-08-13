@@ -420,6 +420,24 @@ button {
   min-height: 0;
 }
 
+.hero--project .project-cover {
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-strong);
+  box-shadow: var(--shadow);
+}
+
+.hero--project .project-cover picture,
+.hero--project .project-cover img {
+  height: 100%;
+}
+
+.hero--project .project-cover img {
+  object-fit: cover;
+}
+
 .hero-project {
   max-width: 36rem;
   margin-top: clamp(2rem, 5vw, 4rem);

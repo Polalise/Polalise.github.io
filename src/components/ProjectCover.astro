@@ -15,7 +15,7 @@ const alt = context === "card" ? "" : cover.alt;
 const sizes = context === "card"
   ? "(max-width: 47.99rem) calc(100vw - 2.3rem), (max-width: 64rem) calc(100vw - 4rem), 50vw"
   : context === "hero"
-    ? "(max-width: 47.99rem) 100vw, min(100vw - 4rem, 86rem)"
+    ? "(max-width: 47.99rem) calc(100vw - 2.3rem), (max-width: 64rem) calc(100vw - 4rem), min(45vw, 40rem)"
     : "(max-width: 47.99rem) calc(100vw - 2.3rem), (max-width: 64rem) calc(100vw - 4rem), min(100vw - 9rem, 86rem)";
 
 const evidence = projectCoverEvidenceText(project);

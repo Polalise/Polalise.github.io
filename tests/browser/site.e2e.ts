@@ -259,6 +259,31 @@ test.describe("responsive themes and accessibility", () => {
     expect(desktopSources.every((source) => !source.includes("cover-mobile"))).toBe(true);
   });
 
+  test("home hero cover preserves its generated aspect ratio", async ({ page }) => {
+    for (const viewport of [
+      { width: 390, height: 844, expectedRatio: 4 / 3 },
+      { width: 1440, height: 900, expectedRatio: 16 / 10 },
+      { width: 1904, height: 937, expectedRatio: 16 / 10 }
+    ]) {
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      await page.goto("/", { waitUntil: "networkidle" });
+      const dimensions = await page.locator(".hero--project .project-cover").evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        const image = element.querySelector("img") as HTMLImageElement;
+        return {
+          width: rect.width,
+          height: rect.height,
+          imageWidth: image.getBoundingClientRect().width,
+          imageHeight: image.getBoundingClientRect().height,
+          objectFit: getComputedStyle(image).objectFit
+        };
+      });
+      expect(dimensions.width / dimensions.height).toBeCloseTo(viewport.expectedRatio, 2);
+      expect(dimensions.imageWidth / dimensions.imageHeight).toBeCloseTo(viewport.expectedRatio, 2);
+      expect(dimensions.objectFit).toBe("cover");
+    }
+  });
+
   test("detail evidence galleries expose responsive images and scope labels", async ({ page }) => {
     await page.goto("/projects/hajacheck/", { waitUntil: "networkidle" });
     const images = page.locator(".project-gallery .project-visual img");
