@@ -47,21 +47,26 @@ links:
 cover:
   kind: "scope"
   tone: "accent"
-  alt: "시설물 현황과 AI 주간 브리핑, 처리 대기 하자를 구성한 HajaCheck 화면 설계 스토리보드"
+  alt: "시설물 현황과 하자 등급 분포, AI 주간 브리핑, 검수 대기 하자를 보여주는 HajaCheck 대시보드 실행 화면"
   evidence:
     source: "action"
     index: 0
 visuals:
-  - id: "dashboard"
-    alt: "하자 현황과 등급별 통계 구성을 보여주는 HajaCheck 대시보드 스토리보드"
-    caption: "하자 현황과 통계의 정보 구조를 정리한 화면 설계 스토리보드"
+  - id: "app-dashboard"
+    alt: "전체 시설물과 이번 달 분석, 검수 대기 건수 집계와 하자 등급 분포, AI 주간 브리핑, 최근 점검 목록을 함께 보여주는 HajaCheck 대시보드 실행 화면"
+    caption: "시설물 현황과 하자 등급 분포, 검수 대기 목록을 한 화면에서 확인하는 운영 대시보드"
     scope: "team"
-    evidence: "팀 최종보고서에 수록된 화면 설계 산출물"
-  - id: "ai-detection"
-    alt: "시공 사진의 하자 위치와 판정 정보 구성을 보여주는 AI 분석 화면 스토리보드"
-    caption: "AI 탐지 결과와 사람 검수 흐름을 정리한 화면 설계 스토리보드"
+    evidence: "원본 저장소에 포함된 서비스 실행 화면. 화면 전체는 팀 산출물입니다"
+  - id: "app-analysis-viewer"
+    alt: "시공 사진 위에 하자 위치를 상자로 표시하고 신뢰도와 예상 원인, 방치 시 위험, 조치 계획을 제시하며 검수 확정과 오탐 삭제를 사람이 선택하는 HajaCheck 분석 결과 뷰어 실행 화면"
+    caption: "AI 탐지 결과를 사람이 검수 확정하거나 오탐으로 삭제하는 분석 결과 뷰어"
     scope: "team"
-    evidence: "팀 최종보고서에 수록된 화면 설계 산출물"
+    evidence: "원본 저장소에 포함된 서비스 실행 화면. AI 탐지와 요약 품질은 팀 전체 산출물입니다"
+  - id: "app-defect-detail"
+    alt: "점검 건의 총 하자와 검수확정, 조치중, 조치완료 집계와 하자 사진 목록, 상태 변경 활동 기록을 함께 보여주는 HajaCheck 하자 상세 실행 화면"
+    caption: "하자 집계와 사진 목록, 상태 변경 활동 기록을 연결한 하자 상세 화면"
+    scope: "personal"
+    evidence: "개인 담당 범위인 하자 관리 구현 화면. 상태 전환 이력 보존은 위 결과 1번과 같은 근거입니다"
 ---
 
 ## 서비스 안에서 AI를 통제하는 방법

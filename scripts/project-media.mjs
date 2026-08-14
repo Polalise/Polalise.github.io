@@ -38,11 +38,12 @@ const SCREEN_PROJECTS = new Set([
   "ml-economics-answers",
   "deep-learning-sleep"
 ]);
-const MEDIA_MANIFEST_VERSION = 4;
+const MEDIA_MANIFEST_VERSION = 5;
 export const PROJECT_DETAIL_MEDIA = Object.freeze({
   hajacheck: [
-    { id: "dashboard", source: "dashboard.jpg" },
-    { id: "ai-detection", source: "ai-detection.jpg" }
+    { id: "app-dashboard", source: "app-dashboard.png" },
+    { id: "app-analysis-viewer", source: "app-analysis-viewer.png" },
+    { id: "app-defect-detail", source: "app-defect-detail.png" }
   ],
   "ml-economics-answers": [
     { id: "app", source: "app.jpg" },
@@ -81,10 +82,10 @@ const SCREEN_EVIDENCE = Object.freeze({
     mobilePosition: "centre"
   },
   hajacheck: {
-    input: path.join(projectRoot, "source", "project-visuals", "hajacheck", "dashboard.jpg"),
-    title: "화면 설계 스토리보드",
-    desktopSubtitle: "시설물 현황 · AI 주간 브리핑 · 처리 대기 하자 구성",
-    mobileSubtitle: "대시보드 정보 구조 설계",
+    input: path.join(projectRoot, "source", "project-visuals", "hajacheck", "app-dashboard.png"),
+    title: "실제 서비스 대시보드",
+    desktopSubtitle: "시설물 현황 · 하자 등급 분포 · AI 주간 브리핑 · 검수 대기",
+    mobileSubtitle: "시설물 현황과 검수 대기 하자",
     mobilePosition: "north"
   },
   "ml-economics-answers": {
@@ -108,7 +109,10 @@ export const PROJECT_DETAIL_VARIANTS = Object.freeze({
   "-960w.webp": { width: 960, height: 600, maxBytes: 180_000 },
   "-480w.webp": { width: 480, height: 300, maxBytes: 90_000 }
 });
-const palette = { paper: "#F2F0EA", ink: "#161914", muted: "#696B64", rule: "#C9C7BE", accent: "#C2410C", soft: "#E9DED1", white: "#FFFFFF" };
+// Design 02 토큰과 같은 값을 사용한다. accent 는 면(도형·화살표)에만 쓰고,
+// 본문 크기 텍스트에는 대비 4.5:1 을 넘는 accentText 를 쓴다.
+// 근거는 저장소 루트의 디자인 설계 노트 8.1 절에 있다.
+const palette = { paper: "#F6F7F9", ink: "#111318", muted: "#5F6470", rule: "#E4E7EC", accent: "#2477FF", accentText: "#1263E8", soft: "#EEF5FF", white: "#FFFFFF" };
 const PROJECT_NUMBERS = Object.fromEntries(PROJECT_COVER_SLUGS.map((slug, index) => [slug, String(index + 1).padStart(2, "0")]));
 
 const escapeXml = (value) => String(value).replace(/[&<>\"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[char]);
@@ -131,7 +135,7 @@ function frame(width, height, slug, kicker, _title, subtitle, body) {
   <rect width="${width}" height="${height}" fill="${palette.paper}"/>
   <rect width="18" height="${height}" fill="${palette.accent}"/>
   ${line(pad, 72, width - pad, 72, palette.ink, 2)}
-  ${monoText(pad, 116, `PROJECT / ${PROJECT_NUMBERS[slug]} · ${slug.toUpperCase()}`, 17, 700, palette.accent)}
+  ${monoText(pad, 116, `PROJECT / ${PROJECT_NUMBERS[slug]} · ${slug.toUpperCase()}`, 17, 700, palette.accentText)}
   ${monoText(pad, 158, kicker.toUpperCase(), 18, 600, palette.muted)}
   ${text(pad, 213, subtitle, width >= 1200 ? 32 : 24, 700, palette.ink)}
   ${body}
@@ -145,7 +149,7 @@ function hajacheck(w, h) {
   const mobile = w < 1200; const y = mobile ? 330 : 390; const gap = mobile ? 18 : 24; const bw = (w - (mobile ? 96 : 144) - gap * 3) / 4; const x0 = mobile ? 48 : 72;
   const labels = [["01", "사진 업로드"], ["02", "AI 탐지·등급화"], ["03", "사람 검수"], ["04", "LLM 보고서 초안"]];
   let body = "";
-  labels.forEach(([n, label], i) => { const x = x0 + i * (bw + gap); body += text(x, y - 24, n, 17, 700, palette.accent); body += box(x, y, bw, mobile ? 126 : 160, label, i === 2 ? "최종 판단" : "", i === 2, mobile ? 19 : 25); if (i < 3) body += arrow(x + bw, y + (mobile ? 63 : 80), x + bw + gap - 4, y + (mobile ? 63 : 80)); });
+  labels.forEach(([n, label], i) => { const x = x0 + i * (bw + gap); body += text(x, y - 24, n, 17, 700, palette.accentText); body += box(x, y, bw, mobile ? 126 : 160, label, i === 2 ? "최종 판단" : "", i === 2, mobile ? 19 : 25); if (i < 3) body += arrow(x + bw, y + (mobile ? 63 : 80), x + bw + gap - 4, y + (mobile ? 63 : 80)); });
   body += text(x0, y + (mobile ? 180 : 226), "AI가 최종 판단하지 않는다 · 사람 검수 이후 보고서 초안 생성", mobile ? 19 : 24, 600, palette.muted);
   return frame(w, h, "hajacheck", "AI-assisted defect management", "HajaCheck", "탐지에서 검수와 보고서 초안까지 이어지는 팀 서비스 흐름", body);
 }
@@ -208,7 +212,7 @@ function advanced(w,h) {
   body+=box(panelX,mapY,panelW,mobile?112:174,"상세 비교","매물 정보 확인",true,mobile?20:29);
   body+=box(panelX+(mobile?56:120),mapY+(mobile?146:246),panelW-(mobile?56:120),mobile?112:174,"상담 예약","예약 · 일정",false,mobile?20:29);
   body+=arrowDown(panelX+panelW/2,mapY+(mobile?112:174),mapY+(mobile?136:230));
-  body+=monoText(mapX,mobile?596:790,"TEAM SERVICE SCOPE",mobile?16:20,700,palette.accent);
+  body+=monoText(mapX,mobile?596:790,"TEAM SERVICE SCOPE",mobile?16:20,700,palette.accentText);
   body+=text(mapX,mobile?626:832,"팀 산출물 · 개인 담당 범위 미확인",mobile?17:22,600,palette.muted);
   return frame(w,h,"advanced-project","Verified team-service scope","PPAP 부동산 플랫폼","지도 타일과 출처 불명 매물 사진 없이 확인된 서비스 범위만 표현",body);
 }
@@ -226,12 +230,12 @@ function pet(w,h) {
   body+=line(cx-bw*.265,splitY+bh,cx,splitY+bh+gap,palette.accent,2);
   body+=line(cx+bw*.265,splitY+bh,cx,splitY+bh+gap,palette.accent,2);
   body+=box(cx-bw/2,splitY+bh+gap,bw,bh,"Oracle","관계형 데이터 저장",false,mobile?19:25);
-  body+=monoText(mobile?48:72,mobile?634:824,"TEAM PROJECT · 구조만 요약",mobile?15:20,700,palette.accent);
+  body+=monoText(mobile?48:72,mobile?634:824,"TEAM PROJECT · 구조만 요약",mobile?15:20,700,palette.accentText);
   return frame(w,h,"pet-platform-project","Traditional Java web architecture","Pet Platform Project","Servlet/JSP 요청 처리와 Oracle 데이터 연동 구조",body);
 }
 
 function finalProject(w,h) {
-  const mobile=w<1200,cx=w/2,cy=mobile?480:545,centerW=mobile?270:360,centerH=mobile?118:150;let body=box(cx-centerW/2,cy-centerH/2,centerW,centerH,"마이페이지","계정 중심 활동 허브",true,mobile?22:30);const nodes=mobile?[[180,355,"찜"],[780,355,"신고"],[180,625,"거래 목록"],[780,625,"리뷰"]]:[[280,390,"찜"],[1320,390,"신고"],[280,720,"거래 목록"],[1320,720,"리뷰"]];nodes.forEach(([x,y,label])=>{const bw=mobile?180:260,bh=mobile?78:96;body+=box(x-bw/2,y-bh/2,bw,bh,label,"",false,mobile?20:27);body+=line(cx+(x<cx?-centerW/2:centerW/2),cy,x+(x<cx?bw/2:-bw/2),y,palette.accent,3)});body+=text(mobile?48:72,mobile?690:845,"개인 담당으로 기록된 기능 범위",mobile?17:21,700,palette.accent);
+  const mobile=w<1200,cx=w/2,cy=mobile?480:545,centerW=mobile?270:360,centerH=mobile?118:150;let body=box(cx-centerW/2,cy-centerH/2,centerW,centerH,"마이페이지","계정 중심 활동 허브",true,mobile?22:30);const nodes=mobile?[[180,355,"찜"],[780,355,"신고"],[180,625,"거래 목록"],[780,625,"리뷰"]]:[[280,390,"찜"],[1320,390,"신고"],[280,720,"거래 목록"],[1320,720,"리뷰"]];nodes.forEach(([x,y,label])=>{const bw=mobile?180:260,bh=mobile?78:96;body+=box(x-bw/2,y-bh/2,bw,bh,label,"",false,mobile?20:27);body+=line(cx+(x<cx?-centerW/2:centerW/2),cy,x+(x<cx?bw/2:-bw/2),y,palette.accent,3)});body+=text(mobile?48:72,mobile?690:845,"개인 담당으로 기록된 기능 범위",mobile?17:21,700,palette.accentText);
   return frame(w,h,"project-final","Account-centered activity history","Project Final","찜·신고·거래·리뷰 이력을 마이페이지에서 연결",body);
 }
 
@@ -262,8 +266,8 @@ async function buildDiagramSources(slug,builder){
 
 async function buildScreenSources(slug){
   const {input,title,desktopSubtitle,mobileSubtitle,mobilePosition}=SCREEN_EVIDENCE[slug];
-  const desktopOverlay=Buffer.from(`<svg width="1600" height="1000" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="850" width="1600" height="150" fill="#161914" fill-opacity=".94"/><text x="64" y="920" font-family="Pretendard,Arial,sans-serif" font-size="34" font-weight="700" fill="#F2F0EA">${escapeXml(title)}</text><text x="64" y="962" font-family="Pretendard,Arial,sans-serif" font-size="20" fill="#C7C8C1">${escapeXml(desktopSubtitle)}</text></svg>`);
-  const mobileOverlay=Buffer.from(`<svg width="960" height="720" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="590" width="960" height="130" fill="#161914" fill-opacity=".94"/><text x="40" y="650" font-family="Pretendard,Arial,sans-serif" font-size="28" font-weight="700" fill="#F2F0EA">${escapeXml(title)}</text><text x="40" y="690" font-family="Pretendard,Arial,sans-serif" font-size="17" fill="#C7C8C1">${escapeXml(mobileSubtitle)}</text></svg>`);
+  const desktopOverlay=Buffer.from(`<svg width="1600" height="1000" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="850" width="1600" height="150" fill="${palette.ink}" fill-opacity=".94"/><rect x="0" y="850" width="1600" height="4" fill="${palette.accent}"/><text x="64" y="922" font-family="Pretendard,Arial,sans-serif" font-size="34" font-weight="700" fill="${palette.white}">${escapeXml(title)}</text><text x="64" y="964" font-family="Pretendard,Arial,sans-serif" font-size="20" fill="#C3C7D1">${escapeXml(desktopSubtitle)}</text></svg>`);
+  const mobileOverlay=Buffer.from(`<svg width="960" height="720" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="590" width="960" height="130" fill="${palette.ink}" fill-opacity=".94"/><rect x="0" y="590" width="960" height="4" fill="${palette.accent}"/><text x="40" y="652" font-family="Pretendard,Arial,sans-serif" font-size="28" font-weight="700" fill="${palette.white}">${escapeXml(title)}</text><text x="40" y="692" font-family="Pretendard,Arial,sans-serif" font-size="17" fill="#C3C7D1">${escapeXml(mobileSubtitle)}</text></svg>`);
   const desktop=await sharp(input).resize(1600,1000,{fit:"cover",position:"north"}).composite([{input:desktopOverlay}]).png({compressionLevel:9}).toBuffer();
   const mobile=await sharp(input).resize(960,720,{fit:"cover",position:mobilePosition}).composite([{input:mobileOverlay}]).png({compressionLevel:9}).toBuffer();
   await writeIfChanged(path.join(sourceRoot,slug,"desktop.png"),desktop); await writeIfChanged(path.join(sourceRoot,slug,"mobile.png"),mobile);
@@ -375,7 +379,7 @@ export async function buildProjectMedia(root=projectRoot){
       for(const [suffix,spec] of Object.entries(PROJECT_DETAIL_VARIANTS)){
         const output=path.join(destination,`${id}${suffix}`);
         await writeFile(output,await sharp(input)
-          .resize(spec.width,spec.height,{fit:"contain",position:"centre",background:palette.paper})
+          .resize(spec.width,spec.height,{fit:"contain",position:"centre",background:palette.white})
           .webp({quality:84,effort:6})
           .toBuffer());
       }

@@ -200,16 +200,23 @@ test.describe("responsive themes and accessibility", () => {
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   });
 
-  test("home keeps the four-section hiring narrative and bounded mobile length", async ({ page }) => {
+  // Design 02 로 정보 구조를 바꾸면서 이전 계약(섹션 4개, 히어로 이미지 0개, 높이 6,500px)을
+  // 의도적으로 교체했다. 링크 상한 12개는 새 구조에서도 그대로 지켜져 유지한다.
+  // 높이 상한은 2026-08-14 실측 7,441px 기준으로 약 5% 여유를 둔 회귀 기준이다.
+  test("home keeps the Design 02 narrative, link budget, and bounded mobile length", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/", { waitUntil: "networkidle" });
-    await expect(page.locator("main > section")).toHaveCount(4);
+    await expect(page.locator("main > section")).toHaveCount(6);
+    for (const id of ["work", "featured", "about", "contact"]) {
+      await expect(page.locator(`main section#${id}`)).toHaveCount(1);
+    }
     expect(await page.locator("main a").count()).toBeLessThanOrEqual(12);
     for (const slug of ["hajacheck", "ml-economics-answers", "machine-learning-oil"]) {
-      await expect(page.locator(`main a[href="/projects/${slug}/"]`)).toHaveCount(1);
+      await expect(page.locator(`main a[href="/projects/${slug}/"]`)).toHaveCount(2);
     }
+    await expect(page.locator('main a[href="/projects/"]')).toHaveCount(1);
     const height = await page.evaluate(() => document.documentElement.scrollHeight);
-    expect(height).toBeLessThanOrEqual(6_500);
+    expect(height).toBeLessThanOrEqual(7_800);
   });
 
   test("project index exposes exactly one detail link per project", async ({ page }) => {
@@ -259,19 +266,59 @@ test.describe("responsive themes and accessibility", () => {
     expect(desktopSources.every((source) => !source.includes("cover-mobile"))).toBe(true);
   });
 
-  test("home hero uses a source-backed evidence index instead of a project image", async ({ page }) => {
+  // Design 02 히어로는 실제 제품 화면 하나를 크게 보여준다. 생성 다이어그램이나 목업이 아니라
+  // 원본 저장소의 실행 화면이어야 하므로 경로와 대체텍스트까지 검사한다.
+  test("home hero shows one real HajaCheck product screen with a described alt", async ({ page }) => {
     await page.goto("/", { waitUntil: "networkidle" });
-    await expect(page.locator(".hero--project img")).toHaveCount(0);
-    await expect(page.locator(".hero-evidence")).toHaveCount(1);
-    await expect(page.locator(".hero-evidence__head h2")).toHaveText("HajaCheck");
-    await expect(page.locator(".hero-evidence__scope dt")).toHaveText(["My scope", "Flyway", "Merged PR"]);
-    await expect(page.locator(".hero-evidence__flow li")).toHaveText(["사진", "AI 분석", "사람 검수", "보고서"]);
+    const heroImage = page.locator(".d2-hero__preview img");
+    await expect(heroImage).toHaveCount(1);
+    await expect(heroImage).toHaveAttribute("src", /\/media\/projects\/hajacheck\/visuals\/app-dashboard\.webp$/);
+    await expect(heroImage).toHaveAttribute("loading", "eager");
+    expect((await heroImage.getAttribute("alt"))?.trim().length ?? 0).toBeGreaterThan(20);
+    await heroImage.evaluate(async (node) => {
+      const image = node as HTMLImageElement;
+      if (!image.complete) await new Promise((resolve) => image.addEventListener("load", resolve, { once: true }));
+      await image.decode();
+    });
+    expect(await heroImage.evaluate((node) => (node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  });
+
+  test("project explorer is operable by pointer and keyboard with one panel at a time", async ({ page }) => {
+    await page.goto("/", { waitUntil: "networkidle" });
+    const tabs = page.locator('.d2-explorer__index [role="tab"]');
+    const panels = page.locator('.d2-explorer__stage [role="tabpanel"]');
+    await expect(tabs).toHaveCount(4);
+    await expect(panels).toHaveCount(4);
+
+    const visiblePanels = async () =>
+      panels.evaluateAll((nodes) => nodes.filter((node) => !(node as HTMLElement).hidden).length);
+    expect(await visiblePanels()).toBe(1);
+    await expect(tabs.nth(0)).toHaveAttribute("aria-selected", "true");
+
+    // 클릭 선택
+    await tabs.nth(2).click();
+    await expect(tabs.nth(2)).toHaveAttribute("aria-selected", "true");
+    await expect(tabs.nth(0)).toHaveAttribute("aria-selected", "false");
+    expect(await visiblePanels()).toBe(1);
+    await expect(panels.nth(2)).toBeVisible();
+
+    // 키보드 이동은 roving tabindex 로 처리한다
+    await tabs.nth(2).focus();
+    await page.keyboard.press("ArrowDown");
+    await expect(tabs.nth(3)).toBeFocused();
+    await expect(tabs.nth(3)).toHaveAttribute("aria-selected", "true");
+    await page.keyboard.press("ArrowDown");
+    await expect(tabs.nth(0)).toBeFocused();
+    expect(await visiblePanels()).toBe(1);
+
+    // 선택되지 않은 탭은 Tab 순서에서 빠진다
+    expect(await tabs.evaluateAll((nodes) => nodes.filter((node) => (node as HTMLElement).tabIndex === 0).length)).toBe(1);
   });
 
   test("detail evidence galleries expose responsive images and scope labels", async ({ page }) => {
     await page.goto("/projects/hajacheck/", { waitUntil: "networkidle" });
     const images = page.locator(".project-gallery .project-visual img");
-    await expect(images).toHaveCount(2);
+    await expect(images).toHaveCount(3);
     await images.last().scrollIntoViewIfNeeded();
     await images.evaluateAll(async (nodes) => {
       for (const image of nodes) {
@@ -281,8 +328,9 @@ test.describe("responsive themes and accessibility", () => {
       }
     });
     expect(await images.evaluateAll((nodes) => nodes.every((node) => (node as HTMLImageElement).naturalWidth > 0))).toBe(true);
-    await expect(page.locator(".project-visual figcaption span")).toHaveText(["팀 산출물", "팀 산출물"]);
-    await expect(page.locator('.project-gallery source[srcset*="-480w.webp"]')).toHaveCount(2);
+    // 대시보드와 분석 뷰어는 팀 전체 산출물, 하자 상세는 개인 담당 범위다.
+    await expect(page.locator(".project-visual figcaption span")).toHaveText(["팀 산출물", "팀 산출물", "개인 구현·분석"]);
+    await expect(page.locator('.project-gallery source[srcset*="-480w.webp"]')).toHaveCount(3);
   });
 
   test("all mobile controls meet the 44 by 44 target", async ({ page }) => {

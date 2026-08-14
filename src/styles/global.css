@@ -1,29 +1,44 @@
+/* Design 02 : Interactive Product Portfolio.
+   accent 가 기본값이다. 흰 배경 대비 5.28:1 로 본문 크기 텍스트와 채운 버튼 배경에 모두 쓸 수 있다.
+   accent-bright 는 큰 지표 숫자·포커스 링·도형처럼 비텍스트 3:1 만 필요한 곳에만 쓴다 (4.07:1).
+   밝은 파랑을 기본값으로 두면 작은 글자에서 AA 가 깨지므로 순서를 이렇게 잡았다.
+   근거와 측정값은 저장소 루트의 디자인 설계 노트 8.1 절에 있다. */
 :root {
-  --paper: #f2f0ea;
-  --paper-strong: #e9e5dc;
-  --surface: #faf8f3;
-  --ink: #171411;
-  --ink-soft: #5f5a54;
-  --line: #cfc8bb;
-  --accent: #c2410c;
-  --accent-ink: #fff7ed;
-  --shadow: 0 24px 70px rgb(34 24 17 / 10%);
-  --radius: 1rem;
-  --max-width: 86rem;
-  --gutter: clamp(1.15rem, 4vw, 4.5rem);
+  --paper: #ffffff;
+  --paper-strong: #f6f7f9;
+  --surface: #fafbfc;
+  --ink: #111318;
+  --ink-soft: #5f6470;
+  --line: #e4e7ec;
+  --line-strong: #ccd8eb;
+  --accent: #1263e8;
+  --accent-bright: #2477ff;
+  --accent-soft: #eef5ff;
+  --accent-ink: #ffffff;
+  --shadow: 0 20px 50px rgb(15 23 42 / 8%);
+  --shadow-card: 0 8px 24px rgb(15 23 42 / 4%);
+  --radius: .75rem;
+  --radius-card: .625rem;
+  --radius-button: .375rem;
+  --max-width: 90rem;
+  --gutter: clamp(1.15rem, 4vw, 3rem);
   color-scheme: light;
 }
 
 :root[data-theme="dark"] {
-  --paper: #171411;
-  --paper-strong: #211d19;
-  --surface: #1c1916;
-  --ink: #f5f0e8;
-  --ink-soft: #b9b0a5;
-  --line: #413a33;
-  --accent: #ef6c2f;
-  --accent-ink: #190f09;
-  --shadow: 0 24px 70px rgb(0 0 0 / 32%);
+  --paper: #0f1115;
+  --paper-strong: #171a20;
+  --surface: #14171d;
+  --ink: #edeff3;
+  --ink-soft: #a3a9b7;
+  --line: #262b34;
+  --line-strong: #39414f;
+  --accent: #6ba5ff;
+  --accent-bright: #6ba5ff;
+  --accent-soft: #16233a;
+  --accent-ink: #0b1220;
+  --shadow: 0 20px 50px rgb(0 0 0 / 45%);
+  --shadow-card: 0 8px 24px rgb(0 0 0 / 25%);
   color-scheme: dark;
 }
 
@@ -35,30 +50,9 @@
   src: url("/fonts/noto-sans-kr/NotoSansKR-VF.woff2") format("woff2-variations");
 }
 
-@font-face {
-  font-family: "Paperlogy";
-  font-style: normal;
-  font-display: optional;
-  font-weight: 700;
-  src: url("/fonts/paperlogy/Paperlogy-700.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Paperlogy";
-  font-style: normal;
-  font-display: optional;
-  font-weight: 800;
-  src: url("/fonts/paperlogy/Paperlogy-800.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Paperlogy";
-  font-style: normal;
-  font-display: optional;
-  font-weight: 900;
-  src: url("/fonts/paperlogy/Paperlogy-900.woff2") format("woff2");
-}
-
+/* Design 02 는 제목까지 한 계열로 통일한다 (명세 9절 "폰트를 여러 개 섞지 않는다").
+   Pretendard Variable 은 2MB 로 현재 한글 폰트 65KB 의 30배라 명세 94절 성능 목표와
+   충돌해 채택하지 않았다. 디스플레이용 Paperlogy 도 같은 이유로 제거했다. */
 @font-face {
   font-family: "IBM Plex Mono";
   font-style: normal;
@@ -102,28 +96,18 @@ h2,
 h3,
 h4,
 h5,
-h6,
-.metric-item dd strong {
-  font-family: "Paperlogy", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+h6 {
+  font-weight: 750;
+  letter-spacing: -.03em;
 }
 
+/* 명세 90절 : 노이즈 오버레이와 장식 배경을 두지 않는다.
+   시각 요소는 실제 제품 화면이 담당한다. */
 body {
   margin: 0;
   min-width: 20rem;
   overflow-x: hidden;
-  background:
-    linear-gradient(90deg, transparent calc(50% - .5px), color-mix(in srgb, var(--line) 26%, transparent) 50%, transparent calc(50% + .5px)),
-    var(--paper);
-}
-
-body::before {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  content: "";
-  opacity: .18;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.92' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.12'/%3E%3C/svg%3E");
+  background: var(--paper);
 }
 
 img {
@@ -147,13 +131,14 @@ button {
 }
 
 :focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 4px;
+  outline: 2px solid var(--accent-bright);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 ::selection {
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--accent-soft);
+  color: var(--ink);
 }
 
 .skip-link {
@@ -176,9 +161,9 @@ button {
   position: sticky;
   top: 0;
   z-index: 20;
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
-  background: color-mix(in srgb, var(--paper) 88%, transparent);
-  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper) 94%, transparent);
+  backdrop-filter: blur(10px);
 }
 
 .header-inner,
@@ -193,7 +178,7 @@ button {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  min-height: 4.8rem;
+  min-height: 4.5rem;
 }
 
 .wordmark {
@@ -339,14 +324,16 @@ button {
   }
 }
 
+/* Paperlogy 를 제거하고 Noto Sans KR 로 통일하면서 행간을 다시 잡았다.
+   한글은 자소 높이가 커서 line-height 가 1 미만이면 여러 줄에서 글자가 겹친다. */
 .section-head h2,
 .page-intro h1,
 .detail-title {
   margin: 0;
-  font-size: clamp(2.55rem, 6vw, 6.2rem);
+  font-size: clamp(2.25rem, 4.5vw, 4rem);
   font-weight: 800;
-  letter-spacing: -.055em;
-  line-height: .95;
+  letter-spacing: -.04em;
+  line-height: 1.08;
   overflow-wrap: break-word;
   text-wrap: pretty;
   word-break: keep-all;
@@ -382,10 +369,10 @@ button {
 .hero h1 {
   max-width: 13ch;
   margin: 1.4rem 0 1.5rem;
-  font-size: clamp(3.5rem, 6vw, 7.2rem);
-  font-weight: 900;
-  letter-spacing: -.075em;
-  line-height: .88;
+  font-size: clamp(2.6rem, 5vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: -.045em;
+  line-height: 1.08;
   overflow-wrap: break-word;
   text-wrap: balance;
   word-break: keep-all;
@@ -422,195 +409,40 @@ button {
   min-height: 3rem;
   align-items: center;
   justify-content: center;
-  padding: .8rem 1.15rem;
-  border: 1px solid var(--ink);
-  border-radius: 999px;
-  background: var(--ink);
+  gap: .4rem;
+  padding: .8rem 1.25rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-button);
+  background: var(--accent);
   color: var(--accent-ink);
   font-size: .9rem;
   font-weight: 700;
   text-decoration: none;
-  transition: transform .2s ease, background .2s ease, color .2s ease;
+  transition: transform .2s ease, background .2s ease, border-color .2s ease, color .2s ease;
 }
 
 .button:hover {
-  transform: translateY(-2px);
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-ink);
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--accent) 86%, #000);
+  border-color: color-mix(in srgb, var(--accent) 86%, #000);
 }
 
 .button--ghost {
+  border-color: var(--line);
   background: transparent;
   color: var(--ink);
 }
 
-.hero-evidence {
-  align-self: end;
-  margin-bottom: clamp(1rem, 5vw, 5rem);
-  border-top: 2px solid var(--ink);
-}
-
-.hero-evidence__head {
-  position: relative;
-  padding: 1.2rem 0 clamp(2.5rem, 6vw, 5rem);
-  border-bottom: 1px solid var(--line);
-}
-
-.hero-evidence__head p {
-  display: flex;
-  justify-content: space-between;
-  margin: 0;
-  color: var(--accent);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
-  font-size: .72rem;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-
-.hero-evidence__head p span {
+.button--ghost:hover {
+  border-color: var(--line-strong);
+  background: var(--paper-strong);
   color: var(--ink);
-  font-size: clamp(2.5rem, 6vw, 5.5rem);
-  letter-spacing: -.08em;
-  line-height: .8;
 }
 
-.hero-evidence__head h2 {
-  max-width: 11ch;
-  margin: clamp(2rem, 5vw, 4rem) 0 .65rem;
-  font-size: clamp(2.8rem, 5vw, 5rem);
-  letter-spacing: -.065em;
-  line-height: .9;
-}
-
-.hero-evidence__head small,
-.hero-evidence__scope dt,
-.hero-evidence__flow > p {
-  color: var(--ink-soft);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
-  font-size: .7rem;
-  font-weight: 600;
-  letter-spacing: .05em;
-  text-transform: uppercase;
-}
-
-.hero-evidence__scope {
-  display: grid;
-  grid-template-columns: 1.5fr repeat(2, .75fr);
-  margin: 0;
-  border-bottom: 1px solid var(--line);
-}
-
-.hero-evidence__scope div {
-  min-width: 0;
-  padding: 1.25rem 1rem 1.35rem 0;
-}
-
-.hero-evidence__scope div + div {
-  padding-left: 1rem;
-  border-left: 1px solid var(--line);
-}
-
-.hero-evidence__scope dd {
-  margin: .75rem 0 0;
-  font-size: .92rem;
-  font-weight: 680;
-  line-height: 1.5;
-  word-break: keep-all;
-}
-
-.hero-evidence__scope strong {
-  color: var(--accent);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
-  font-size: clamp(1.6rem, 3vw, 2.5rem);
-  line-height: .8;
-}
-
-.hero-evidence__flow {
-  padding-top: 1.25rem;
-}
-
-.hero-evidence__flow > p {
-  margin: 0 0 1rem;
-}
-
-.hero-evidence__flow ol {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.4rem;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  counter-reset: flow;
-}
-
-.hero-evidence__flow li {
-  position: relative;
-  padding-top: 1.9rem;
-  counter-increment: flow;
-  font-size: .8rem;
-  font-weight: 700;
-  word-break: keep-all;
-}
-
-.hero-evidence__flow li::before {
-  position: absolute;
-  top: 0;
-  left: 0;
-  color: var(--accent);
-  content: "0" counter(flow);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
-  font-size: .68rem;
-}
-
-.hero-evidence__flow li:not(:last-child)::after {
-  position: absolute;
-  top: 1.95rem;
-  right: -.9rem;
-  color: var(--line-strong);
-  content: "→";
-}
-
-.hero-frame {
-  position: absolute;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  background: var(--surface);
-}
-
-.hero-frame img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.hero-frame:nth-child(1) {
-  inset: 3% 2% 17% 13%;
-  transform: rotate(1.8deg);
-}
-
-.hero-frame:nth-child(2) {
-  right: -5%;
-  bottom: 2%;
-  width: 48%;
-  height: 42%;
-  transform: rotate(-2.5deg);
-}
-
-.hero-frame:nth-child(3) {
-  top: -2%;
-  left: 0;
-  width: 37%;
-  height: 28%;
-  transform: rotate(-3deg);
-}
-
+/* 지표가 2개인 rail(사례 연구)에서도 빈 열이 남지 않게 auto-fit 을 쓴다. */
 .metric-rail {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
   margin: 0;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
@@ -618,7 +450,7 @@ button {
 
 .metric-item {
   min-width: 0;
-  padding: clamp(1.5rem, 4vw, 3rem);
+  padding: clamp(1.35rem, 2.6vw, 2.1rem);
 }
 
 .metric-item + .metric-item {
@@ -638,13 +470,14 @@ button {
   margin: .55rem 0;
 }
 
+/* 명세 43절 - Design 01 의 대형 숫자보다 차분한 34~50px 범위를 쓴다. */
 .metric-item dd strong {
   display: block;
   color: var(--accent);
-  font-size: clamp(2.15rem, 5.2vw, 5rem);
-  font-weight: 900;
-  letter-spacing: -.06em;
-  line-height: 1;
+  font-size: clamp(2.125rem, 3vw, 3.125rem);
+  font-weight: 800;
+  letter-spacing: -.04em;
+  line-height: 1.05;
 }
 
 .metric-item span {
@@ -671,12 +504,6 @@ button {
   grid-template-columns: 1.35fr .65fr;
   gap: clamp(1.5rem, 4vw, 4rem);
   align-items: start;
-}
-
-.featured-stack {
-  display: grid;
-  gap: clamp(3rem, 8vw, 7rem);
-  padding-top: clamp(5rem, 11vw, 10rem);
 }
 
 .project-card {
@@ -746,9 +573,9 @@ button {
 
 .project-card h3 {
   margin: .85rem 0 .7rem;
-  font-size: clamp(1.8rem, 4vw, 3.9rem);
-  letter-spacing: -.045em;
-  line-height: 1;
+  font-size: clamp(1.5rem, 2.6vw, 2.4rem);
+  letter-spacing: -.035em;
+  line-height: 1.15;
   overflow-wrap: break-word;
   text-wrap: balance;
   word-break: keep-all;
@@ -844,22 +671,6 @@ button {
 
 .text-link:hover span {
   transform: translateX(.25rem);
-}
-
-.plus-feature {
-  display: grid;
-  grid-template-columns: .78fr 1.22fr;
-  gap: clamp(2rem, 7vw, 7rem);
-  align-items: center;
-}
-
-.plus-feature .project-card__visual {
-  order: 2;
-  aspect-ratio: 5 / 3;
-}
-
-.plus-feature .project-card__body {
-  order: 1;
 }
 
 .archive-grid,
@@ -985,72 +796,6 @@ button {
 .evidence-row a:hover {
   border-color: var(--accent);
   color: var(--accent);
-}
-
-.principles {
-  display: grid;
-  grid-template-columns: 1.1fr .9fr 1fr;
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
-}
-
-.principle {
-  padding: clamp(1.5rem, 4vw, 3.2rem);
-  background: var(--paper);
-}
-
-.principle strong {
-  display: block;
-  margin-bottom: 1.3rem;
-  color: var(--accent);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
-  font-size: .76rem;
-}
-
-.principle h3 {
-  margin: 0 0 .8rem;
-  font-size: clamp(1.3rem, 1.8vw, 1.7rem);
-  letter-spacing: -.035em;
-  text-wrap: balance;
-  word-break: keep-all;
-}
-
-.principle p {
-  margin: 0;
-  color: var(--ink-soft);
-  line-height: 1.65;
-  text-wrap: pretty;
-  word-break: keep-all;
-}
-
-.contact-band {
-  display: grid;
-  grid-template-columns: 1.5fr .5fr;
-  gap: 2rem;
-  align-items: end;
-  padding: clamp(3rem, 8vw, 7rem);
-  border-radius: var(--radius);
-  background: var(--ink);
-  color: var(--paper);
-}
-
-.contact-band h2 {
-  max-width: 13ch;
-  margin: 0;
-  font-size: clamp(2.6rem, 6vw, 6.3rem);
-  letter-spacing: -.06em;
-  line-height: .95;
-  overflow-wrap: break-word;
-  text-wrap: balance;
-  word-break: keep-all;
-}
-
-.contact-band a {
-  justify-self: end;
-  color: var(--paper);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
-  font-size: clamp(.78rem, 1.5vw, 1rem);
 }
 
 .page-intro {
@@ -1296,9 +1041,9 @@ button {
 }
 
 .next-project strong {
-  font-size: clamp(2.4rem, 7vw, 7rem);
-  letter-spacing: -.06em;
-  line-height: 1;
+  font-size: clamp(1.9rem, 4vw, 3.4rem);
+  letter-spacing: -.04em;
+  line-height: 1.12;
   overflow-wrap: break-word;
   text-wrap: balance;
   word-break: keep-all;
@@ -1536,6 +1281,546 @@ button {
   align-items: center;
 }
 
+/* ---------------------------------------------------------------------------
+   Design 02 : 홈페이지 전용 컴포넌트.
+   기존 .hero* 는 404 페이지가 계속 사용하므로 지우지 않고 d2- 네임스페이스로 분리했다.
+   --------------------------------------------------------------------------- */
+
+.d2-hero__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  column-gap: clamp(2rem, 5vw, 4.5rem);
+  row-gap: clamp(2.5rem, 5vw, 4rem);
+  align-items: center;
+  padding-block: clamp(3.5rem, 7vw, 6.5rem) clamp(3rem, 5vw, 4.5rem);
+}
+
+.d2-hero__copy h1 {
+  margin: 1.1rem 0 1.35rem;
+  font-size: clamp(2.9rem, 5.4vw, 5.5rem);
+  font-weight: 800;
+  letter-spacing: -.045em;
+  line-height: 1.06;
+  word-break: keep-all;
+}
+
+.d2-dot {
+  color: var(--accent);
+}
+
+.d2-hero__lead {
+  max-width: 30rem;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  line-height: 1.72;
+  text-wrap: pretty;
+  word-break: keep-all;
+}
+
+.d2-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .7rem;
+  margin-top: 2rem;
+}
+
+.d2-hero__inner .metric-rail {
+  grid-column: 1 / -1;
+}
+
+/* 명세 24절 : 브라우저 목업을 만들지 않고 화면 자체가 UI 카드로 읽히게 한다. */
+.d2-preview {
+  min-width: 0;
+  margin: 0;
+}
+
+.d2-preview img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-strong);
+  box-shadow: var(--shadow);
+}
+
+.d2-preview figcaption {
+  max-width: 46rem;
+  margin-top: .95rem;
+  color: var(--ink-soft);
+  font-size: .8rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+  word-break: keep-all;
+}
+
+.d2-preview figcaption span {
+  display: inline-block;
+  margin-right: .5rem;
+  padding: .2rem .5rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-size: .64rem;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.d2-section {
+  padding-block: clamp(3.5rem, 6vw, 6rem);
+}
+
+/* .page-shell 자체의 세로 여백이 섹션 여백과 겹치지 않게 한다. */
+.d2-section > .page-shell {
+  padding-block: 0;
+}
+
+.d2-section__head {
+  max-width: 44rem;
+  margin-bottom: clamp(2rem, 4vw, 3.25rem);
+}
+
+.d2-section__head h2 {
+  margin: .7rem 0 0;
+  font-size: clamp(1.9rem, 3.2vw, 3rem);
+  letter-spacing: -.04em;
+  line-height: 1.1;
+  text-wrap: balance;
+  word-break: keep-all;
+}
+
+.d2-section__head p {
+  margin: .8rem 0 0;
+  color: var(--ink-soft);
+  line-height: 1.7;
+  text-wrap: pretty;
+  word-break: keep-all;
+}
+
+/* 프로젝트 탐색기 : 명세 28~33절 */
+.d2-explorer {
+  display: grid;
+  grid-template-columns: minmax(0, 32fr) minmax(0, 68fr);
+  gap: clamp(1.5rem, 3vw, 2.75rem);
+  align-items: start;
+}
+
+.d2-explorer__index {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+.d2-explorer__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: .9rem;
+  align-items: center;
+  width: 100%;
+  min-height: 4.5rem;
+  padding: 1rem 1.1rem;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: background .18s ease, color .18s ease;
+}
+
+.d2-explorer__item:last-child {
+  border-bottom: 0;
+}
+
+.d2-explorer__num {
+  color: var(--ink-soft);
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-size: .78rem;
+  font-weight: 700;
+}
+
+.d2-explorer__name {
+  min-width: 0;
+}
+
+.d2-explorer__name strong {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  word-break: keep-all;
+}
+
+.d2-explorer__name small {
+  display: block;
+  margin-top: .2rem;
+  color: var(--ink-soft);
+  font-size: .76rem;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+
+.d2-explorer__arrow {
+  color: var(--ink-soft);
+  transition: transform .18s ease, color .18s ease;
+}
+
+.d2-explorer__item:hover {
+  background: var(--paper-strong);
+}
+
+.d2-explorer__item:hover .d2-explorer__arrow {
+  transform: translateX(.25rem);
+}
+
+.d2-explorer__item[aria-selected="true"] {
+  background: var(--accent-soft);
+}
+
+.d2-explorer__item[aria-selected="true"] .d2-explorer__num,
+.d2-explorer__item[aria-selected="true"] .d2-explorer__arrow {
+  color: var(--accent);
+}
+
+.d2-explorer__item[aria-selected="true"] .d2-explorer__name strong {
+  color: var(--accent);
+}
+
+/* 명세 96절 QA - 제품 화면이 작아 보이지 않도록 미리보기 열을 더 넓게 잡는다. */
+.d2-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  align-items: start;
+  padding: clamp(1.35rem, 2.5vw, 2rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+}
+
+.d2-panel[hidden] {
+  display: none;
+}
+
+.d2-panel__body {
+  min-width: 0;
+}
+
+.d2-panel__kicker {
+  margin: 0;
+  color: var(--accent);
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.d2-panel__body h3 {
+  margin: .6rem 0 .7rem;
+  font-size: clamp(1.6rem, 2.6vw, 2.3rem);
+  letter-spacing: -.04em;
+  line-height: 1.1;
+  word-break: keep-all;
+}
+
+.d2-panel__lead {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: .96rem;
+  line-height: 1.7;
+  text-wrap: pretty;
+  word-break: keep-all;
+}
+
+.d2-panel__facts {
+  display: grid;
+  gap: 0;
+  margin: 1.4rem 0 0;
+  border-top: 1px solid var(--line);
+}
+
+.d2-panel__facts div {
+  display: grid;
+  grid-template-columns: minmax(4.5rem, auto) minmax(0, 1fr);
+  gap: 1rem;
+  padding: .7rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.d2-panel__facts dt {
+  color: var(--ink-soft);
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.d2-panel__facts dd {
+  margin: 0;
+  font-size: .86rem;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
+.d2-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin: 1.2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.d2-tags li {
+  padding: .3rem .55rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  font-size: .72rem;
+}
+
+.d2-panel__list {
+  margin: 1.3rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+
+.d2-panel__list li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem .9rem;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: .62rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.d2-panel__list strong {
+  font-size: .9rem;
+  font-weight: 650;
+  word-break: keep-all;
+}
+
+.d2-panel__list span {
+  color: var(--ink-soft);
+  font-size: .75rem;
+  word-break: keep-all;
+}
+
+.d2-panel__media img {
+  aspect-ratio: 16 / 10;
+  box-shadow: var(--shadow-card);
+}
+
+/* 사례 연구 : 명세 37~43절 */
+.d2-case {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 4vw, 3.5rem);
+  align-items: center;
+  margin-bottom: clamp(2.5rem, 4vw, 3.5rem);
+}
+
+.d2-case__body h2 {
+  margin: .7rem 0 .8rem;
+  font-size: clamp(2rem, 3.4vw, 3.2rem);
+  letter-spacing: -.045em;
+  line-height: 1.06;
+}
+
+.d2-case__lead {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 1rem;
+  line-height: 1.72;
+  text-wrap: pretty;
+  word-break: keep-all;
+}
+
+.d2-case__split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.d2-case__split h3 {
+  margin: 0 0 .5rem;
+  color: var(--accent);
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.d2-case__split p {
+  margin: 0;
+  font-size: .9rem;
+  line-height: 1.68;
+  text-wrap: pretty;
+  word-break: keep-all;
+}
+
+.d2-case__limit {
+  margin: 1.5rem 0 0;
+  padding-left: .85rem;
+  border-left: 2px solid var(--accent);
+  color: var(--ink-soft);
+  font-size: .82rem;
+  line-height: 1.62;
+  text-wrap: pretty;
+  word-break: keep-all;
+}
+
+/* 일하는 방식 : 명세 50~53절 */
+.d2-principles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+.d2-principle {
+  padding: clamp(1.35rem, 2.5vw, 1.9rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+}
+
+.d2-principle__num {
+  display: block;
+  color: var(--ink-soft);
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-size: .72rem;
+  font-weight: 700;
+}
+
+.d2-principle__icon {
+  display: grid;
+  width: 2.4rem;
+  height: 2.4rem;
+  margin: 1.1rem 0 1.15rem;
+  place-items: center;
+  border-radius: var(--radius-button);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.d2-principle__icon svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.d2-principle h3 {
+  margin: 0 0 .6rem;
+  font-size: 1.1rem;
+  letter-spacing: -.025em;
+  word-break: keep-all;
+}
+
+.d2-principle p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: .9rem;
+  line-height: 1.68;
+  text-wrap: pretty;
+  word-break: keep-all;
+}
+
+/* 연락처 카드 : 명세 54~58절 */
+.d2-contact {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  align-items: center;
+  padding: clamp(1.75rem, 3.5vw, 3rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.d2-contact__pill {
+  display: inline-block;
+  margin: 0 0 1rem;
+  padding: .32rem .7rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: .74rem;
+  font-weight: 700;
+}
+
+.d2-contact__identity h2 {
+  margin: 0;
+  font-size: clamp(2rem, 3.4vw, 2.9rem);
+  letter-spacing: -.045em;
+  line-height: 1.05;
+}
+
+.d2-contact__role {
+  margin: .55rem 0 0;
+  color: var(--ink-soft);
+  font-size: .92rem;
+}
+
+.d2-contact__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .7rem;
+}
+
+@media (max-width: 64rem) {
+  .d2-hero__inner,
+  .d2-explorer,
+  .d2-panel,
+  .d2-case,
+  .d2-contact {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .d2-principles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .d2-principle:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .d2-case__media {
+    order: 2;
+  }
+
+  .d2-contact__actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .d2-principles,
+  .d2-case__split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .d2-hero__copy h1 {
+    font-size: clamp(2.6rem, 11vw, 3.6rem);
+  }
+
+  .d2-hero__actions .button,
+  .d2-contact__actions .button {
+    flex: 1 1 8rem;
+  }
+}
+
 .reveal-ready [data-reveal] {
   opacity: 0;
   transform: translateY(2rem);
@@ -1550,15 +1835,6 @@ button {
 @media (max-width: 64rem) {
   .hero {
     grid-template-columns: 1fr;
-  }
-
-  .hero-evidence {
-    align-self: auto;
-    margin: 0;
-  }
-
-  .hero-frame:nth-child(2) {
-    right: 0;
   }
 
   .section-head,
@@ -1576,20 +1852,12 @@ button {
   .detail-aside {
     position: static;
   }
-
-  .principles {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .principle:last-child {
-    grid-column: 1 / -1;
-  }
 }
 
 @media (max-width: 47.99rem) {
   .section-head h2 {
-    font-size: clamp(2.25rem, 6vw, 3.25rem);
-    line-height: 1;
+    font-size: clamp(1.9rem, 6vw, 2.6rem);
+    line-height: 1.12;
   }
 
   .header-inner {
@@ -1648,20 +1916,6 @@ button {
     font-size: clamp(3.25rem, 15vw, 5.8rem);
   }
 
-  .hero-evidence__scope {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .hero-evidence__scope div:first-child {
-    grid-column: 1 / -1;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .hero-evidence__scope div:nth-child(2) {
-    padding-left: 0;
-    border-left: 0;
-  }
-
   .tech-list span {
     max-width: 100%;
     overflow-wrap: anywhere;
@@ -1682,17 +1936,10 @@ button {
 
   .featured-grid,
   .featured-grid--pair,
-  .plus-feature,
-  .principles,
-  .contact-band,
   .footer-inner,
   .evidence-row,
   .resume-section {
     grid-template-columns: 1fr;
-  }
-
-  .featured-stack {
-    padding-top: 0;
   }
 
   .project-card--supporting .project-card__link,
@@ -1709,11 +1956,6 @@ button {
     aspect-ratio: 4 / 3;
   }
 
-  .plus-feature .project-card__visual,
-  .plus-feature .project-card__body {
-    order: initial;
-  }
-
   .archive-grid,
   .projects-grid {
     display: grid;
@@ -1724,14 +1966,6 @@ button {
   .projects-grid .project-card {
     grid-column: 1 !important;
     padding-top: 0 !important;
-  }
-
-  .contact-band a {
-    justify-self: start;
-  }
-
-  .contact-band {
-    padding: 2.5rem 1.5rem 2.75rem;
   }
 
   .detail-facts,
