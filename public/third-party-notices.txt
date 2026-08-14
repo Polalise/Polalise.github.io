@@ -2,12 +2,6 @@
 
 This repository redistributes font software under the SIL Open Font License 1.1.
 
-## Paperlogy
-
-Character-subset derivative of Paperlogy, glyph-trimmed to this site's copy and repackaged as WOFF2, distributed under the license reproduced below.
-
-Copyright (c) 2024, PT& (https://www.designptn.com), Paperlogy is a trademark of Lee Juim. Glyphs from Gmarket Sans & Montserrat.
-
 ## Noto Sans KR VF
 
 Character-subset derivative of Noto Sans KR (variable), glyph-trimmed to this site's copy and repackaged as WOFF2, distributed under the license reproduced below.

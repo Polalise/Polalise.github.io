@@ -44,9 +44,15 @@ type ExplorerEntry = {
 
 const explorerEntries: ExplorerEntry[] = [];
 
+// 상세 갤러리는 첫 항목을 전체 폭으로 렌더링하므로 그 순서와 홈의 대표 화면 선택을 분리한다.
+// 홈은 id 로 고르고, 지정이 없으면 첫 화면으로 되돌아간다.
+const FEATURED_VISUAL_ID: Record<string, string> = { hajacheck: "app-dashboard" };
+const featuredVisual = (project: (typeof projects)[number]) =>
+  project.data.visuals.find(({ id }) => id === FEATURED_VISUAL_ID[project.id]) ?? project.data.visuals[0];
+
 for (const [offset, project] of [hajaCheck, mlEconomics, machineLearningOil].entries()) {
   if (!project) continue;
-  const visual = project.data.visuals[0];
+  const visual = featuredVisual(project);
   explorerEntries.push({
     id: project.id,
     index: String(offset + 1).padStart(2, "0"),
@@ -88,7 +94,7 @@ explorerEntries.push({
 });
 
 const heroEntry = explorerEntries[0];
-const caseVisual = hajaCheck?.data.visuals[1];
+const caseVisual = hajaCheck?.data.visuals.find(({ id }) => id === "app-analysis-viewer");
 const caseMedia = caseVisual ? projectVisualMedia("hajacheck", caseVisual.id) : undefined;
 
 const principles = [

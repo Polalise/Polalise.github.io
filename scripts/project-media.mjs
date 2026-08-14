@@ -40,9 +40,11 @@ const SCREEN_PROJECTS = new Set([
 ]);
 const MEDIA_MANIFEST_VERSION = 5;
 export const PROJECT_DETAIL_MEDIA = Object.freeze({
+  // 분석 결과 뷰어를 첫 번째로 둔다. 상세 갤러리는 첫 항목만 전체 폭으로 렌더링하므로
+  // 사람 검수 흐름이 드러나는 화면에 가장 큰 자리를 준다.
   hajacheck: [
-    { id: "app-dashboard", source: "app-dashboard.png" },
     { id: "app-analysis-viewer", source: "app-analysis-viewer.png" },
+    { id: "app-dashboard", source: "app-dashboard.png" },
     { id: "app-defect-detail", source: "app-defect-detail.png" }
   ],
   "ml-economics-answers": [

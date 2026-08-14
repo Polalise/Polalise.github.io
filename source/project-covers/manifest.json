@@ -1,6 +1,6 @@
 {
   "version": 5,
-  "inputFingerprint": "90:9a:ad:2b:c1:68:37:76:64:b3:f4:5b:64:64:91:f9:9b:38:8f:80:54:76:b6:0c:ce:c7:19:ff:8d:74:14:6e",
+  "inputFingerprint": "f4:16:1d:98:c6:4c:6c:5f:7b:6f:9b:22:6c:bd:76:e3:4b:0f:d7:d8:1c:34:33:c5:27:04:4c:fa:56:a6:e4:fd",
   "outputs": {
     "public/media/projects/hajacheck/cover.webp": "5b:c8:e8:bb:b2:2b:a9:7e:ac:6a:30:95:87:bb:1a:8f:bc:2b:d1:d3:38:1b:9e:dc:5e:35:49:8c:ec:f5:ba:b2",
     "public/media/projects/hajacheck/cover-960w.webp": "38:09:2b:c2:c3:77:5e:10:aa:20:37:59:72:ff:31:79:20:d3:c2:8f:9f:96:64:ca:52:39:1b:8a:67:2b:56:f4",
@@ -56,12 +56,12 @@
     "public/media/projects/bmi-calculator/cover-mobile.webp": "92:d7:35:71:55:a4:44:7f:19:e6:69:bb:fd:bc:99:3f:83:66:b1:c9:22:84:39:ea:4b:86:1d:d7:13:b9:9f:da",
     "public/media/projects/bmi-calculator/cover-mobile-480w.webp": "79:a1:bc:ce:44:42:ea:e0:12:cb:8d:30:7e:16:95:e7:70:36:32:59:bc:b8:a9:4d:d7:d8:09:bc:7a:c6:2e:71",
     "public/media/projects/bmi-calculator/cover-og.webp": "d4:5f:52:b4:a7:0c:23:64:c7:3d:be:92:9b:b4:e8:7c:61:f7:a4:c8:17:50:40:d4:e9:1a:96:36:86:96:a0:1c",
-    "public/media/projects/hajacheck/visuals/app-dashboard.webp": "1e:e8:83:7b:a3:dc:10:d3:d3:81:a1:a6:bd:d3:75:8b:53:88:0e:9e:dd:e2:3d:29:e3:c7:a6:e9:6b:69:df:68",
-    "public/media/projects/hajacheck/visuals/app-dashboard-960w.webp": "41:61:18:4c:26:11:04:ff:17:46:81:07:83:40:8a:9b:1c:f4:ed:fa:53:57:43:39:02:0e:76:72:0d:56:c5:2b",
-    "public/media/projects/hajacheck/visuals/app-dashboard-480w.webp": "4c:30:9a:0a:1d:db:67:da:a3:95:2d:6f:e1:64:2a:e7:27:25:b7:ad:b4:7d:0c:d6:ce:af:42:0c:05:d0:4d:d0",
     "public/media/projects/hajacheck/visuals/app-analysis-viewer.webp": "34:e4:e8:b1:a6:e7:4e:2e:dd:b5:52:d7:24:9e:e3:75:28:b5:a3:20:fd:e0:8f:f3:18:a6:22:ef:26:a1:31:a9",
     "public/media/projects/hajacheck/visuals/app-analysis-viewer-960w.webp": "09:85:ba:66:5a:0e:92:29:f3:c6:eb:22:c0:ea:bc:33:8d:2a:2b:b1:46:01:5c:9b:ca:42:b7:17:b1:bc:53:1f",
     "public/media/projects/hajacheck/visuals/app-analysis-viewer-480w.webp": "4e:34:04:ad:fd:7f:6d:aa:c5:b2:45:26:6a:af:ef:a9:15:a6:8c:6c:06:5e:e9:37:7d:f5:9b:94:e1:d3:a0:de",
+    "public/media/projects/hajacheck/visuals/app-dashboard.webp": "1e:e8:83:7b:a3:dc:10:d3:d3:81:a1:a6:bd:d3:75:8b:53:88:0e:9e:dd:e2:3d:29:e3:c7:a6:e9:6b:69:df:68",
+    "public/media/projects/hajacheck/visuals/app-dashboard-960w.webp": "41:61:18:4c:26:11:04:ff:17:46:81:07:83:40:8a:9b:1c:f4:ed:fa:53:57:43:39:02:0e:76:72:0d:56:c5:2b",
+    "public/media/projects/hajacheck/visuals/app-dashboard-480w.webp": "4c:30:9a:0a:1d:db:67:da:a3:95:2d:6f:e1:64:2a:e7:27:25:b7:ad:b4:7d:0c:d6:ce:af:42:0c:05:d0:4d:d0",
     "public/media/projects/hajacheck/visuals/app-defect-detail.webp": "3a:e5:c4:41:f0:dc:6c:b2:f9:15:67:c6:ec:77:5f:07:23:fd:6c:ff:0e:42:f0:f5:5a:dd:a7:a0:03:d1:46:4d",
     "public/media/projects/hajacheck/visuals/app-defect-detail-960w.webp": "3a:df:8f:98:33:2d:45:a7:50:3d:d5:e1:e0:f9:75:b7:26:cc:99:dc:d0:a7:70:bb:e0:9d:07:d6:d7:24:9e:74",
     "public/media/projects/hajacheck/visuals/app-defect-detail-480w.webp": "b7:d7:11:17:cd:5d:61:74:0f:20:f0:c4:91:a3:b3:fc:54:63:58:8f:0e:f0:5d:8c:34:5e:23:c7:ca:01:28:d5",
