@@ -28,11 +28,35 @@
 }
 
 @font-face {
-  font-family: "Polalise Sans";
+  font-family: "Noto Sans KR VF";
   font-style: normal;
-  font-display: optional;
-  font-weight: 45 920;
-  src: url("/fonts/polalise-sans/PolaliseSansVariable.woff2") format("woff2-variations");
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("/fonts/noto-sans-kr/NotoSansKR-VF.woff2") format("woff2-variations");
+}
+
+@font-face {
+  font-family: "Paperlogy";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url("/fonts/paperlogy/Paperlogy-700.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Paperlogy";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 800;
+  src: url("/fonts/paperlogy/Paperlogy-800.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Paperlogy";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 900;
+  src: url("/fonts/paperlogy/Paperlogy-900.woff2") format("woff2");
 }
 
 @font-face {
@@ -68,9 +92,19 @@
 html {
   background: var(--paper);
   color: var(--ink);
-  font-family: "Polalise Sans", "Apple SD Gothic Neo", sans-serif;
+  font-family: "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   scroll-behavior: smooth;
   text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.metric-item dd strong {
+  font-family: "Paperlogy", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
 }
 
 body {
@@ -181,7 +215,7 @@ button {
   border-radius: 50%;
   background: var(--accent);
   color: var(--accent-ink);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-weight: 700;
 }
 
@@ -275,7 +309,7 @@ button {
 .section-index,
 .detail-kicker,
 .fact-label {
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .72rem;
   font-weight: 600;
   letter-spacing: .075em;
@@ -310,7 +344,7 @@ button {
 .detail-title {
   margin: 0;
   font-size: clamp(2.55rem, 6vw, 6.2rem);
-  font-weight: 760;
+  font-weight: 800;
   letter-spacing: -.055em;
   line-height: .95;
   overflow-wrap: break-word;
@@ -349,7 +383,7 @@ button {
   max-width: 13ch;
   margin: 1.4rem 0 1.5rem;
   font-size: clamp(3.5rem, 6vw, 7.2rem);
-  font-weight: 790;
+  font-weight: 900;
   letter-spacing: -.075em;
   line-height: .88;
   overflow-wrap: break-word;
@@ -428,7 +462,7 @@ button {
   justify-content: space-between;
   margin: 0;
   color: var(--accent);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .72rem;
   font-weight: 700;
   letter-spacing: .08em;
@@ -454,7 +488,7 @@ button {
 .hero-evidence__scope dt,
 .hero-evidence__flow > p {
   color: var(--ink-soft);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .7rem;
   font-weight: 600;
   letter-spacing: .05em;
@@ -488,7 +522,7 @@ button {
 
 .hero-evidence__scope strong {
   color: var(--accent);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: clamp(1.6rem, 3vw, 2.5rem);
   line-height: .8;
 }
@@ -526,7 +560,7 @@ button {
   left: 0;
   color: var(--accent);
   content: "0" counter(flow);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .68rem;
 }
 
@@ -608,13 +642,13 @@ button {
   display: block;
   color: var(--accent);
   font-size: clamp(2.15rem, 5.2vw, 5rem);
-  font-weight: 790;
+  font-weight: 900;
   letter-spacing: -.06em;
   line-height: 1;
 }
 
 .metric-item span {
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   color: var(--ink-soft);
   font-size: .68rem;
   text-transform: uppercase;
@@ -741,7 +775,7 @@ button {
 
 .project-card__metric strong {
   color: var(--accent);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: clamp(1.4rem, 3vw, 2.4rem);
 }
 
@@ -752,7 +786,7 @@ button {
 
 .project-card__metric small {
   color: var(--accent);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .65rem;
   font-weight: 600;
   letter-spacing: .04em;
@@ -777,7 +811,7 @@ button {
   display: block;
   margin-bottom: .2rem;
   color: var(--accent);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .64rem;
   font-weight: 700;
   letter-spacing: .06em;
@@ -926,7 +960,7 @@ button {
 }
 
 .evidence-row dt {
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .9rem;
   font-weight: 650;
 }
@@ -970,7 +1004,7 @@ button {
   display: block;
   margin-bottom: 1.3rem;
   color: var(--accent);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .76rem;
 }
 
@@ -1015,7 +1049,7 @@ button {
 .contact-band a {
   justify-self: end;
   color: var(--paper);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: clamp(.78rem, 1.5vw, 1rem);
 }
 
@@ -1052,7 +1086,7 @@ button {
 
 .project-count strong {
   color: var(--accent);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: 3rem;
 }
 
@@ -1063,7 +1097,7 @@ button {
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--line);
   color: var(--ink-soft);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .75rem;
   font-weight: 600;
   margin: 0;
@@ -1226,7 +1260,7 @@ button {
 
 .metric-evidence strong {
   color: var(--accent);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: 1.35rem;
 }
 
@@ -1257,7 +1291,7 @@ button {
 
 .next-project span {
   color: var(--accent);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .75rem;
 }
 
@@ -1357,7 +1391,7 @@ button {
 .project-visual figcaption span {
   grid-row: 1 / span 2;
   color: var(--accent);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .7rem;
   font-weight: 700;
   letter-spacing: .06em;
@@ -1437,7 +1471,7 @@ button {
 .resume-section h2 {
   margin: 0;
   color: var(--accent);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .75rem;
   letter-spacing: .08em;
   text-transform: uppercase;

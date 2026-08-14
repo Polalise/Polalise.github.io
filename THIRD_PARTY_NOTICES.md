@@ -2,11 +2,17 @@
 
 This repository redistributes font software under the SIL Open Font License 1.1.
 
-## Polalise Sans
+## Paperlogy
 
-`Polalise Sans` is a character-subset derivative of Pretendard 1.3.9. The derivative uses a new family name, retains the original copyright metadata, and is distributed under the license reproduced below.
+Character-subset derivative of Paperlogy, glyph-trimmed to this site's copy and repackaged as WOFF2, distributed under the license reproduced below.
 
-Copyright (c) 2021, Kil Hyung-jin (https://github.com/orioncactus/pretendard), with Reserved Font Name Pretendard.
+Copyright (c) 2024, PT& (https://www.designptn.com), Paperlogy is a trademark of Lee Juim. Glyphs from Gmarket Sans & Montserrat.
+
+## Noto Sans KR VF
+
+Character-subset derivative of Noto Sans KR (variable), glyph-trimmed to this site's copy and repackaged as WOFF2, distributed under the license reproduced below.
+
+Copyright 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'. Hangul elements, letters & syllables by Sandoll Communications, Soo-young Jang & Joo-yeon Kang.
 
 ## IBM Plex Mono
 
