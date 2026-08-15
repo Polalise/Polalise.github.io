@@ -918,6 +918,14 @@ button {
   max-width: 20ch;
 }
 
+/* 이력서 페이지 개선 가이드 5절 - 경력 섹션이 더 빨리 보이도록 히어로 높이를 줄인다.
+   제목과 본문 크기는 그대로 두고 위아래 여백만 줄인다.
+   1440px 실측 484.6px 에서 415.8px 로 약 14% 줄어드는 값이다. */
+.resume-intro {
+  padding-top: clamp(4rem, 7.6vw, 7.5rem);
+  padding-bottom: clamp(3rem, 5.4vw, 5.5rem);
+}
+
 .projects-intro {
   padding-top: clamp(4.5rem, 9vw, 8rem);
   padding-bottom: clamp(3.5rem, 7vw, 6rem);
@@ -1270,9 +1278,34 @@ button {
   }
 }
 
+/* 이력서 페이지 개선 가이드 10절 - 1920px 에서 본문 폭이 다른 페이지보다 좁아 좌우 여백이
+   과해 보였다. 68rem 에서 약 12% 넓힌다. 문장 길이는 아래 max-width 로 따로 제한한다.
+   섹션들이 grid 자식으로 직접 들어오므로 --single 의 행 간격은 0 이어야 한다
+   (.resume-layout 의 gap 은 라벨/본문 2열용이라 여기서는 10rem 까지 벌어진다). */
 .resume-layout--single {
   grid-template-columns: minmax(0, 1fr);
-  max-width: 68rem;
+  gap: 0;
+  max-width: 76rem;
+}
+
+/* 가이드 28·29절 - 섹션 리듬용 구간. 배경이 바뀌는 구간은 경계선을 갖지 않는다.
+   .page-shell 의 세로 여백은 구간이 대신 갖는다. */
+.resume-band {
+  padding-block: clamp(2.5rem, 4vw, 3.5rem);
+}
+
+.resume-band > .page-shell {
+  padding-block: 0;
+}
+
+.resume-band--subtle {
+  background: var(--surface-subtle);
+}
+
+/* 구간의 첫 섹션은 구간 경계선과 겹치므로 자체 괘선을 갖지 않는다. */
+.resume-band > .page-shell > .resume-section:first-child {
+  padding-top: 0;
+  border-top: 0;
 }
 
 .resume-sidebar {
@@ -1293,20 +1326,25 @@ button {
   line-height: 1.6;
 }
 
+/* 가이드 34절 - 섹션 사이 리듬을 48~64px 로 잡는다. 2rem 고정은 넓은 화면에서 평평했다. */
 .resume-section {
   display: grid;
   grid-template-columns: 10rem 1fr;
   gap: 2rem;
-  padding: 2rem 0;
+  padding: clamp(2rem, 3vw, 2.75rem) 0;
   border-top: 1px solid var(--line);
 }
 
+/* 가이드 12·45절 - 섹션 라벨을 사이트 공통 .eyebrow 와 같은 크기·자간으로 맞춘다.
+   .75rem 은 이 페이지에서만 12px 로 다른 페이지의 12.5px 보다 작았다. */
 .resume-section h2 {
   margin: 0;
   color: var(--accent);
   font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
-  font-size: .75rem;
-  letter-spacing: .08em;
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .075em;
+  line-height: 1.5;
   text-transform: uppercase;
 }
 
@@ -1323,6 +1361,7 @@ button {
 
 .resume-entry p,
 .resume-entry li {
+  max-width: 44rem;
   color: var(--ink-soft);
   line-height: 1.7;
   overflow-wrap: break-word;
@@ -1332,6 +1371,177 @@ button {
 
 .resume-entry ul {
   padding-left: 1.1rem;
+}
+
+/* 가이드 16·17절 - 회사명과 역할/재직 기간을 분리한다. */
+.resume-entry__role {
+  margin: .5rem 0 0;
+  font-size: .92rem;
+  font-weight: 500;
+}
+
+/* 가이드 18절 - 실제 수치만 anchor 로 올린다. 카드로 빼지 않고 문장 안에 둔다.
+   accent 는 흰 배경 5.28:1 로 본문 크기에서도 AA 를 만족한다. */
+.resume-entry b {
+  color: var(--accent);
+  font-weight: 750;
+}
+
+/* 가이드 21~27절 : Compact Project Row.
+   카드가 아니라 얇은 괘선으로 구분하고, 프로젝트마다 대표 근거 한 줄을 같은 위치에 둔다. */
+.resume-work__row {
+  padding-block: clamp(1.4rem, 2.2vw, 1.9rem);
+  border-bottom: 1px solid var(--line);
+}
+
+.resume-work__row:first-child {
+  padding-top: 0;
+}
+
+.resume-work__row:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.resume-work__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0 1.5rem;
+}
+
+.resume-work__head h3 {
+  margin: 0;
+  font-size: clamp(1.2rem, 1.6vw, 1.38rem);
+  text-wrap: balance;
+  word-break: keep-all;
+}
+
+.resume-work__head h3 a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  text-decoration: none;
+  transition: color .2s ease;
+}
+
+.resume-work__head h3 a:hover {
+  color: var(--accent);
+}
+
+.resume-work__link {
+  margin-top: 0;
+  font-size: .88rem;
+}
+
+.resume-work__meta {
+  margin: -.35rem 0 0;
+  color: var(--ink-soft);
+  font-size: .85rem;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
+.resume-work__desc {
+  max-width: 44rem;
+  margin: .7rem 0 0;
+  color: var(--ink-soft);
+  font-size: .95rem;
+  line-height: 1.68;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+  word-break: keep-all;
+}
+
+/* 가이드 24·25절 - 근거는 프로젝트당 정확히 하나다. 지표는 값이 앞서고,
+   지표가 없는 프로젝트는 담당 범위를 같은 자리에 둔다. 숫자를 만들지 않는다. */
+.resume-work__proof {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 .55rem;
+  max-width: 44rem;
+  margin: .85rem 0 0;
+  word-break: keep-all;
+}
+
+.resume-work__proof strong {
+  color: var(--accent);
+  font-size: 1.05rem;
+  font-weight: 750;
+  letter-spacing: -.01em;
+}
+
+.resume-work__proof span {
+  font-size: .92rem;
+  font-weight: 600;
+}
+
+.resume-work__proof--scope {
+  display: block;
+}
+
+/* 라벨이 한글이라 섹션 라벨의 mono 대문자 자간을 쓰지 않는다.
+   "개 인  담 당  범 위" 처럼 글자가 흩어져 읽히지 않았다. */
+.resume-work__proof--scope span {
+  display: block;
+  color: var(--accent);
+  font-size: .82rem;
+  font-weight: 700;
+}
+
+.resume-work__proof--scope strong {
+  display: block;
+  margin-top: .25rem;
+  color: var(--ink);
+  font-size: .95rem;
+  font-weight: 650;
+  line-height: 1.6;
+}
+
+/* 가이드 31~33절 - chip 대신 번호와 분류로 위계를 만든다. */
+.resume-skills {
+  display: grid;
+  gap: clamp(1.35rem, 2.5vw, 1.75rem);
+}
+
+.resume-skill {
+  display: grid;
+  grid-template-columns: 2.25rem 1fr;
+  column-gap: 1rem;
+}
+
+.resume-skill__num {
+  grid-row: 1 / span 2;
+  padding-top: .2rem;
+  color: var(--accent);
+  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .075em;
+}
+
+.resume-skill h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  word-break: keep-all;
+}
+
+.resume-skill p {
+  max-width: 44rem;
+  margin: .35rem 0 0;
+  color: var(--ink-soft);
+  font-size: .9rem;
+  line-height: 1.7;
+  overflow-wrap: break-word;
+  word-break: keep-all;
+}
+
+/* 가이드 39·41절 - 히어로의 버튼 묶음을 반복하지 않는다. 문장과 텍스트 링크만 둔다. */
+.resume-cta .resume-entry h3 {
+  max-width: 32ch;
+  font-size: 1.2rem;
 }
 
 .site-footer {
@@ -2228,8 +2438,14 @@ button {
 @media print {
   .site-header,
   .site-footer,
-  .resume-actions {
+  .resume-actions,
+  /* 인쇄본에서는 PDF 로 넘어가라는 안내가 의미를 잃는다. */
+  .resume-cta {
     display: none;
+  }
+
+  .resume-band--subtle {
+    background: transparent;
   }
 
   body {

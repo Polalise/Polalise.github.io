@@ -4,75 +4,147 @@ import { getProjects } from "../../lib/projects";
 
 const projects = await getProjects();
 const selected = projects.slice(0, 4);
+
+// 이력서 페이지 개선 가이드 21~24절 : 프로젝트 목록을 Compact Project Row 로 바꾸고
+// 프로젝트마다 대표 근거를 정확히 하나만 보여준다.
+// 근거는 콘텐츠에서만 만든다. 개인 지표가 있으면 그 첫 항목을, 없으면 개인 담당 범위를 쓴다.
+// 규칙으로 고정해 팀 성과가 개인 근거로 올라오는 것을 막는다 (AI_ACTION 4.1 절).
+const workRows = selected.map((project) => {
+  const metric = project.data.metrics.find(({ scope }) => scope === "personal");
+  const team = project.data.ownership === "team";
+  const ownershipLabel = team
+    ? `팀 프로젝트${project.data.teamSize ? ` ${project.data.teamSize}명` : ""}`
+    : "개인 프로젝트";
+
+  return {
+    id: project.id,
+    title: project.data.displayTitle,
+    meta: [project.data.category, ownershipLabel, project.data.period].filter(Boolean).join(" · "),
+    summary: project.data.summary,
+    proof: metric
+      ? { kind: "metric" as const, value: metric.value, label: metric.label }
+      : { kind: "scope" as const, value: project.data.role ?? "", label: "개인 담당 범위" }
+  };
+});
 ---
 
 <BaseLayout
   title="이력서 | 유병현"
   description="AI 기능을 검증하고 웹 서비스 흐름으로 연결하는 풀스택 개발자 유병현의 공개 이력서입니다."
 >
-  <header class="page-shell page-intro">
+  <header class="page-shell page-intro resume-intro">
     <div data-reveal>
       <p class="eyebrow">Public resume</p>
       <h1><span>유병현</span> <span>AI 연동형 풀스택 개발자</span></h1>
     </div>
     <div data-reveal>
       <p>React와 Spring Boot 실무를 기반으로 AI 기능의 검증 기준을 세우고 화면, API, 데이터베이스까지 이어지는 제품 흐름을 구현합니다.</p>
+      {/* 가이드 7·8절 - 내려받기보다 내용을 확인하게 만드는 문구를 primary 로 둔다.
+          이메일과 GitHub 는 secondary outline 을 유지한다. */}
       <div class="resume-actions">
-        <a class="button" href="/resume/resume.pdf" download>PDF 내려받기</a>
+        <a class="button" href="/resume/resume.pdf" target="_blank" rel="noreferrer">PDF 이력서 보기 <span aria-hidden="true">→</span></a>
         <a class="button button--ghost" href="mailto:qudgus182@naver.com">이메일</a>
         <a class="button button--ghost" href="https://github.com/Polalise" target="_blank" rel="noreferrer">GitHub</a>
       </div>
     </div>
   </header>
 
-  <section class="section" aria-label="공개 이력서 내용">
+  <section class="section resume-band" aria-label="프로필과 경력">
     <div class="page-shell resume-layout resume-layout--single">
-      <div>
-        <section class="resume-section" data-reveal>
-          <h2>Profile</h2>
-          <div class="resume-entry">
-            <h3>구현과 검증을 하나의 개발 흐름으로 봅니다.</h3>
-            <p>웹 개발 실무 1년 4개월 동안 반복 업무 자동화와 조회 성능 개선을 경험했습니다. 이후 LLM 서비스 계약, 누수 없는 모델 평가, 비교 실험을 프로젝트로 확장했습니다.</p>
-          </div>
-        </section>
+      <section class="resume-section" data-reveal>
+        <h2>Profile</h2>
+        <div class="resume-entry">
+          <h3>구현과 검증을 하나의 개발 흐름으로 봅니다.</h3>
+          <p>웹 개발 실무 1년 4개월 동안 반복 업무 자동화와 조회 성능 개선을 경험했습니다. 이후 LLM 서비스 계약, 누수 없는 모델 평가, 비교 실험을 프로젝트로 확장했습니다.</p>
+        </div>
+      </section>
 
-        <section class="resume-section" id="experience" data-reveal>
-          <h2>Experience</h2>
-          <div class="resume-entry">
-            <h3>LKSYS · 웹 개발</h3>
-            <p>실무 1년 4개월</p>
-            <ul>
-              <li>반복되는 인증 업무를 자동화해 건당 30분 이상 걸리던 작업 시간을 줄였습니다.</li>
-              <li>AVAS 조회 흐름을 개선해 응답 시간을 약 2.0초에서 1.6초로 단축했습니다.</li>
-              <li>React 기반 화면과 Spring Boot 기반 서버를 연결하는 업무를 수행했습니다.</li>
-            </ul>
-          </div>
-        </section>
+      {/* 가이드 15~20절 - KPI 카드를 만들지 않고 문장 안의 실제 수치만 visual anchor 로 올린다.
+          수치는 홈 지표와 같은 값을 쓴다 (1년 4개월 / 30분 이상 / 약 2.0초에서 1.6초). */}
+      <section class="resume-section" id="experience" data-reveal>
+        <h2>Experience</h2>
+        <div class="resume-entry">
+          <h3>LKSYS</h3>
+          <p class="resume-entry__role">웹 개발 · 실무 <b>1년 4개월</b></p>
+          <ul>
+            <li>반복되는 인증 업무를 자동화해 건당 <b>30분 이상</b> 걸리던 작업 시간을 줄였습니다.</li>
+            <li>AVAS 조회 흐름을 개선해 응답 시간을 <b>약 2.0초에서 1.6초</b>로 약 20% 단축했습니다.</li>
+            <li>React 기반 화면과 Spring Boot 기반 서버를 연결하는 업무를 수행했습니다.</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </section>
 
-        <section class="resume-section" data-reveal>
-          <h2>Selected work</h2>
-          <div>
-            {selected.map((project) => (
-              <article class="resume-entry">
-                <h3><a href={`/projects/${project.id}/`}>{project.data.displayTitle}</a></h3>
-                <p>{project.data.summary}</p>
-              </article>
-            ))}
-          </div>
-        </section>
+  {/* 가이드 28·29절 - 흰 배경만 이어지지 않도록 이 섹션만 옅은 면으로 분리한다.
+      프로젝트별 카드가 아니라 구간 전체 배경이다. */}
+  <section class="resume-band resume-band--subtle" aria-label="대표 프로젝트">
+    <div class="page-shell resume-layout resume-layout--single">
+      <section class="resume-section" data-reveal>
+        <h2>Selected work</h2>
+        <div class="resume-work">
+          {workRows.map((row) => (
+            <article class="resume-work__row">
+              <div class="resume-work__head">
+                <h3><a href={`/projects/${row.id}/`}>{row.title}</a></h3>
+                <a class="text-link resume-work__link" href={`/projects/${row.id}/`} aria-label={`${row.title} 사례 보기`}>
+                  사례 보기 <span aria-hidden="true">→</span>
+                </a>
+              </div>
+              <p class="resume-work__meta">{row.meta}</p>
+              <p class="resume-work__desc">{row.summary}</p>
+              {row.proof.kind === "metric" ? (
+                <p class="resume-work__proof">
+                  <strong>{row.proof.value}</strong>
+                  <span>{row.proof.label}</span>
+                </p>
+              ) : (
+                <p class="resume-work__proof resume-work__proof--scope">
+                  <span>{row.proof.label}</span>
+                  <strong>{row.proof.value}</strong>
+                </p>
+              )}
+            </article>
+          ))}
+        </div>
+      </section>
+    </div>
+  </section>
 
-        <section class="resume-section" data-reveal>
-          <h2>Skills</h2>
-          <div class="resume-entry">
+  <section class="resume-band" aria-label="기술과 이력서 문서">
+    <div class="page-shell resume-layout resume-layout--single">
+      {/* 가이드 31~33절 - 기술을 chip 으로 바꾸지 않고 분류와 목록의 위계만 세운다. */}
+      <section class="resume-section" data-reveal>
+        <h2>Skills</h2>
+        <div class="resume-skills">
+          <div class="resume-skill">
+            <span class="resume-skill__num" aria-hidden="true">01</span>
             <h3>제품 구현</h3>
-            <p>React, TypeScript, Spring Boot, Java, MyBatis, SQL, Flyway</p>
-            <h3>AI와 데이터</h3>
-            <p>Python, LLM, RAG, 머신러닝 평가, 데이터 분할, 오류 분석</p>
-            <h3>협업과 품질</h3>
-            <p>REST API 계약, GitHub 협업, 마이그레이션 관리, 테스트 자동화</p>
+            <p>React · TypeScript · Spring Boot · Java · MyBatis · SQL · Flyway</p>
           </div>
-        </section>
-      </div>
+          <div class="resume-skill">
+            <span class="resume-skill__num" aria-hidden="true">02</span>
+            <h3>AI와 데이터</h3>
+            <p>Python · LLM · RAG · 머신러닝 평가 · 데이터 분할 · 오류 분석</p>
+          </div>
+          <div class="resume-skill">
+            <span class="resume-skill__num" aria-hidden="true">03</span>
+            <h3>협업과 품질</h3>
+            <p>REST API 계약 · GitHub 협업 · 마이그레이션 관리 · 테스트 자동화</p>
+          </div>
+        </div>
+      </section>
+
+      {/* 가이드 37~41절 - 페이지를 끝까지 읽은 사용자가 바로 문서로 넘어가게 한다.
+          히어로의 버튼 묶음을 반복하지 않고 문장 하나와 텍스트 링크만 둔다. */}
+      <section class="resume-section resume-cta" data-reveal>
+        <h2>PDF resume</h2>
+        <div class="resume-entry">
+          <h3>더 자세한 경력과 프로젝트 역할은 PDF 이력서에서 확인할 수 있습니다.</h3>
+          <p>이 페이지는 핵심 경력과 대표 근거만 요약합니다. 담당 업무 범위와 기간은 문서에 정리했습니다.</p>
+          <a class="text-link" href="/resume/resume.pdf" target="_blank" rel="noreferrer">PDF 이력서 보기 <span aria-hidden="true">→</span></a>
+        </div>
+      </section>
     </div>
   </section>
 </BaseLayout>

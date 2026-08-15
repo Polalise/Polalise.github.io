@@ -433,6 +433,26 @@ test.describe("responsive themes and accessibility", () => {
     await expect(page.locator('meta[name="twitter:image:alt"]')).toHaveAttribute("content", /\S+/);
   });
 
+  // 이력서 페이지 개선 가이드 22~24·37절. 프로젝트마다 대표 근거를 정확히 하나만 두고,
+  // 페이지 마지막이 footer 가 아니라 PDF 안내로 끝나는 구조를 회귀로 고정한다.
+  test("resume preview keeps one proof and one case link for each selected project", async ({ page }) => {
+    await page.goto("/resume/", { waitUntil: "networkidle" });
+    const rows = page.locator(".resume-work__row");
+    await expect(rows).toHaveCount(4);
+
+    for (let index = 0; index < 4; index += 1) {
+      const row = rows.nth(index);
+      await expect(row.locator(".resume-work__proof")).toHaveCount(1);
+      await expect(row.locator("a.resume-work__link")).toHaveCount(1);
+      expect((await row.locator(".resume-work__proof").innerText()).trim().length).toBeGreaterThan(1);
+    }
+
+    // 근거 없는 프로젝트에 숫자를 만들지 않는다. PlusHome 은 담당 범위를 근거로 쓴다.
+    await expect(page.locator(".resume-work__proof--scope")).toHaveCount(1);
+    await expect(page.locator('main .resume-cta a[href="/resume/resume.pdf"]')).toHaveCount(1);
+    await expect(page.locator("main > section").last()).toHaveClass(/resume-band/);
+  });
+
   test("resume print keeps content and removes navigation actions", async ({ page }) => {
     await page.goto("/resume/", { waitUntil: "networkidle" });
     await page.locator("#experience").scrollIntoViewIfNeeded();
