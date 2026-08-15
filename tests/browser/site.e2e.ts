@@ -206,7 +206,10 @@ test.describe("responsive themes and accessibility", () => {
   test("home keeps the Design 02 narrative, link budget, and bounded mobile length", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/", { waitUntil: "networkidle" });
-    await expect(page.locator("main > section")).toHaveCount(6);
+    // 6개에서 7개로 늘었다. 개선 가이드 16절의 대형 문장 구간을 사례 연구와 Selected Works
+    // 사이에 넣었다. 이 구간은 제목 대신 aria-label 로 이름을 갖는다.
+    await expect(page.locator("main > section")).toHaveCount(7);
+    await expect(page.locator('main > section[aria-label="설계 관점"]')).toHaveCount(1);
     for (const id of ["work", "featured", "about", "contact"]) {
       await expect(page.locator(`main section#${id}`)).toHaveCount(1);
     }
