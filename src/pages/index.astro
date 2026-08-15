@@ -18,6 +18,10 @@ const otherProjects = projects.filter(
   (project) => !["hajacheck", "ml-economics-answers", "machine-learning-oil"].includes(project.id)
 );
 
+// 헤드라인이 말하는 화면 -> 백엔드 -> DB -> AI 순서를 그대로 따른다.
+// 전부 프로젝트 콘텐츠의 technologies 에 실제로 있는 값만 쓴다. 추정값을 넣지 않는다.
+const heroSkills = ["React", "Spring Boot", "PostgreSQL", "FastAPI", "LLM · RAG"];
+
 const impactMetrics = [
   { value: "1년 4개월", label: "웹 개발 실무", scope: "personal" as const, evidence: "공개 이력서 경력 기간" },
   { value: "30분 이상", label: "인증 업무 건당 단축", scope: "personal" as const, evidence: "기존 수작업 대비 업무 기록" },
@@ -113,6 +117,9 @@ const principles = [
         <p class="d2-hero__lead">
           프론트엔드와 API, 데이터베이스 스키마와 AI 연동까지 같은 기준으로 설계하고 검증합니다.
         </p>
+        <ul class="d2-tags" aria-label="주로 사용하는 기술">
+          {heroSkills.map((skill) => <li>{skill}</li>)}
+        </ul>
         <div class="d2-hero__actions">
           <a class="button" href="#work">프로젝트 보기 <span aria-hidden="true">↓</span></a>
           <a class="button button--ghost" href="/resume/">이력서 <span aria-hidden="true">→</span></a>
