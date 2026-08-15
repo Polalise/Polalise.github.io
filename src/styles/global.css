@@ -299,9 +299,11 @@ button {
 .project-meta,
 .section-index,
 .detail-kicker,
+/* 가독성 가이드 4절 - eyebrow 와 micro label 은 12~13px 을 하한으로 둔다.
+   11.5px 은 실제 데스크톱에서 스캔할 때 읽히지 않았다. */
 .fact-label {
   font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
-  font-size: .72rem;
+  font-size: .78rem;
   font-weight: 600;
   letter-spacing: .075em;
   line-height: 1.5;
@@ -492,7 +494,7 @@ button {
 .metric-item span {
   font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   color: var(--ink-soft);
-  font-size: .68rem;
+  font-size: .75rem;
   text-transform: uppercase;
 }
 
@@ -501,8 +503,8 @@ button {
   max-width: 20rem;
   margin-top: .55rem;
   color: var(--ink-soft);
-  font-size: .78rem;
-  line-height: 1.45;
+  font-size: .82rem;
+  line-height: 1.55;
   overflow-wrap: break-word;
   text-wrap: pretty;
   word-break: keep-all;
@@ -634,7 +636,7 @@ button {
 .project-card__metric small {
   color: var(--accent);
   font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
-  font-size: .65rem;
+  font-size: .75rem;
   font-weight: 600;
   letter-spacing: .04em;
   text-transform: uppercase;
@@ -650,8 +652,8 @@ button {
   padding-left: .8rem;
   border-left: 2px solid var(--accent);
   color: var(--ink-soft);
-  font-size: .76rem;
-  line-height: 1.55;
+  font-size: .8rem;
+  line-height: 1.6;
 }
 
 .project-card__evidence span {
@@ -659,7 +661,7 @@ button {
   margin-bottom: .2rem;
   color: var(--accent);
   font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
-  font-size: .64rem;
+  font-size: .72rem;
   font-weight: 700;
   letter-spacing: .06em;
   text-transform: uppercase;
@@ -904,7 +906,7 @@ button {
 
 .detail-facts dt {
   color: var(--ink-soft);
-  font-size: .75rem;
+  font-size: .8rem;
 }
 
 .detail-facts dd {
@@ -1057,7 +1059,7 @@ button {
 .next-project span {
   color: var(--accent);
   font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
-  font-size: .75rem;
+  font-size: .8rem;
 }
 
 .next-project strong {
@@ -1157,7 +1159,7 @@ button {
   grid-row: 1 / span 2;
   color: var(--accent);
   font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
-  font-size: .7rem;
+  font-size: .74rem;
   font-weight: 700;
   letter-spacing: .06em;
   text-transform: uppercase;
@@ -1410,7 +1412,7 @@ button {
   background: var(--accent-soft);
   color: var(--accent);
   font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
-  font-size: .64rem;
+  font-size: .72rem;
   font-weight: 700;
   letter-spacing: .07em;
   text-transform: uppercase;
@@ -1526,8 +1528,8 @@ button {
   display: block;
   margin-top: .2rem;
   color: var(--ink-soft);
-  font-size: .76rem;
-  line-height: 1.45;
+  font-size: .8rem;
+  line-height: 1.55;
   word-break: keep-all;
 }
 
@@ -1584,7 +1586,7 @@ button {
   margin: 0;
   color: var(--accent);
   font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
-  font-size: .7rem;
+  font-size: .74rem;
   font-weight: 700;
   letter-spacing: .07em;
   text-transform: uppercase;
@@ -1625,7 +1627,7 @@ button {
 .d2-panel__facts dt {
   color: var(--ink-soft);
   font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
-  font-size: .68rem;
+  font-size: .72rem;
   font-weight: 700;
   letter-spacing: .06em;
   text-transform: uppercase;
@@ -1654,7 +1656,7 @@ button {
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--ink-soft);
-  font-size: .75rem;
+  font-size: .78rem;
 }
 
 .d2-panel__list {
@@ -1763,7 +1765,7 @@ button {
   margin: 0 0 .5rem;
   color: var(--accent);
   font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
-  font-size: .7rem;
+  font-size: .74rem;
   font-weight: 700;
   letter-spacing: .07em;
   text-transform: uppercase;
@@ -1861,7 +1863,7 @@ button {
   border-radius: 999px;
   background: var(--accent-soft);
   color: var(--accent);
-  font-size: .74rem;
+  font-size: .8rem;
   font-weight: 700;
 }
 

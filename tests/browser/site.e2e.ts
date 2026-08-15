@@ -219,7 +219,10 @@ test.describe("responsive themes and accessibility", () => {
     }
     await expect(page.locator('main a[href="/projects/"]')).toHaveCount(1);
     const height = await page.evaluate(() => document.documentElement.scrollHeight);
-    expect(height).toBeLessThanOrEqual(7_800);
+    // 2026-08-15 가독성 개선으로 소형 텍스트를 키우면서 7,645px 에서 7,725px 로 늘었다.
+    // 이전 상한 7,800px 은 여유가 1% 뿐이라 회귀 기준으로 쓰기에 너무 예민하다.
+    // 실측 7,725px 에 약 5% 를 더한 값으로 다시 잡는다.
+    expect(height).toBeLessThanOrEqual(8_100);
   });
 
   test("project index exposes exactly one detail link per project", async ({ page }) => {
