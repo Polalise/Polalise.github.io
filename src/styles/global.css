@@ -7,6 +7,9 @@
   --paper: #ffffff;
   --paper-strong: #f6f7f9;
   --surface: #fafbfc;
+  /* 섹션 배경 리듬용. 대비를 아주 약하게 둬서 섹션이 상자처럼 보이지 않게 한다. */
+  --surface-subtle: #f7f9fc;
+  --surface-accent: #f5f9ff;
   --ink: #111318;
   --ink-soft: #5f6470;
   --line: #e4e7ec;
@@ -29,6 +32,9 @@
   --paper: #0f1115;
   --paper-strong: #171a20;
   --surface: #14171d;
+  /* 개선 가이드는 라이트 기준만 제시한다. 다크는 같은 의도(아주 약한 대비)로 별도 지정한다. */
+  --surface-subtle: #14171d;
+  --surface-accent: #131b2b;
   --ink: #edeff3;
   --ink-soft: #a3a9b7;
   --line: #262b34;
@@ -1396,8 +1402,27 @@ button {
   text-transform: uppercase;
 }
 
+/* 가이드 5절 - 섹션 사이가 끊겨 보이지 않게 112~128px 범위로 좁힌다.
+   이전에는 위아래 각 96px 이라 섹션 간 192px 이었다. */
 .d2-section {
-  padding-block: clamp(3.5rem, 6vw, 6rem);
+  padding-block: clamp(2.75rem, 4vw, 4rem);
+}
+
+/* 가이드 9절 - 흰 배경만 이어지지 않도록 아주 옅은 배경으로 리듬을 만든다.
+   배경이 바뀌는 구간에서는 위쪽 경계선을 없앤다. 선과 면이 겹치면 섹션이 상자처럼 보인다. */
+.d2-section--subtle {
+  background: var(--surface-subtle);
+}
+
+.d2-section--accent {
+  background: var(--surface-accent);
+}
+
+.d2-section--subtle,
+.d2-section--accent,
+.d2-section--subtle + .d2-section,
+.d2-section--accent + .d2-section {
+  border-top-color: transparent;
 }
 
 /* .page-shell 자체의 세로 여백이 섹션 여백과 겹치지 않게 한다. */
@@ -1435,9 +1460,11 @@ button {
   align-items: start;
 }
 
+/* 옅은 배경 위에서 목록과 패널이 카드로 읽히도록 흰 면을 유지한다. */
 .d2-explorer__index {
   border: 1px solid var(--line);
   border-radius: var(--radius-card);
+  background: var(--paper);
   overflow: hidden;
 }
 
@@ -1503,8 +1530,11 @@ button {
   transform: translateX(.25rem);
 }
 
+/* 가이드 10절 - 선택 상태에 배경만이 아니라 좌측 인디케이터도 함께 준다.
+   border-left 대신 inset box-shadow 를 써서 선택할 때 내용이 3px 밀리지 않게 한다. */
 .d2-explorer__item[aria-selected="true"] {
   background: var(--accent-soft);
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 
 .d2-explorer__item[aria-selected="true"] .d2-explorer__num,
@@ -1771,7 +1801,7 @@ button {
   padding: clamp(1.75rem, 3.5vw, 3rem);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--surface);
+  background: var(--paper);
 }
 
 .d2-contact__pill {
