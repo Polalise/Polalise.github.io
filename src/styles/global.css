@@ -1286,18 +1286,22 @@ button {
    기존 .hero* 는 404 페이지가 계속 사용하므로 지우지 않고 d2- 네임스페이스로 분리했다.
    --------------------------------------------------------------------------- */
 
+/* 헤드라인 첫 줄이 14자라 5:7 로는 컬럼이 530px 밖에 안 돼 "AI까지"가 고아 줄로 떨어졌다.
+   6:6 으로 넓혀 첫 줄이 한 줄에 들어가게 한다. */
 .d2-hero__inner {
   display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
   column-gap: clamp(2rem, 5vw, 4.5rem);
   row-gap: clamp(2.5rem, 5vw, 4rem);
   align-items: center;
   padding-block: clamp(3.5rem, 7vw, 6.5rem) clamp(3rem, 5vw, 4.5rem);
 }
 
+/* 첫 줄 "화면부터 DB와 AI까지" 는 약 10.2em 폭이다. 1024px 이상에서 컬럼이 471~672px 이므로
+   최대 3.9rem(62px) 이면 어느 폭에서도 한 줄에 들어간다. 명세 10절 범위(60~94px) 안이다. */
 .d2-hero__copy h1 {
   margin: 1.1rem 0 1.35rem;
-  font-size: clamp(2.9rem, 5.4vw, 5.5rem);
+  font-size: clamp(2.5rem, 4.3vw, 3.9rem);
   font-weight: 800;
   letter-spacing: -.045em;
   line-height: 1.06;
@@ -1306,6 +1310,18 @@ button {
 
 .d2-dot {
   color: var(--accent);
+}
+
+/* 좁은 화면에서는 자연스럽게 흘려보내고, 48rem 이상에서만 의도한 두 줄로 끊는다.
+   br 을 고정으로 넣으면 모바일에서 어색한 위치에 줄이 끊긴다. */
+.d2-hero__copy h1 .d2-line {
+  display: inline;
+}
+
+@media (min-width: 48rem) {
+  .d2-hero__copy h1 .d2-line {
+    display: block;
+  }
 }
 
 .d2-hero__lead {
