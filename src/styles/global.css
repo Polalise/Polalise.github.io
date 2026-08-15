@@ -603,23 +603,28 @@ button {
   word-break: keep-all;
 }
 
-.project-card__body > p:not(.project-card__metric) {
+/* 근거 블록을 함께 잡지 않게 명시적으로 제외한다. 이 선택자는 명시도가
+   `.project-card__body > .project-card__evidence` 보다 높아서, 제외하지 않으면
+   아래 근거 블록의 font-size / line-height / margin-top / max-width 가 전부 무시된다. */
+.project-card__body > p:not(.project-card__metric):not(.project-card__evidence) {
   max-width: 37rem;
   margin: 0;
   color: var(--ink-soft);
   font-size: 1rem;
-  line-height: 1.65;
+  line-height: 1.72;
   overflow-wrap: break-word;
   text-wrap: pretty;
   word-break: keep-all;
 }
 
+/* 3영역 개선 가이드 3.13 절 - 설명과 지표가 한 덩어리로 붙어 보였다.
+   정보 그룹은 글자 크기가 아니라 간격으로 나눈다. */
 .project-card__metric {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   gap: .65rem;
-  margin: 1.1rem 0 0;
+  margin: 1.75rem 0 0;
 }
 
 .project-card__metric strong {
@@ -631,14 +636,16 @@ button {
 .project-card__metric span {
   color: var(--ink-soft);
   font-size: .78rem;
+  line-height: 1.45;
 }
 
 .project-card__metric small {
   color: var(--accent);
   font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
-  font-size: .75rem;
+  font-size: .78rem;
   font-weight: 600;
   letter-spacing: .04em;
+  line-height: 1.45;
   text-transform: uppercase;
 }
 
@@ -646,25 +653,39 @@ button {
   content: "";
 }
 
+/* 3영역 개선 가이드 3.17~3.19 절 - 근거는 지표를 뒷받침하는 보조 정보다.
+   위 선택자 충돌로 지금까지 설명문과 똑같은 16px 로 렌더링돼 위계가 없었다.
+   가이드 범위(13~14px) 의 위쪽을 써서 설명문보다 한 단계 낮추되 작아지지 않게 둔다. */
 .project-card__body > .project-card__evidence {
   max-width: 40rem;
   margin-top: 1rem;
   padding-left: .8rem;
   border-left: 2px solid var(--accent);
   color: var(--ink-soft);
-  font-size: .8rem;
-  line-height: 1.6;
+  font-size: .88rem;
+  line-height: 1.65;
+  /* 근거 문자열에는 공백 없는 긴 파일 경로가 들어간다.
+     공통 문단 규칙에서 제외했으므로 줄바꿈 속성을 여기서 다시 명시한다.
+     빠뜨리면 좁은 열에서 경로가 통째로 그리드를 밀어 가로 스크롤이 생긴다. */
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+  word-break: keep-all;
 }
 
 .project-card__evidence span {
   display: block;
-  margin-bottom: .2rem;
+  margin-bottom: .25rem;
   color: var(--accent);
   font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
-  font-size: .72rem;
+  font-size: .74rem;
   font-weight: 700;
   letter-spacing: .06em;
+  line-height: 1.4;
   text-transform: uppercase;
+}
+
+.project-card__body > .text-link {
+  margin-top: 1.5rem;
 }
 
 .text-link {
@@ -1659,32 +1680,40 @@ button {
   font-size: .78rem;
 }
 
+/* 3영역 개선 가이드 1.8~1.12 절 - Other Works 패널의 오른쪽 열.
+   미리보기 이미지가 없는 패널이라 오른쪽 절반이 비어 있었다. 카드 폭을 줄이는 대신
+   패널 그리드의 두 번째 칸을 프로젝트 색인이 채운다.
+   카드 안에 카드를 만들지 않고 이름 + 한 줄 메타 + 얇은 구분선만 쓴다. */
+.d2-panel__index {
+  min-width: 0;
+}
+
 .d2-panel__list {
-  margin: 1.3rem 0 0;
+  margin: 0;
   padding: 0;
   border-top: 1px solid var(--line);
   list-style: none;
 }
 
 .d2-panel__list li {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .3rem .9rem;
-  align-items: baseline;
-  justify-content: space-between;
-  padding: .62rem 0;
+  padding: .72rem 0;
   border-bottom: 1px solid var(--line);
 }
 
 .d2-panel__list strong {
-  font-size: .9rem;
+  display: block;
+  font-size: .94rem;
   font-weight: 650;
+  line-height: 1.4;
   word-break: keep-all;
 }
 
 .d2-panel__list span {
+  display: block;
+  margin-top: .15rem;
   color: var(--ink-soft);
-  font-size: .75rem;
+  font-size: .8rem;
+  line-height: 1.45;
   word-break: keep-all;
 }
 
@@ -1804,12 +1833,16 @@ button {
   background: var(--paper);
 }
 
+/* 3영역 개선 가이드 2.4~2.9 절 - 카드 크기와 테두리는 그대로 두고
+   번호 / 제목 / 본문의 크기와 행간만 올려 "덜 채운 카드" 인상을 없앤다.
+   번호는 순서를 알리는 보조 요소이므로 제목보다 강해지지 않게 둔다. */
 .d2-principle__num {
   display: block;
   color: var(--ink-soft);
   font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
-  font-size: .72rem;
+  font-size: .88rem;
   font-weight: 700;
+  line-height: 1;
 }
 
 .d2-principle__icon {
@@ -1829,17 +1862,18 @@ button {
 }
 
 .d2-principle h3 {
-  margin: 0 0 .6rem;
-  font-size: 1.1rem;
-  letter-spacing: -.025em;
+  margin: 0 0 .7rem;
+  font-size: 1.2rem;
+  letter-spacing: -.015em;
+  line-height: 1.35;
   word-break: keep-all;
 }
 
 .d2-principle p {
   margin: 0;
   color: var(--ink-soft);
-  font-size: .9rem;
-  line-height: 1.68;
+  font-size: .94rem;
+  line-height: 1.72;
   text-wrap: pretty;
   word-break: keep-all;
 }
@@ -1893,6 +1927,12 @@ button {
   .d2-case,
   .d2-contact {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* 1열로 접히면 프로젝트 색인이 왼쪽 요약 바로 아래에 붙는다.
+     가이드 1.16 절대로 요약 -> 메타데이터 -> 색인 순서를 유지하되 사이를 벌려 준다. */
+  .d2-panel__index {
+    margin-top: 1.6rem;
   }
 
   .d2-principles {

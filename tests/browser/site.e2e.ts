@@ -219,10 +219,10 @@ test.describe("responsive themes and accessibility", () => {
     }
     await expect(page.locator('main a[href="/projects/"]')).toHaveCount(1);
     const height = await page.evaluate(() => document.documentElement.scrollHeight);
-    // 2026-08-15 가독성 개선으로 소형 텍스트를 키우면서 7,645px 에서 7,725px 로 늘었다.
-    // 이전 상한 7,800px 은 여유가 1% 뿐이라 회귀 기준으로 쓰기에 너무 예민하다.
-    // 실측 7,725px 에 약 5% 를 더한 값으로 다시 잡는다.
-    expect(height).toBeLessThanOrEqual(8_100);
+    // 2026-08-15 3영역 개선(How I Work 본문 2문장 보강, Selected Works 간격 재정리)으로
+    // 7,725px 에서 8,011px 로 늘었다. 이전 상한 8,100px 은 여유가 1% 뿐이라 다시 예민해졌다.
+    // 실측 8,011px 에 약 5% 를 더한 값으로 잡는다.
+    expect(height).toBeLessThanOrEqual(8_400);
   });
 
   test("project index exposes exactly one detail link per project", async ({ page }) => {
@@ -319,6 +319,25 @@ test.describe("responsive themes and accessibility", () => {
 
     // 선택되지 않은 탭은 Tab 순서에서 빠진다
     expect(await tabs.evaluateAll((nodes) => nodes.filter((node) => (node as HTMLElement).tabIndex === 0).length)).toBe(1);
+
+    // 3영역 개선 가이드 1.6~1.12 절. 04 번만 미리보기 이미지 대신 프로젝트 색인을 갖는다.
+    // 오른쪽 절반이 다시 비는 회귀를 막기 위해 두 열이 실제로 나뉘었는지 좌표로 확인한다.
+    await page.setViewportSize({ width: 1440, height: 950 });
+    await tabs.nth(3).click();
+    const collection = page.locator("#explorer-panel-other-works");
+    await expect(collection.locator(".d2-panel__index .d2-panel__list li")).toHaveCount(6);
+    await expect(collection.locator("img")).toHaveCount(0);
+    const columns = await collection.evaluate((panel) => {
+      const body = panel.querySelector(".d2-panel__body")!.getBoundingClientRect();
+      const index = panel.querySelector(".d2-panel__index")!.getBoundingClientRect();
+      return {
+        bodyRight: body.right,
+        indexLeft: index.left,
+        indexShare: index.width / panel.getBoundingClientRect().width
+      };
+    });
+    expect(columns.indexLeft).toBeGreaterThan(columns.bodyRight);
+    expect(columns.indexShare).toBeGreaterThan(0.45);
   });
 
   test("detail evidence galleries expose responsive images and scope labels", async ({ page }) => {

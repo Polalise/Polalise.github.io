@@ -101,10 +101,27 @@ const heroEntry = explorerEntries[0];
 const caseVisual = hajaCheck?.data.visuals.find(({ id }) => id === "app-analysis-viewer");
 const caseMedia = caseVisual ? projectVisualMedia("hajacheck", caseVisual.id) : undefined;
 
+// 3영역 개선 가이드 2.8 절. 카드 면적 대비 내용이 적어 비어 보였다. 그래픽을 넣는 대신
+// 각 원칙에 "무엇을 하는가 + 실제로 어떻게 적용하는가" 한 문장씩을 더한다.
 const principles = [
-  { index: "01", title: "누수를 먼저 의심합니다", body: "좋은 점수보다 데이터 분할과 실제 입력 조건을 먼저 확인합니다.", icon: "search" },
-  { index: "02", title: "LLM의 책임을 제한합니다", body: "의도는 모델이 구조화하고, 권한과 정합성은 서버가 보장하게 나눕니다.", icon: "shield" },
-  { index: "03", title: "계약을 코드로 남깁니다", body: "화면과 API, 데이터베이스의 변경 경계를 명확히 관리합니다.", icon: "code" }
+  {
+    index: "01",
+    title: "누수를 먼저 의심합니다",
+    body: "좋은 점수보다 데이터 분할과 실제 입력 조건을 먼저 확인합니다. 학습 데이터와 운영 환경의 차이에서 오류가 시작된다고 봅니다.",
+    icon: "search"
+  },
+  {
+    index: "02",
+    title: "LLM의 책임을 제한합니다",
+    body: "의도는 모델이 구조화하고, 권한과 정합성은 서버가 보장하게 나눕니다. 모델은 제안하고, 시스템은 검증하고 기록하도록 설계합니다.",
+    icon: "shield"
+  },
+  {
+    index: "03",
+    title: "계약을 코드로 남깁니다",
+    body: "화면과 API, 데이터베이스의 변경 경계를 명확히 관리합니다. 기능보다 먼저 인터페이스와 책임 범위를 분리해 유지보수를 쉽게 만듭니다.",
+    icon: "code"
+  }
 ];
 ---
 
@@ -151,8 +168,8 @@ const principles = [
     <div class="page-shell">
       <div class="d2-section__head" data-reveal>
         <p class="section-index">01 / Selected projects</p>
-        <h2 id="work-title">프로젝트를 골라 바로 확인하세요</h2>
-        <p>각 항목은 실제 화면과 담당 범위, 검증 근거를 함께 보여줍니다.</p>
+        <h2 id="work-title">무엇을 맡고, 어떻게 해결했는지 보여드립니다</h2>
+        <p>실제 화면, 담당 범위, 검증 근거를 프로젝트별로 정리했습니다.</p>
       </div>
 
       <div class="d2-explorer">
@@ -206,18 +223,23 @@ const principles = [
                   </ul>
                 )}
 
-                {entry.list && (
-                  <ul class="d2-panel__list">
-                    {entry.list.map((item) => (
-                      <li><strong>{item.title}</strong><span>{item.category}</span></li>
-                    ))}
-                  </ul>
-                )}
-
                 <a class="text-link" href={entry.href} aria-label={entry.hrefLabel}>
                   {entry.list ? "전체 프로젝트" : "사례 자세히 보기"} <span aria-hidden="true">→</span>
                 </a>
               </div>
+
+              {/* 3영역 개선 가이드 1.6~1.12 절. 이 패널만 오른쪽에 미리보기 이미지가 없어
+                  절반이 비어 보였다. 카드 폭을 줄이는 대신 왼쪽은 컬렉션 요약, 오른쪽은
+                  프로젝트 색인으로 나눈다. 색인은 카드가 아니라 텍스트 목록으로 둔다. */}
+              {entry.list && (
+                <div class="d2-panel__index">
+                  <ul class="d2-panel__list" aria-label={`${entry.title} 프로젝트 목록`}>
+                    {entry.list.map((item) => (
+                      <li><strong>{item.title}</strong><span>{item.category}</span></li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {entry.media && (
                 <figure class="d2-preview d2-panel__media">
@@ -324,17 +346,17 @@ const principles = [
             <span class="d2-principle__num">{principle.index}</span>
             <span class="d2-principle__icon" aria-hidden="true">
               {principle.icon === "search" && (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="11" cy="11" r="6.5" /><path d="m16 16 4.5 4.5" />
                 </svg>
               )}
               {principle.icon === "shield" && (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 3 5 6v5.5c0 4.3 2.9 7.6 7 9.5 4.1-1.9 7-5.2 7-9.5V6z" /><path d="m9 12 2 2 4-4" />
                 </svg>
               )}
               {principle.icon === "code" && (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                   <path d="m8 7-5 5 5 5" /><path d="m16 7 5 5-5 5" /><path d="M13.5 4 10.5 20" />
                 </svg>
               )}
