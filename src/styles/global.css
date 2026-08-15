@@ -1286,22 +1286,23 @@ button {
    기존 .hero* 는 404 페이지가 계속 사용하므로 지우지 않고 d2- 네임스페이스로 분리했다.
    --------------------------------------------------------------------------- */
 
-/* 헤드라인 첫 줄이 14자라 5:7 로는 컬럼이 530px 밖에 안 돼 "AI까지"가 고아 줄로 떨어졌다.
-   6:6 으로 넓혀 첫 줄이 한 줄에 들어가게 한다. */
+/* 제품 화면을 증거로 크게 보여주는 쪽이 우선이라 카피 5 : 시각 7 을 쓴다.
+   헤드라인을 "화면부터 DB·AI까지" 로 압축해 첫 줄이 5/12 컬럼에 들어간다. */
 .d2-hero__inner {
   display: grid;
-  grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
-  column-gap: clamp(2rem, 5vw, 4.5rem);
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  column-gap: clamp(2rem, 4vw, 3.5rem);
   row-gap: clamp(2.5rem, 5vw, 4rem);
   align-items: center;
   padding-block: clamp(3.5rem, 7vw, 6.5rem) clamp(3rem, 5vw, 4.5rem);
 }
 
-/* 첫 줄 "화면부터 DB와 AI까지" 는 약 10.2em 폭이다. 1024px 이상에서 컬럼이 471~672px 이므로
-   최대 3.9rem(62px) 이면 어느 폭에서도 한 줄에 들어간다. 명세 10절 범위(60~94px) 안이다. */
+/* 히어로 제목은 레이아웃 모드마다 기준 폭이 달라 clamp 하나로 처리할 수 없다.
+   1024px 이하는 한 컬럼(전체 폭), 그 위는 5/12 컬럼(약 372~530px)이다.
+   이 값은 넓은 한 컬럼 기준이고, 두 컬럼 구간은 아래 64.01rem 규칙이 덮어쓴다. */
 .d2-hero__copy h1 {
   margin: 1.1rem 0 1.35rem;
-  font-size: clamp(2.5rem, 4.3vw, 3.9rem);
+  font-size: clamp(2.5rem, 5.5vw, 3.6rem);
   font-weight: 800;
   letter-spacing: -.045em;
   line-height: 1.06;
@@ -1321,6 +1322,14 @@ button {
 @media (min-width: 48rem) {
   .d2-hero__copy h1 .d2-line {
     display: block;
+  }
+}
+
+/* 두 컬럼 구간. 첫 줄 "화면부터 DB·AI까지" 는 약 9.25em 이고 카피 컬럼은 372~530px 이므로
+   최대 3.4rem(54px) 이면 어느 폭에서도 한 줄에 들어간다. 개선 가이드 6.2절 범위(54~64px) 안이다. */
+@media (min-width: 64.01rem) {
+  .d2-hero__copy h1 {
+    font-size: clamp(2.2rem, 3.7vw, 3.4rem);
   }
 }
 
@@ -1827,9 +1836,6 @@ button {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .d2-hero__copy h1 {
-    font-size: clamp(2.6rem, 11vw, 3.6rem);
-  }
 
   .d2-hero__actions .button,
   .d2-contact__actions .button {
