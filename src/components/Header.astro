@@ -19,6 +19,13 @@ const isResume = path === "/resume/";
     </nav>
     <button class="theme-toggle" type="button" aria-label="색상 테마 전환" aria-live="polite" aria-pressed="false">
       <span data-theme-label>테마</span>
+      {/* 모바일에서는 버튼 폭이 좁아 글자 대신 아이콘만 보인다. 이전에는 문자 U+25D0 을 썼는데
+          Pretendard 에는 그 글리프가 없어 시스템 폰트로 떨어졌다. 폰트에 의존하지 않도록
+          도형으로 그린다. 버튼 이름은 aria-label 이 갖고 있어 아이콘은 보조기술에서 숨긴다. */}
+      <svg class="theme-toggle__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+        <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.5" />
+        <path d="M8 1a7 7 0 0 0 0 14z" fill="currentColor" />
+      </svg>
     </button>
   </div>
 </header>

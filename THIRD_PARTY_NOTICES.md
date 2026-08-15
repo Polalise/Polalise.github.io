@@ -2,11 +2,22 @@
 
 This repository redistributes font software under the SIL Open Font License 1.1.
 
-## Noto Sans KR VF
+## Pretendard Variable
 
-Character-subset derivative of Noto Sans KR (variable), glyph-trimmed to this site's copy and repackaged as WOFF2, distributed under the license reproduced below.
+Character-subset derivative of Pretendard Variable (version 1.309), glyph-trimmed to this site's copy and repackaged as WOFF2, distributed under the license reproduced below. The variable weight axis is narrowed to the 400-800 range this site actually uses.
 
-Copyright 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'. Hangul elements, letters & syllables by Sandoll Communications, Soo-young Jang & Joo-yeon Kang.
+Copyright 2023 Kil Hyung-jin.
+
+Regenerate after content changes, using the project's Python toolchain:
+
+    npm run build                 # dist/ must be current, the collector reads it
+    npm run font:characters       # writes the character set to a temp file
+    python -m fontTools.varLib.instancer PretendardVariable.woff2 wght=400:800
+    python -m fontTools.subset PretendardVariable-partial.woff2 \
+      --text-file=<collected characters> --flavor=woff2 \
+      --output-file=public/fonts/pretendard-subset/PretendardVariable.subset.woff2
+
+The upstream 2 MB release is kept out of version control; download it again from the Pretendard distribution when a rebuild is needed.
 
 ## IBM Plex Mono
 

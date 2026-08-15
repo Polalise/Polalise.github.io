@@ -15,4 +15,6 @@ tmp/
 # 원본 파일은 로컬에 그대로 두고 git 에서만 제외한다.
 public/fonts/**/*.ttf
 public/fonts/**/*.otf
-public/fonts/Pretendard/
+# 배포본 원본만 제외한다. 디렉터리째 무시하면 Windows 의 core.ignorecase=true 때문에
+# 실제로 쓰는 public/fonts/pretendard-subset/ 서브셋까지 함께 걸린다.
+public/fonts/Pretendard/PretendardVariable.woff2

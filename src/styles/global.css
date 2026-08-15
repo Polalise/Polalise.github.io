@@ -48,17 +48,21 @@
   color-scheme: dark;
 }
 
+/* Design 02 는 제목까지 한 계열로 통일한다 (명세 9절 "폰트를 여러 개 섞지 않는다").
+   배포본 PretendardVariable.woff2 는 2MB 라 명세 94절 성능 목표와 충돌한다. 그래서
+   덱과 같은 방식으로 이 사이트가 실제로 쓰는 618자만 남긴 가변 서브셋을 만들어 쓴다
+   (2,057KB -> 81KB). 가변축은 실제 사용 구간인 400~800 으로 좁혔다. 재생성 절차는
+   THIRD_PARTY_NOTICES.md 참고. 디스플레이용 Paperlogy 는 같은 이유로 이미 제거했다.
+   디렉터리 이름을 배포본과 다르게 둔 이유: Windows 는 대소문자를 구분하지 않아
+   pretendard/ 를 만들면 원본이 있는 Pretendard/ 와 같은 폴더가 되고, 대소문자를 구분하는
+   GitHub Pages 에서 경로가 어긋나 404 로 조용히 시스템 폰트로 떨어진다. */
 @font-face {
-  font-family: "Noto Sans KR VF";
+  font-family: "Pretendard Variable";
   font-style: normal;
   font-display: optional;
-  font-weight: 100 900;
-  src: url("/fonts/noto-sans-kr/NotoSansKR-VF.woff2") format("woff2-variations");
+  font-weight: 400 800;
+  src: url("/fonts/pretendard-subset/PretendardVariable.subset.woff2") format("woff2-variations");
 }
-
-/* Design 02 는 제목까지 한 계열로 통일한다 (명세 9절 "폰트를 여러 개 섞지 않는다").
-   Pretendard Variable 은 2MB 로 현재 한글 폰트 65KB 의 30배라 명세 94절 성능 목표와
-   충돌해 채택하지 않았다. 디스플레이용 Paperlogy 도 같은 이유로 제거했다. */
 @font-face {
   font-family: "IBM Plex Mono";
   font-style: normal;
@@ -92,7 +96,7 @@
 html {
   background: var(--paper);
   color: var(--ink);
-  font-family: "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   scroll-behavior: smooth;
   text-rendering: optimizeLegibility;
 }
@@ -206,7 +210,7 @@ button {
   border-radius: 50%;
   background: var(--accent);
   color: var(--accent-ink);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-family: "IBM Plex Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-weight: 700;
 }
 
@@ -279,6 +283,11 @@ button {
   color: var(--accent);
 }
 
+/* 데스크톱에서는 글자 라벨이 이름을 맡는다. 아이콘은 모바일에서만 쓴다. */
+.theme-toggle__icon {
+  display: none;
+}
+
 .page-shell {
   padding-block: clamp(5rem, 10vw, 9rem);
 }
@@ -302,7 +311,7 @@ button {
 /* 가독성 가이드 4절 - eyebrow 와 micro label 은 12~13px 을 하한으로 둔다.
    11.5px 은 실제 데스크톱에서 스캔할 때 읽히지 않았다. */
 .fact-label {
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-family: "IBM Plex Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .78rem;
   font-weight: 600;
   letter-spacing: .075em;
@@ -332,8 +341,9 @@ button {
   }
 }
 
-/* Paperlogy 를 제거하고 Noto Sans KR 로 통일하면서 행간을 다시 잡았다.
-   한글은 자소 높이가 커서 line-height 가 1 미만이면 여러 줄에서 글자가 겹친다. */
+/* Paperlogy 를 제거하고 본문·제목을 한 계열로 통일하면서 행간을 다시 잡았다.
+   한글은 자소 높이가 커서 line-height 가 1 미만이면 여러 줄에서 글자가 겹친다.
+   이 값은 폰트를 Pretendard 로 바꾼 뒤에도 그대로 유효하다. */
 .section-head h2,
 .page-intro h1,
 .detail-title {
@@ -492,7 +502,7 @@ button {
 }
 
 .metric-item span {
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-family: "IBM Plex Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   color: var(--ink-soft);
   font-size: .75rem;
   text-transform: uppercase;
@@ -645,7 +655,7 @@ button {
 
 .project-card__metric strong {
   color: var(--accent);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-family: "IBM Plex Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: clamp(1.4rem, 3vw, 2.4rem);
 }
 
@@ -657,7 +667,7 @@ button {
 
 .project-card__metric small {
   color: var(--accent);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-family: "IBM Plex Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .78rem;
   font-weight: 600;
   letter-spacing: .04em;
@@ -692,7 +702,7 @@ button {
   display: block;
   margin-bottom: .25rem;
   color: var(--accent);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-family: "IBM Plex Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .74rem;
   font-weight: 700;
   letter-spacing: .06em;
@@ -838,7 +848,7 @@ button {
 }
 
 .evidence-row dt {
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-family: "IBM Plex Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .9rem;
   font-weight: 650;
 }
@@ -900,7 +910,7 @@ button {
    라벨과 격차가 커 히어로에서 따로 놀았다. */
 .project-count strong {
   color: var(--accent);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-family: "IBM Plex Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: clamp(2rem, 2.5vw, 2.25rem);
   line-height: 1.1;
 }
@@ -938,7 +948,7 @@ button {
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--line);
   color: var(--ink-soft);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-family: "IBM Plex Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .75rem;
   font-weight: 600;
   margin: 0;
@@ -1101,7 +1111,7 @@ button {
 
 .metric-evidence strong {
   color: var(--accent);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-family: "IBM Plex Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: 1.35rem;
 }
 
@@ -1132,7 +1142,7 @@ button {
 
 .next-project span {
   color: var(--accent);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-family: "IBM Plex Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .8rem;
 }
 
@@ -1232,7 +1242,7 @@ button {
 .project-visual figcaption span {
   grid-row: 1 / span 2;
   color: var(--accent);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-family: "IBM Plex Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .74rem;
   font-weight: 700;
   letter-spacing: .06em;
@@ -1340,7 +1350,7 @@ button {
 .resume-section h2 {
   margin: 0;
   color: var(--accent);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-family: "IBM Plex Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .78rem;
   font-weight: 600;
   letter-spacing: .075em;
@@ -1516,7 +1526,7 @@ button {
   grid-row: 1 / span 2;
   padding-top: .2rem;
   color: var(--accent);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-family: "IBM Plex Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .78rem;
   font-weight: 600;
   letter-spacing: .075em;
@@ -1687,7 +1697,7 @@ button {
   border-radius: 999px;
   background: var(--accent-soft);
   color: var(--accent);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-family: "IBM Plex Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .72rem;
   font-weight: 700;
   letter-spacing: .07em;
@@ -1783,7 +1793,7 @@ button {
 
 .d2-explorer__num {
   color: var(--ink-soft);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-family: "IBM Plex Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .78rem;
   font-weight: 700;
 }
@@ -1861,7 +1871,7 @@ button {
 .d2-panel__kicker {
   margin: 0;
   color: var(--accent);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-family: "IBM Plex Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .74rem;
   font-weight: 700;
   letter-spacing: .07em;
@@ -1902,7 +1912,7 @@ button {
 
 .d2-panel__facts dt {
   color: var(--ink-soft);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-family: "IBM Plex Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .72rem;
   font-weight: 700;
   letter-spacing: .06em;
@@ -2048,7 +2058,7 @@ button {
 .d2-case__split h3 {
   margin: 0 0 .5rem;
   color: var(--accent);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-family: "IBM Plex Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .74rem;
   font-weight: 700;
   letter-spacing: .07em;
@@ -2094,7 +2104,7 @@ button {
 .d2-principle__num {
   display: block;
   color: var(--ink-soft);
-  font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
+  font-family: "IBM Plex Mono", "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", monospace;
   font-size: .88rem;
   font-weight: 700;
   line-height: 1;
@@ -2311,9 +2321,10 @@ button {
     font-size: 0;
   }
 
-  .theme-toggle::before {
-    content: "◐";
-    font-size: 1rem;
+  .theme-toggle__icon {
+    display: block;
+    width: 1rem;
+    height: 1rem;
   }
 
   .hero {
