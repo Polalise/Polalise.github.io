@@ -576,6 +576,20 @@ button {
   transform: translateX(.25rem);
 }
 
+/* 프로젝트 페이지 가이드 32·33절 - 블록 전체가 이미 하나의 링크다.
+   제목 색 전환과 화면 테두리 강조까지만 더하고 scale·큰 이동은 쓰지 않는다. */
+.project-card h3 {
+  transition: color .18s ease;
+}
+
+.project-card__link:hover h3 {
+  color: var(--accent);
+}
+
+.project-card__link:hover .project-card__visual {
+  border-color: var(--line-strong);
+}
+
 .project-card__body {
   padding-top: 1.35rem;
 }
@@ -593,9 +607,11 @@ button {
   content: "/";
 }
 
+/* 두 개선 가이드 모두 프로젝트 제목을 30~34px 로 본다. 기존 값은 1440px 에서 37.4px 라
+   섹션 제목과 경쟁했고, 홈과 프로젝트 페이지가 같은 정보에 다른 크기를 쓰게 된다. */
 .project-card h3 {
   margin: .85rem 0 .7rem;
-  font-size: clamp(1.5rem, 2.6vw, 2.4rem);
+  font-size: clamp(1.5rem, 2.4vw, 2.15rem);
   letter-spacing: -.035em;
   line-height: 1.15;
   overflow-wrap: break-word;
@@ -716,11 +732,50 @@ button {
   transform: translateX(.25rem);
 }
 
-.archive-grid,
-.projects-grid {
+/* 프로젝트 페이지 가이드 18·29·30·31절.
+   12열 masonry 는 프로젝트마다 폭과 시작 높이가 달라 비교가 어려웠고, nth-child 의
+   padding-top 까지 더해져 행 간격이 실측 160px 까지 벌어졌다.
+   규칙적인 2열 grid 로 바꾸고 행 간격은 섹션 간격(144px)보다 작게 잡는다. */
+.tier-grid {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: clamp(2.5rem, 5vw, 5rem) clamp(1.2rem, 3vw, 2.5rem);
+  gap: clamp(3.25rem, 5vw, 5rem) clamp(2.5rem, 3.5vw, 3.5rem);
+  align-items: start;
+}
+
+.tier-grid--featured,
+.tier-grid--archive {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* lead case 는 한 행을 다 쓰고 화면과 설명을 좌우로 나눈다.
+   전폭 16:10 이미지는 840px 까지 커져 페이지를 지배하므로 쓰지 않는다. */
+.tier-grid--featured .project-card--wide {
+  grid-column: 1 / -1;
+}
+
+.tier-grid--featured .project-card--wide .project-card__link {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+  gap: clamp(2rem, 4vw, 3.5rem);
+  align-items: center;
+}
+
+.tier-grid--featured .project-card--wide .project-card__body {
+  padding-top: 0;
+}
+
+.project-card--wide h3 {
+  font-size: clamp(2rem, 3.4vw, 3rem);
+}
+
+/* 가이드 21·22·23절 - archive 는 모든 화면 프레임을 16:9 로 통일하고
+   제목을 대표 사례보다 한 단계 낮춰 위계를 만든다. */
+.tier-grid--archive .project-card__visual {
+  aspect-ratio: 16 / 9;
+}
+
+.tier-grid--archive .project-card h3 {
+  font-size: clamp(1.45rem, 2vw, 1.75rem);
 }
 
 .featured-grid--pair {
@@ -743,11 +798,6 @@ button {
   padding-top: 0;
 }
 
-.projects-grid .project-card--supporting {
-  grid-column: 1 / -1;
-  padding-top: 0;
-}
-
 .project-card--compact .project-card__link {
   display: grid;
   grid-template-columns: minmax(11rem, .8fr) minmax(0, 1.2fr);
@@ -763,38 +813,12 @@ button {
   aspect-ratio: 4 / 3;
 }
 
-.archive-grid .project-card:nth-child(1),
-.projects-grid .project-card:nth-child(4n + 1) {
-  grid-column: span 7;
-}
-
-.archive-grid .project-card:nth-child(2),
-.projects-grid .project-card:nth-child(4n + 2) {
-  grid-column: 9 / span 4;
-  padding-top: 5rem;
-}
-
-.archive-grid .project-card:nth-child(3),
-.projects-grid .project-card:nth-child(4n + 3) {
-  grid-column: 2 / span 4;
-}
-
-.archive-grid .project-card:nth-child(4),
-.projects-grid .project-card:nth-child(4n + 4) {
-  grid-column: 7 / span 6;
-  padding-top: 3rem;
-}
-
-.archive-grid .project-card:nth-child(5) {
-  grid-column: 4 / span 6;
-}
-
 .project-card--compact h3 {
   font-size: clamp(1.5rem, 3vw, 2.35rem);
 }
 
 .project-card--supporting h3 {
-  font-size: clamp(2rem, 3vw, 3.25rem);
+  font-size: clamp(1.9rem, 2.7vw, 2.5rem);
   overflow-wrap: normal;
   word-break: normal;
 }
@@ -872,10 +896,31 @@ button {
   color: var(--ink-soft);
 }
 
+/* 가이드 7절 - 별도 카드를 만들지 않고 값과 라벨의 위계만 정리한다. 값 48px 은 옆의 16px
+   라벨과 격차가 커 히어로에서 따로 놀았다. */
 .project-count strong {
   color: var(--accent);
   font-family: "IBM Plex Mono", "Noto Sans KR VF", "Apple SD Gothic Neo", "Malgun Gothic", monospace;
-  font-size: 3rem;
+  font-size: clamp(2rem, 2.5vw, 2.25rem);
+  line-height: 1.1;
+}
+
+.project-count span {
+  font-size: .82rem;
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+
+/* 가이드 4·5절 - 프로젝트 index 히어로에만 적용한다.
+   이력서 히어로는 `<span>` 2줄 구조라 좁은 폭이 그대로 맞다.
+   10ch 는 이 문장을 4줄로 떨어뜨렸다. 폰트를 줄이지 않고 폭을 넓혀 2줄로 만든다. */
+.projects-intro h1 {
+  max-width: 20ch;
+}
+
+.projects-intro {
+  padding-top: clamp(4.5rem, 9vw, 8rem);
+  padding-bottom: clamp(3.5rem, 7vw, 6rem);
 }
 
 .tier-divider {
@@ -1989,6 +2034,16 @@ button {
     grid-template-columns: 1fr;
   }
 
+  /* 가이드 38절 - 태블릿에서 lead case 를 좌우로 쪼개면 화면과 설명이 모두 좁아진다.
+     archive 2열은 유지한다. */
+  .tier-grid--featured .project-card--wide .project-card__link {
+    grid-template-columns: 1fr;
+  }
+
+  .tier-grid--featured .project-card--wide .project-card__body {
+    padding-top: 1.35rem;
+  }
+
   .section-head {
     gap: 1rem;
   }
@@ -2100,16 +2155,18 @@ button {
     aspect-ratio: 4 / 3;
   }
 
-  .archive-grid,
-  .projects-grid {
-    display: grid;
+  /* 가이드 39절 - 모바일에서는 대표 사례도 archive 도 억지로 2열을 유지하지 않는다. */
+  .tier-grid--featured,
+  .tier-grid--archive {
     grid-template-columns: 1fr;
   }
 
-  .archive-grid .project-card,
-  .projects-grid .project-card {
-    grid-column: 1 !important;
-    padding-top: 0 !important;
+  .tier-grid--featured .project-card--wide .project-card__link {
+    grid-template-columns: 1fr;
+  }
+
+  .tier-grid--archive .project-card__visual {
+    aspect-ratio: 4 / 3;
   }
 
   .detail-facts,

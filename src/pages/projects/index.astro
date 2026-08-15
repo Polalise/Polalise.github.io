@@ -13,7 +13,7 @@ const archive = projects.filter((project) => project.data.tier === "archive");
   title="프로젝트 | 유병현"
   description="AI 서비스, 머신러닝 검증, 풀스택 웹 구축 경험을 사실과 근거 중심으로 정리한 프로젝트 목록입니다."
 >
-  <header class="page-shell page-intro">
+  <header class="page-shell page-intro projects-intro">
     <div data-reveal>
       <p class="eyebrow">Selected work and archive</p>
       <h1>프로젝트를 결과가 아닌 판단의 흐름으로.</h1>
@@ -27,7 +27,9 @@ const archive = projects.filter((project) => project.data.tier === "archive");
   <section class="section" aria-labelledby="featured-list-title">
     <div class="page-shell">
       <h2 class="tier-divider" id="featured-list-title"><span>대표 사례</span><span>01 - 03</span></h2>
-      <div class="projects-grid">
+      {/* 프로젝트 페이지 가이드 10절. 불규칙한 masonry 대신 HajaCheck 를 lead case 로 전폭 배치하고
+          나머지 둘은 같은 규칙의 2열로 둔다. 순서는 콘텐츠의 order 를 그대로 따른다. */}
+      <div class="tier-grid tier-grid--featured">
         {featured.map((project, index) => <ProjectCard project={project} variant={index === 0 ? "wide" : "standard"} eager={index === 0} />)}
       </div>
     </div>
@@ -36,7 +38,7 @@ const archive = projects.filter((project) => project.data.tier === "archive");
   <section class="section" aria-labelledby="supporting-list-title">
     <div class="page-shell">
       <h2 class="tier-divider" id="supporting-list-title"><span>주요 풀스택 사례</span><span>04</span></h2>
-      <div class="projects-grid">
+      <div class="tier-grid tier-grid--single">
         {supporting.map((project) => <ProjectCard project={project} variant="supporting" />)}
       </div>
     </div>
@@ -45,8 +47,10 @@ const archive = projects.filter((project) => project.data.tier === "archive");
   <section class="section" aria-labelledby="archive-list-title">
     <div class="page-shell">
       <h2 class="tier-divider" id="archive-list-title"><span>보조 및 아카이브</span><span>05 - 09</span></h2>
-      <div class="projects-grid">
-        {archive.map((project) => <ProjectCard project={project} variant="compact" />)}
+      {/* 가이드 18·21·22절. compact 변형은 프로젝트마다 이미지 높이가 132~218px 로 제각각이었다.
+          standard 변형과 고정 16:9 프레임으로 통일해 2열 grid 에서 서로 비교되게 한다. */}
+      <div class="tier-grid tier-grid--archive">
+        {archive.map((project) => <ProjectCard project={project} variant="standard" />)}
       </div>
     </div>
   </section>

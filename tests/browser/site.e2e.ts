@@ -235,6 +235,49 @@ test.describe("responsive themes and accessibility", () => {
     await expect(page.locator('main a[href^="/projects/"]')).toHaveCount(9);
   });
 
+  // 프로젝트 페이지 가이드 10·18·21절. 이전 12열 masonry 는 카드 폭이 421~767px,
+  // 화면 높이가 132~218px 로 흩어져 비교가 어려웠다. 규칙적인 grid 로 되돌아가지 않게 잠근다.
+  test("project index keeps a regular editorial grid instead of masonry", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 950 });
+    await page.goto("/projects/", { waitUntil: "networkidle" });
+
+    const boxes = (selector: string) =>
+      page.locator(selector).evaluateAll((cards) =>
+        cards.map((card) => {
+          const bounds = card.getBoundingClientRect();
+          const visual = card.querySelector(".project-card__visual")?.getBoundingClientRect();
+          return {
+            x: Math.round(bounds.x),
+            y: Math.round(bounds.y),
+            width: Math.round(bounds.width),
+            visualHeight: visual ? Math.round(visual.height) : 0
+          };
+        })
+      );
+
+    const featured = await boxes(".tier-grid--featured .project-card");
+    expect(featured).toHaveLength(3);
+    // lead case 는 한 행을 다 쓰고 나머지 둘은 같은 폭 · 같은 시작 높이의 2열이다
+    expect(featured[0].width).toBeGreaterThan(featured[1].width * 1.9);
+    expect(featured[1].width).toBe(featured[2].width);
+    expect(featured[1].y).toBe(featured[2].y);
+    expect(featured[1].visualHeight).toBe(featured[2].visualHeight);
+
+    const archive = await boxes(".tier-grid--archive .project-card");
+    expect(archive).toHaveLength(5);
+    expect(new Set(archive.map((card) => card.width)).size).toBe(1);
+    // 모든 archive 화면은 같은 16:9 프레임을 쓴다
+    expect(new Set(archive.map((card) => card.visualHeight)).size).toBe(1);
+    // 2열이므로 서로 다른 x 좌표는 정확히 둘이다
+    expect(new Set(archive.map((card) => card.x)).size).toBe(2);
+
+    // 모바일에서는 두 grid 모두 1열로 접힌다
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.reload({ waitUntil: "networkidle" });
+    const mobileArchive = await boxes(".tier-grid--archive .project-card");
+    expect(new Set(mobileArchive.map((card) => card.x)).size).toBe(1);
+  });
+
   test("responsive project art direction and image decoding work", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/projects/", { waitUntil: "networkidle" });
