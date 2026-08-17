@@ -21,8 +21,19 @@
   --shadow: 0 20px 50px rgb(15 23 42 / 8%);
   --shadow-card: 0 8px 24px rgb(15 23 42 / 4%);
   --radius: .75rem;
+  /* 설계 노트 13.5 절 : 반경에 의미를 준다. card = 콘텐츠를 담는 면,
+     control = 행동을 실행하는 것, pill = 상태를 표시하는 것.
+     이전 --radius-button(.375rem) 은 control 로 대체됐다. */
   --radius-card: .625rem;
-  --radius-button: .375rem;
+  --radius-control: .25rem;
+  --radius-pill: 999px;
+  /* 13.6 절 : hover·active 는 테마마다 방향이 반대다. 라이트는 어두워지고 다크는 밝아진다.
+     이전에는 두 테마 모두 color-mix(accent 86%, #000) 라 다크에서 거꾸로였다.
+     --line-control 은 컨트롤 전용이다. --line 은 구분선용이라 옅은 값을 유지한다. */
+  --accent-hover: #0f55c8;
+  --accent-active: #0d49ac;
+  --line-control: #8892a6;
+  --focus-ring: #2477ff;
   --max-width: 90rem;
   --gutter: clamp(1.15rem, 4vw, 3rem);
   color-scheme: light;
@@ -43,6 +54,12 @@
   --accent-bright: #6ba5ff;
   --accent-soft: #16233a;
   --accent-ink: #0b1220;
+  /* 13.6 절 : 다크에서는 밝아지는 방향이다. focus-ring 을 accent 와 분리하는 것이 핵심이다.
+     accent 와 accent-bright 가 같은 값이라 채운 버튼에 포커스하면 링이 면과 같은 색이었다. */
+  --accent-hover: #80b2ff;
+  --accent-active: #91bcff;
+  --line-control: #5a6474;
+  --focus-ring: #edeff3;
   --shadow: 0 20px 50px rgb(0 0 0 / 45%);
   --shadow-card: 0 8px 24px rgb(0 0 0 / 25%);
   color-scheme: dark;
@@ -140,10 +157,29 @@ button {
   font: inherit;
 }
 
+/* 설계 노트 13.8 절. 링 색을 --accent-bright 에서 --focus-ring 으로 뺀 것이 핵심이다.
+   다크에서 --accent 와 --accent-bright 가 같은 값(#6ba5ff)이라 채운 버튼에 포커스하면
+   링이 버튼 면과 같은 색이 되어 "버튼이 커진 것" 처럼 읽혔다.
+   outline-offset 이 만드는 틈에는 페이지 배경이 비치므로 링은 버튼 면과 결코 맞닿지 않는다.
+   그래서 링은 면 색이 아니라 배경색만 상대하면 된다 (라이트 4.07:1, 다크 16.41:1). */
 :focus-visible {
-  outline: 2px solid var(--accent-bright);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
   border-radius: 2px;
+}
+
+/* 시각적으로는 감추고 보조기술에는 남긴다. display:none 과 visibility:hidden 은 낭독되지 않는다.
+   새 창으로 열리는 링크의 "(새 창)" 안내에 쓴다 (13.7 절). */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 ::selection {
@@ -266,20 +302,32 @@ button {
   font-weight: 800;
 }
 
+/* pill 은 행동이 아니라 상태를 뜻한다 (13.5 절). 이 버튼은 on/off 상태를 바꾸므로 pill 이 맞다.
+   ghost 버튼과 같은 외곽선 컨트롤 규칙을 따른다. */
 .theme-toggle {
   justify-self: end;
   min-width: 4.7rem;
   min-height: 2.75rem;
   padding: .6rem .85rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius-pill);
   background: transparent;
   color: var(--ink);
   cursor: pointer;
+  transition: transform .2s ease, background .2s ease, border-color .2s ease, color .2s ease;
 }
 
 .theme-toggle:hover {
+  transform: translateY(-1px);
   border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.theme-toggle:active {
+  transform: translateY(0);
+  border-color: var(--accent);
+  background: var(--accent-soft);
   color: var(--accent);
 }
 
@@ -413,48 +461,121 @@ button {
   word-break: keep-all;
 }
 
-.hero-actions,
-.detail-links,
-.resume-actions {
+/* 13.10 절. 버튼 묶음이 5곳에 흩어져 3벌의 규칙으로 쪼개져 있었고 모바일 폭 규칙은
+   그중 2곳에만 걸려 있었다. 레이아웃은 여기 한 번만 쓰고 각 묶음의 고유 클래스는
+   여백·정렬처럼 그 자리에서만 다른 것에 쓴다. */
+.button-row {
   display: flex;
   flex-wrap: wrap;
-  gap: .8rem;
+  gap: .7rem;
+}
+
+.hero-actions,
+.detail-links,
+.resume-actions,
+.d2-hero__actions {
   margin-top: 2rem;
 }
 
+/* 13.3·13.5·13.6 절. 반경을 6px 에서 4px 로 낮추고 작은 라벨에 양수 자간을 준다.
+   제목은 -.03em 으로 조이지만 작은 UI 라벨은 반대로 벌리는 것이 읽기 좋다. */
 .button {
+  --icon-x: 3px;
+  --icon-y: 0;
   display: inline-flex;
   min-height: 3rem;
   align-items: center;
   justify-content: center;
-  gap: .4rem;
+  gap: .1rem;
   padding: .8rem 1.25rem;
   border: 1px solid var(--accent);
-  border-radius: var(--radius-button);
+  border-radius: var(--radius-control);
   background: var(--accent);
   color: var(--accent-ink);
   font-size: .9rem;
   font-weight: 700;
+  letter-spacing: .012em;
   text-decoration: none;
   transition: transform .2s ease, background .2s ease, border-color .2s ease, color .2s ease;
 }
 
+.button[data-icon="down"] {
+  --icon-x: 0;
+  --icon-y: 3px;
+}
+
+.button[data-icon="back"] {
+  --icon-x: -3px;
+}
+
+.button[data-icon="external"] {
+  --icon-y: -3px;
+}
+
+/* 아이콘 칸을 하어라인으로 떼어내 primary 에 구조적 성격을 준다. 색만이 아니라
+   형태로도 ghost 와 구분된다. 하어라인은 칸(wrapper)에 있고 화살표만 움직인다. */
+.button__icon {
+  display: inline-flex;
+  align-items: center;
+  margin-left: .55rem;
+  padding-left: .75rem;
+  border-left: 1px solid color-mix(in srgb, var(--accent-ink) 30%, transparent);
+}
+
+.button__icon svg {
+  width: 1rem;
+  height: 1rem;
+  transition: transform .2s ease;
+}
+
+.button:hover .button__icon svg,
+.button:focus-visible .button__icon svg,
+.button:active .button__icon svg {
+  transform: translate(var(--icon-x), var(--icon-y));
+}
+
 .button:hover {
   transform: translateY(-1px);
-  background: color-mix(in srgb, var(--accent) 86%, #000);
-  border-color: color-mix(in srgb, var(--accent) 86%, #000);
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+/* 13.6 절. hover 에서 1px 떠올랐다가 누르면 제자리로 내려온다. 이 되돌림이 "눌림" 이다.
+   hover 가 없는 모바일에서는 이것이 유일한 클릭 피드백이다. scale 은 작은 글자를
+   흐리게 만들므로 쓰지 않는다. */
+.button:active {
+  transform: translateY(0);
+  background: var(--accent-active);
+  border-color: var(--accent-active);
 }
 
 .button--ghost {
-  border-color: var(--line);
+  border-color: var(--line-control);
   background: transparent;
   color: var(--ink);
 }
 
+/* 하어라인 칸은 primary 전용이다. 색만이 아니라 구조로도 위계가 생기게 하는 장치이므로
+   ghost 가 같이 쓰면 그 구분이 사라진다 (13.3·13.4 절). ghost 는 화살표만 둔다. */
+.button--ghost .button__icon {
+  margin-left: .45rem;
+  padding-left: 0;
+  border-left: 0;
+}
+
+/* 외곽선 컨트롤은 hover 에서 accent 로 각성한다. 테마 토글이 이미 쓰던 규칙이고
+   버튼을 그쪽에 맞췄다. 이전의 회색 hover 는 활성 컨트롤을 더 비활성처럼 보이게 했다. */
 .button--ghost:hover {
-  border-color: var(--line-strong);
-  background: var(--paper-strong);
-  color: var(--ink);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.button--ghost:active {
+  transform: translateY(0);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 /* 지표가 2개인 rail(사례 연구)에서도 빈 열이 남지 않게 auto-fit 을 쓴다. */
@@ -725,21 +846,23 @@ button {
   text-decoration: none;
 }
 
-.impact-link,
-.section-action {
-  margin-top: 1.75rem;
-}
-
-.section-action {
-  float: right;
-}
-
 .text-link span {
   transition: transform .2s ease;
 }
 
-.text-link:hover span {
+/* 13.11 절. 이전에는 hover 에만 반응했다. 키보드 사용자도 같은 신호를 받아야 한다. */
+.text-link:hover span,
+.text-link:focus-visible span {
   transform: translateX(.25rem);
+}
+
+.text-link:active {
+  color: var(--accent-active);
+}
+
+.project-card__link:active,
+.next-project:active {
+  color: var(--accent);
 }
 
 /* 프로젝트 페이지 가이드 18·29·30·31절.
@@ -1651,12 +1774,7 @@ button {
   word-break: keep-all;
 }
 
-.d2-hero__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .7rem;
-  margin-top: 2rem;
-}
+/* 레이아웃은 .button-row 가 갖는다. 여백은 위쪽 공통 규칙에 있다. */
 
 .d2-hero__inner .metric-rail {
   grid-column: 1 / -1;
@@ -1828,8 +1946,19 @@ button {
   background: var(--paper-strong);
 }
 
-.d2-explorer__item:hover .d2-explorer__arrow {
+.d2-explorer__item:hover .d2-explorer__arrow,
+.d2-explorer__item:focus-visible .d2-explorer__arrow {
   transform: translateX(.25rem);
+}
+
+.d2-explorer__item:active {
+  background: var(--accent-soft);
+}
+
+/* 13.8 절. 목록 컨테이너가 overflow:hidden 이라 바깥으로 뻗는 링은 첫·마지막 항목에서 잘린다.
+   음수 offset 으로 안쪽에 그려 잘리지 않게 한다. */
+.d2-explorer__item:focus-visible {
+  outline-offset: -3px;
 }
 
 /* 가이드 10절 - 선택 상태에 배경만이 아니라 좌측 인디케이터도 함께 준다.
@@ -2116,7 +2245,8 @@ button {
   height: 2.4rem;
   margin: 1.1rem 0 1.15rem;
   place-items: center;
-  border-radius: var(--radius-button);
+  /* 컨트롤이 아니라 장식 사각형이지만 같은 4px 언어를 쓰게 둔다 (13.15 절 결정). */
+  border-radius: var(--radius-control);
   background: var(--accent-soft);
   color: var(--accent);
 }
@@ -2155,11 +2285,12 @@ button {
   background: var(--paper);
 }
 
+/* 배지다. pill 이지만 클릭 대상이 아니며 13.5 절의 "상태를 표시하는 것" 에 해당한다. */
 .d2-contact__pill {
   display: inline-block;
   margin: 0 0 1rem;
   padding: .32rem .7rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--accent-soft);
   color: var(--accent);
   font-size: .8rem;
@@ -2179,11 +2310,7 @@ button {
   font-size: .92rem;
 }
 
-.d2-contact__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .7rem;
-}
+/* 연락처 카드의 버튼 묶음은 .button-row 를 쓰고 정렬만 아래 반응형에서 조정한다. */
 
 @media (max-width: 64rem) {
   .d2-hero__inner,
@@ -2224,9 +2351,13 @@ button {
   }
 
 
-  .d2-hero__actions .button,
-  .d2-contact__actions .button {
-    flex: 1 1 8rem;
+  /* 13.10 절. 이전에는 이 규칙이 히어로와 연락처에만 걸려 이력서·상세·404 의 같은 버튼이
+     모바일에서 다르게 늘어났다. 이제 모든 묶음에 한 번에 적용된다.
+     basis 를 고정하지 않고 auto 로 두는 이유 : 8rem 으로 고정하면 사이트에서 가장 긴 라벨인
+     "PDF 이력서 보기" 가 눌려 두 줄이 되고 그 버튼만 높이가 48px 에서 64px 로 뛴다.
+     auto 는 내용 폭에서 시작해 남는 공간만 나눠 가지므로 줄바꿈 없이 줄을 채운다. */
+  .button-row > * {
+    flex: 1 1 auto;
   }
 }
 
@@ -2317,7 +2448,7 @@ button {
     min-width: 2.75rem;
     width: 2.75rem;
     padding-inline: .2rem;
-    border-radius: 50%;
+    border-radius: var(--radius-pill);
     font-size: 0;
   }
 
@@ -2408,9 +2539,6 @@ button {
     justify-content: flex-start;
   }
 
-  .section-action {
-    float: none;
-  }
 }
 
 @media (max-width: 30rem) {

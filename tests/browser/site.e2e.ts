@@ -462,4 +462,49 @@ test.describe("responsive themes and accessibility", () => {
     await expect(page.locator(".resume-actions")).toBeHidden();
     await expect(page.locator("#experience")).toBeVisible();
   });
+
+  // 설계 노트 13.6 절. hover 가 없는 모바일에서 :active 는 유일한 클릭 피드백이다.
+  // 이전에는 사이트 전체에 :active 선언이 하나도 없어 누른 표시가 나지 않았다.
+  // 스타일시트 규칙을 직접 읽어 회귀를 막는다.
+  test("every control class defines a pressed state", async ({ page }) => {
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+    const pressedSelectors = await page.evaluate(() =>
+      Array.from(document.styleSheets)
+        .flatMap((sheet) => {
+          try {
+            return Array.from(sheet.cssRules);
+          } catch {
+            return [];
+          }
+        })
+        .filter((rule): rule is CSSStyleRule => rule instanceof CSSStyleRule)
+        .map((rule) => rule.selectorText)
+        .filter((selector) => selector?.includes(":active"))
+    );
+
+    for (const control of [".button", ".button--ghost", ".theme-toggle", ".d2-explorer__item", ".text-link"]) {
+      expect(
+        pressedSelectors.some((selector) => selector.includes(control)),
+        `${control} has no :active rule`
+      ).toBe(true);
+    }
+  });
+
+  // 13.7 절. 새 창으로 열리는 링크 8건이 아무 예고 없이 열리고 있었다.
+  // 시각 표시(아이콘)와 보조기술용 문구를 둘 다 요구한다.
+  test("links that open a new tab announce it visually and to assistive tech", async ({ page }) => {
+    for (const route of ["/", "/resume/", "/projects/hajacheck/"]) {
+      await page.goto(route, { waitUntil: "domcontentloaded" });
+      const externalButtons = page.locator('main a.button[target="_blank"]');
+      const count = await externalButtons.count();
+      expect(count, `${route} has no external button to check`).toBeGreaterThan(0);
+
+      for (let index = 0; index < count; index += 1) {
+        const link = externalButtons.nth(index);
+        await expect(link, route).toHaveAttribute("data-icon", "external");
+        await expect(link.locator(".sr-only"), route).toHaveText("(새 창)");
+        await expect(link.locator(".button__icon svg"), route).toHaveCount(1);
+      }
+    }
+  });
 });

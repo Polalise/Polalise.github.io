@@ -1,0 +1,86 @@
+---
+/* 설계 노트 13.7·13.9 절.
+   이전에는 같은 마크업이 5개 파일에 14회 복사돼 있어 규칙 하나를 바꾸면 전부 손대야 했고,
+   실제로 규칙이 어긋나 있었다 - 새 창으로 열리는 링크 8건에 아무 표시가 없었고
+   화살표는 새 창인데 내부 이동 기호를 쓰는 등 의미와 무관하게 붙어 있었다.
+   그래서 아이콘 종류와 새 창 처리를 호출부가 아니라 이 컴포넌트가 결정한다.
+
+   아이콘 문법: arrow 내부 이동 / down 같은 페이지 앵커 / external 새 창 / back 상위로.
+   문자가 아니라 인라인 SVG 로 그린다. Pretendard 서브셋에 없는 문자를 쓰면 폰트가
+   조용히 대체되는 사고가 있었다 (12.10 절의 U+25D0). */
+
+type IconKind = "arrow" | "down" | "external" | "back" | "none";
+
+interface Props {
+  variant?: "primary" | "ghost";
+  href?: string;
+  /** 생략 시 href 로 추론한다. 추론이 틀리는 경우에만 명시한다. */
+  external?: boolean;
+  /** 생략 시 href 종류로 결정한다. */
+  icon?: IconKind;
+  /** href 가 없을 때만 쓴다. */
+  type?: "button" | "submit";
+  class?: string;
+}
+
+const { variant = "primary", href, external, icon, type, class: className, ...rest } = Astro.props;
+
+if (href && type) {
+  throw new Error("Button: href 와 type 은 함께 쓸 수 없다. 링크면 href, 버튼이면 type 하나만 준다.");
+}
+
+const isExternal = external ?? (href ? /^https?:\/\//.test(href) || href.endsWith(".pdf") : false);
+
+const iconFromHref = (): IconKind => {
+  if (icon) return icon;
+  if (!href) return "none";
+  if (isExternal) return "external";
+  if (href.startsWith("#")) return "down";
+  if (href.startsWith("mailto:") || href.startsWith("tel:")) return "none";
+  return "arrow";
+};
+
+const baseIcon = iconFromHref();
+
+/* primary 는 항상 방향을 가리킨다. 그래야 하어라인 아이콘 칸이 비지 않는다.
+   메일 열기처럼 이동이 아닌 행동은 예외로 두고 아이콘을 붙이지 않는다. */
+const isAction = !href || href.startsWith("mailto:") || href.startsWith("tel:");
+const resolvedIcon: IconKind =
+  variant === "primary" && baseIcon === "none" && !isAction ? "arrow" : baseIcon;
+
+const classes = ["button", variant === "ghost" && "button--ghost", className].filter(Boolean).join(" ");
+
+const Tag = href ? "a" : "button";
+---
+
+<Tag
+  class={classes}
+  data-icon={resolvedIcon}
+  href={href}
+  type={href ? undefined : (type ?? "button")}
+  target={isExternal ? "_blank" : undefined}
+  rel={isExternal ? "noreferrer" : undefined}
+  {...rest}
+>
+  <span><slot /></span>
+  {isExternal && <span class="sr-only">(새 창)</span>}
+  {resolvedIcon !== "none" && (
+    <span class="button__icon">
+      <svg
+        viewBox="0 0 16 16"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+        focusable="false"
+      >
+        {resolvedIcon === "arrow" && <><path d="M2.5 8h10" /><path d="M9 4.5 12.5 8 9 11.5" /></>}
+        {resolvedIcon === "down" && <><path d="M8 2.5v10" /><path d="M4.5 9 8 12.5 11.5 9" /></>}
+        {resolvedIcon === "back" && <><path d="M13.5 8h-10" /><path d="M7 4.5 3.5 8 7 11.5" /></>}
+        {resolvedIcon === "external" && <><path d="M5.5 10.5 10.5 5.5" /><path d="M6.5 5.5h4v4" /></>}
+      </svg>
+    </span>
+  )}
+</Tag>

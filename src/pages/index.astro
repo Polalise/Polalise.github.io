@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import MetricRail from "../components/MetricRail.astro";
+import Button from "../components/Button.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import { getProjects } from "../lib/projects";
 import { projectVisualMedia } from "../lib/media";
@@ -137,9 +138,9 @@ const principles = [
         <ul class="d2-tags" aria-label="주로 사용하는 기술">
           {heroSkills.map((skill) => <li>{skill}</li>)}
         </ul>
-        <div class="d2-hero__actions">
-          <a class="button" href="#work">프로젝트 보기 <span aria-hidden="true">↓</span></a>
-          <a class="button button--ghost" href="/resume/">이력서 <span aria-hidden="true">→</span></a>
+        <div class="button-row d2-hero__actions">
+          <Button href="#work">프로젝트 보기</Button>
+          <Button variant="ghost" href="/resume/">이력서</Button>
         </div>
       </div>
 
@@ -377,10 +378,10 @@ const principles = [
           <h2 id="contact-title">유병현</h2>
           <p class="d2-contact__role">AI 연동형 풀스택 개발자</p>
         </div>
-        <div class="d2-contact__actions">
-          <a class="button" href="https://github.com/Polalise" target="_blank" rel="noreferrer">GitHub</a>
-          <a class="button button--ghost" href="mailto:qudgus182@naver.com">이메일</a>
-          <a class="button button--ghost" href="/resume/resume.pdf">PDF 이력서</a>
+        <div class="button-row d2-contact__actions">
+          <Button href="https://github.com/Polalise">GitHub</Button>
+          <Button variant="ghost" href="mailto:qudgus182@naver.com">이메일</Button>
+          <Button variant="ghost" href="/resume/resume.pdf">PDF 이력서</Button>
         </div>
       </div>
     </div>

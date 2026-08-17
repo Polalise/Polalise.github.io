@@ -3,6 +3,7 @@ import { render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ProjectCover from "../../components/ProjectCover.astro";
 import ProjectGallery from "../../components/ProjectGallery.astro";
+import Button from "../../components/Button.astro";
 import { getProjects } from "../../lib/projects";
 import { projectCoverMedia } from "../../lib/media";
 
@@ -134,10 +135,10 @@ const socialCover = projectCoverMedia(project.id).og;
           )}
 
           {(data.links.repository || data.links.demo || data.links.report) && (
-            <div class="detail-links" data-reveal>
-              {data.links.repository && <a class="button" href={data.links.repository} target="_blank" rel="noreferrer">원본 저장소</a>}
-              {data.links.demo && <a class="button button--ghost" href={data.links.demo} target="_blank" rel="noreferrer">데모</a>}
-              {data.links.report && <a class="button button--ghost" href={data.links.report} target="_blank" rel="noreferrer">공동 산출물</a>}
+            <div class="button-row detail-links" data-reveal>
+              {data.links.repository && <Button href={data.links.repository}>원본 저장소</Button>}
+              {data.links.demo && <Button variant="ghost" href={data.links.demo}>데모</Button>}
+              {data.links.report && <Button variant="ghost" href={data.links.report}>공동 산출물</Button>}
             </div>
           )}
         </div>
