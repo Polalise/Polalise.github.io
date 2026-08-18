@@ -5,7 +5,7 @@ order: 3
 tier: "featured"
 ownership: "personal"
 category: "머신러닝, 시계열, 데이터 시각화"
-summary: "한국은행 월별 데이터로 유가와 환율의 시차를 반영해 다음 달 소비자물가 상승률을 예측하고 시나리오를 비교하는 대시보드입니다."
+summary: "한국은행 월별 데이터로 유가와 환율의 시차를 반영해 다음 달 소비자물가 상승률을 예측하고 시나리오를 비교하는 교육과정 과제 대시보드입니다."
 period: "2026.06 ~ 2026.07"
 role: "가설 설정, 데이터 가공, 모델 비교와 평가, Streamlit 대시보드 구현"
 technologies:
@@ -31,7 +31,7 @@ metrics:
   - value: "0.9278"
     label: "2022년부터 2025년 테스트 R²"
     scope: "personal"
-    evidence: "저장소 분석 노트북과 README의 최종 Linear Regression 평가 결과"
+    evidence: "README와 저장 모델 기준 최종 Linear Regression 평가 결과입니다. 노트북을 다시 실행하면 0.9281이 나오며 측정 대상이 다릅니다"
   - value: "5.6%"
     label: "유가 제외 모델 대비 RMSE 개선"
     scope: "personal"
