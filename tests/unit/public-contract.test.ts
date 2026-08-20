@@ -16,6 +16,7 @@ import {
   validateSourcePrivacy
 } from "../../scripts/audit-public.mjs";
 import { PROJECT_DETAIL_MEDIA, PROJECT_DETAIL_VARIANTS, PROJECT_MEDIA_VARIANTS } from "../../scripts/project-media.mjs";
+import { median } from "../../scripts/median.mjs";
 
 const root = path.resolve(import.meta.dirname, "..", "..");
 const detailMedia = PROJECT_DETAIL_MEDIA as Record<string, readonly { id: string; source: string }[]>;
@@ -163,5 +164,22 @@ describe("route contract", () => {
     expect(routeForHtmlRelativePath(path.join("projects", "index.html"))).toBe("/projects/");
     expect(routeForHtmlRelativePath(path.join("projects", "hajacheck", "index.html"))).toBe("/projects/hajacheck/");
     expect(routeForHtmlRelativePath("404.html")).toBe("/404.html");
+  });
+});
+
+describe("lighthouse gate", () => {
+  it("takes the middle score so one slow run cannot fail the gate", () => {
+    expect(median([81, 96, 95])).toBe(95);
+    expect(median([96])).toBe(96);
+    expect(median([90, 92, 91, 93])).toBe(92);
+  });
+
+  it("still fails when the scores are genuinely low", () => {
+    expect(median([81, 82, 96])).toBe(82);
+    expect(median([70, 71, 72])).toBe(71);
+  });
+
+  it("rejects an empty sample instead of returning a passing score", () => {
+    expect(() => median([])).toThrow();
   });
 });

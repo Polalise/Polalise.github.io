@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import lighthouse from "lighthouse";
 import * as chromeLauncher from "chrome-launcher";
+import { median } from "./median.mjs";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const root = path.join(projectRoot, "dist");
@@ -90,32 +91,55 @@ try {
   });
   const thresholds = { performance: 90, accessibility: 95, "best-practices": 95, seo: 95 };
   const routes = ["/", "/projects/", "/projects/hajacheck/"];
-  for (const route of routes) {
-    const run = await lighthouse(`http://${host}:${port}${route}`, {
-      port: chrome.port,
-      logLevel: "error",
-      output: "json",
-      onlyCategories: ["performance", "accessibility", "best-practices", "seo"]
-    });
-    if (!run) throw new Error(`Lighthouse did not return a result for ${route}`);
+  // 공용 러너에서는 TBT 가 단발로 튀어 같은 커밋이 81 점과 96 점을 오간다. 라우트마다 여러 번
+  // 측정해 중앙값으로 판정하면 이 변동은 걸러지고 실제 회귀는 그대로 남는다.
+  const attempts = Number.parseInt(process.env.LIGHTHOUSE_ATTEMPTS ?? "3", 10);
+  if (!Number.isInteger(attempts) || attempts < 1) {
+    throw new Error(`LIGHTHOUSE_ATTEMPTS must be a positive integer, received ${process.env.LIGHTHOUSE_ATTEMPTS}`);
+  }
 
-    const scores = Object.fromEntries(
-      Object.entries(run.lhr.categories).map(([key, category]) => [key, Math.round((category.score ?? 0) * 100)])
+  for (const route of routes) {
+    const results = [];
+    for (let attempt = 0; attempt < attempts; attempt += 1) {
+      const run = await lighthouse(`http://${host}:${port}${route}`, {
+        port: chrome.port,
+        logLevel: "error",
+        output: "json",
+        onlyCategories: ["performance", "accessibility", "best-practices", "seo"]
+      });
+      if (!run) throw new Error(`Lighthouse did not return a result for ${route}`);
+      results.push(run.lhr);
+    }
+
+    const samples = results.map((lhr) =>
+      Object.fromEntries(
+        Object.entries(lhr.categories).map(([key, category]) => [key, Math.round((category.score ?? 0) * 100)])
+      )
     );
+    const scores = Object.fromEntries(
+      Object.keys(thresholds).map((key) => [key, median(samples.map((sample) => sample[key] ?? 0))])
+    );
+
     for (const [key, threshold] of Object.entries(thresholds)) {
       const score = scores[key] ?? 0;
-      console.log(`${route} ${key}: ${score}`);
+      const observed = samples.map((sample) => sample[key] ?? 0);
+      console.log(`${route} ${key}: ${score}${attempts > 1 ? ` (${attempts} runs: ${observed.join(", ")})` : ""}`);
       if (score < threshold) process.exitCode = 1;
     }
+
     if ((scores.performance ?? 0) < thresholds.performance) {
+      // 진단은 중앙값에 해당하는 실행으로 남긴다. 가장 나쁜 실행만 보면 변동을 원인으로 오인한다.
+      const performances = samples.map((sample) => sample.performance ?? 0);
+      const matched = performances.indexOf(scores.performance);
+      const lhr = results[matched === -1 ? performances.indexOf(Math.min(...performances)) : matched];
       const routeKey = route === "/" ? "home" : route.replace(/^\/+|\/+$/g, "").replaceAll("/", "-");
-      await writeFile(path.join(projectRoot, "tmp", `lighthouse-result-${routeKey}.json`), JSON.stringify(run.lhr));
-      const weightedAudits = run.lhr.categories.performance.auditRefs.filter((reference) => reference.weight > 0);
+      await writeFile(path.join(projectRoot, "tmp", `lighthouse-result-${routeKey}.json`), JSON.stringify(lhr));
+      const weightedAudits = lhr.categories.performance.auditRefs.filter((reference) => reference.weight > 0);
       for (const reference of weightedAudits) {
-        const audit = run.lhr.audits[reference.id];
+        const audit = lhr.audits[reference.id];
         console.log(`${route} ${audit.id}: ${Math.round((audit.score ?? 0) * 100)}${audit.displayValue ? `, ${audit.displayValue}` : ""}`);
       }
-      const diagnostics = Object.values(run.lhr.audits)
+      const diagnostics = Object.values(lhr.audits)
         .filter((audit) => audit.score !== null && audit.score < 1 && audit.displayValue)
         .sort((left, right) => (right.details?.overallSavingsMs ?? 0) - (left.details?.overallSavingsMs ?? 0))
         .slice(0, 15);
