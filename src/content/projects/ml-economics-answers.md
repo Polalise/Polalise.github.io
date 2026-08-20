@@ -45,6 +45,7 @@ metrics:
     evidence: "원본 1,200문항과 검수된 증강 5,065문항으로 구성된 모델 학습 이력"
 links:
   repository: "https://github.com/Polalise/ML_economics_answers"
+  demo: "https://huggingface.co/spaces/Polalise/ML_economics_answers"
 cover:
   kind: "validation"
   tone: "ink"
