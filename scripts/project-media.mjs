@@ -36,7 +36,8 @@ const SCREEN_PROJECTS = new Set([
   "bmi-calculator",
   "hajacheck",
   "ml-economics-answers",
-  "deep-learning-sleep"
+  "deep-learning-sleep",
+  "plushome"
 ]);
 const MEDIA_MANIFEST_VERSION = 5;
 export const PROJECT_DETAIL_MEDIA = Object.freeze({
@@ -63,6 +64,13 @@ export const PROJECT_DETAIL_MEDIA = Object.freeze({
   "bmi-calculator": [
     { id: "history", source: "history.png" },
     { id: "statistics", source: "statistics.webp" }
+  ],
+  // 담당 범위(기업 회원 기능)를 그대로 따라간다 - 주문 관리 -> 상담·견적 -> 견적서 출력.
+  // 원본은 실행 화면이며 실주소·실전화·팀원 실명은 마스킹본으로 대체했다.
+  plushome: [
+    { id: "company-order-manage", source: "company-order-manage.png" },
+    { id: "interior-consult-manage", source: "interior-consult-manage.png" },
+    { id: "quote-pdf", source: "quote-pdf.png" }
   ]
 });
 // SCREEN_PROJECTS 대표 커버의 원본 이미지·오버레이 문구. machine-learning-oil·bmi-calculator는
@@ -102,6 +110,14 @@ const SCREEN_EVIDENCE = Object.freeze({
     title: "실제 Streamlit 실행 화면",
     desktopSubtitle: "취침 전 입력만으로 오늘 밤 수면 예측",
     mobileSubtitle: "취침 전 입력으로 수면 예측",
+    mobilePosition: "north"
+  },
+  // 정량 성과가 없는 프로젝트라 오버레이는 역할·범위 문구로 쓴다. 수치를 새로 만들지 않는다.
+  plushome: {
+    input: path.join(projectRoot, "source", "project-visuals", "plushome", "company-order-manage.png"),
+    title: "실제 기업 회원 대시보드",
+    desktopSubtitle: "상품·주문·리뷰·문의·교환환불·쿠폰 관리와 통계",
+    mobileSubtitle: "기업 회원 주문 관리",
     mobilePosition: "north"
   }
 });

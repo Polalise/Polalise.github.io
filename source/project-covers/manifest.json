@@ -1,6 +1,6 @@
 {
   "version": 5,
-  "inputFingerprint": "7b:c2:c7:f5:70:11:14:14:4c:2f:92:c5:d2:f3:60:24:dd:e8:10:3b:c0:b1:48:8c:07:c0:6e:04:e1:b1:56:44",
+  "inputFingerprint": "d3:80:5e:70:49:05:69:e4:b8:31:c4:f3:2d:b1:b6:7b:1d:da:aa:e5:05:e6:5f:9a:6c:32:7d:88:6e:ab:26:8a",
   "outputs": {
     "public/media/projects/hajacheck/cover.webp": "cf:e8:4a:17:05:15:62:e6:20:21:04:76:f1:9a:ed:1d:b0:9f:6e:bc:5e:b9:62:ae:eb:33:11:f3:7d:36:82:fd",
     "public/media/projects/hajacheck/cover-960w.webp": "59:c9:b8:66:5e:f6:08:2c:1a:6f:c2:bd:f6:1c:4d:f8:f1:dd:6d:be:27:85:5f:e7:32:0c:51:67:70:10:34:1d",
@@ -20,12 +20,12 @@
     "public/media/projects/machine-learning-oil/cover-mobile.webp": "d3:56:34:43:fe:1f:17:50:0f:cf:ec:e7:73:d0:48:0e:91:7a:dd:d0:cd:10:b5:b4:75:f9:c9:53:83:4f:ff:d9",
     "public/media/projects/machine-learning-oil/cover-mobile-480w.webp": "dd:61:38:bc:db:93:31:dd:45:bb:51:a6:ac:22:16:4c:e6:a4:66:af:e9:0a:9f:9f:54:b1:b4:41:6e:03:fb:f7",
     "public/media/projects/machine-learning-oil/cover-og.webp": "3f:de:e3:a4:80:b6:3e:0e:25:3c:57:e2:e6:3b:5a:a5:e0:85:f7:b4:f7:4d:79:f7:46:c4:a2:51:dc:5a:3a:14",
-    "public/media/projects/plushome/cover.webp": "22:8f:ea:81:8b:6e:33:1e:f2:ec:97:12:b0:aa:7c:84:5c:83:32:b0:44:f6:61:cb:64:fd:35:ec:6b:41:59:54",
-    "public/media/projects/plushome/cover-960w.webp": "7f:7e:06:6c:63:05:6d:2b:51:68:ef:43:0a:ac:b0:37:05:55:9a:73:e2:1d:3c:da:e5:46:8a:e9:5c:c1:69:62",
-    "public/media/projects/plushome/cover-480w.webp": "b7:ec:ff:d4:33:f6:8f:63:1d:2e:01:8f:cb:15:06:67:80:31:bc:2c:2a:ae:4c:12:ed:82:76:04:23:5c:86:77",
-    "public/media/projects/plushome/cover-mobile.webp": "b7:2c:ee:7a:70:0b:55:4f:54:d2:dd:d8:10:ad:a2:ac:bf:a1:79:10:99:fa:73:07:40:dc:55:fa:e4:21:da:bb",
-    "public/media/projects/plushome/cover-mobile-480w.webp": "68:59:55:87:e6:f5:c1:d7:58:a8:b8:29:ef:63:b7:60:f2:4b:d0:73:ed:04:f4:6f:d9:7d:0c:96:d1:a7:7b:7f",
-    "public/media/projects/plushome/cover-og.webp": "8c:a2:ff:91:e7:79:00:b1:ac:25:cb:66:4f:f0:cf:2a:98:f1:32:52:10:6f:66:77:4c:2d:66:39:42:da:83:21",
+    "public/media/projects/plushome/cover.webp": "b4:9a:df:de:aa:a9:8e:cf:8f:9d:8b:b6:3f:58:1d:33:db:09:b0:f6:0b:80:3f:4c:f4:a8:f6:0b:a8:b5:80:dc",
+    "public/media/projects/plushome/cover-960w.webp": "cc:ad:c6:09:f8:0a:9c:50:8b:a6:53:ca:87:03:61:16:25:de:09:33:95:fa:9d:82:05:dd:59:45:77:50:ca:19",
+    "public/media/projects/plushome/cover-480w.webp": "18:11:31:0d:f9:8b:a2:49:3f:86:d1:f8:29:b9:c7:c4:5b:20:25:fd:85:be:43:31:ea:63:95:57:10:7b:5e:ec",
+    "public/media/projects/plushome/cover-mobile.webp": "5d:b8:a4:ad:16:e5:56:d6:6d:1a:41:8b:3f:6d:7c:d3:18:c2:e1:96:51:d3:dd:e7:55:90:6c:95:86:c0:59:76",
+    "public/media/projects/plushome/cover-mobile-480w.webp": "03:59:73:98:e8:f3:85:e7:22:e7:7f:f1:29:78:d6:70:25:86:dd:fd:ae:5b:33:f5:e4:af:bd:f8:f2:62:61:e6",
+    "public/media/projects/plushome/cover-og.webp": "f1:e4:7d:b1:7e:8e:7c:b0:74:39:f9:04:00:6a:a3:99:7e:c3:35:0e:1d:e4:d4:a1:81:d1:a0:e4:67:3b:0a:c8",
     "public/media/projects/deep-learning-sleep/cover.webp": "2d:c8:59:82:02:23:34:a7:35:6f:74:5b:5a:ea:25:f6:4e:c4:06:bd:8d:dc:f8:18:13:f1:49:35:01:50:94:d9",
     "public/media/projects/deep-learning-sleep/cover-960w.webp": "95:59:41:ef:78:a8:67:1b:4e:d7:a0:dc:03:d9:a2:1f:d2:32:7b:77:dd:a6:9c:07:88:b7:c3:d5:fa:49:f7:74",
     "public/media/projects/deep-learning-sleep/cover-480w.webp": "a2:86:fd:9f:74:32:5e:d1:75:95:8c:9c:b8:68:1b:ea:06:c7:9b:37:a9:3f:8c:89:f2:c5:85:f5:a9:cb:c5:5b",
@@ -91,6 +91,15 @@
     "public/media/projects/bmi-calculator/visuals/history-480w.webp": "fb:c9:21:56:32:63:08:a3:06:08:80:a3:48:ae:30:50:43:d4:3c:5d:3a:cb:9a:94:63:18:21:cf:3c:42:7e:d5",
     "public/media/projects/bmi-calculator/visuals/statistics.webp": "80:ae:bf:13:8f:cd:8e:35:d0:1f:fe:af:cb:db:7a:0c:1a:0c:7c:b0:1e:09:69:a1:8d:9c:8b:22:e6:6c:5e:dc",
     "public/media/projects/bmi-calculator/visuals/statistics-960w.webp": "81:00:8b:7c:e8:95:ec:22:e7:22:5d:51:dd:76:c3:2e:fe:93:43:b2:52:da:33:f7:fa:3d:93:c7:17:84:76:92",
-    "public/media/projects/bmi-calculator/visuals/statistics-480w.webp": "88:be:4e:87:f2:c6:c8:51:cb:4e:c8:39:cd:ee:f3:8a:7b:40:de:a5:83:a0:b5:78:6c:96:0c:5b:04:51:04:28"
+    "public/media/projects/bmi-calculator/visuals/statistics-480w.webp": "88:be:4e:87:f2:c6:c8:51:cb:4e:c8:39:cd:ee:f3:8a:7b:40:de:a5:83:a0:b5:78:6c:96:0c:5b:04:51:04:28",
+    "public/media/projects/plushome/visuals/company-order-manage.webp": "3f:86:dd:86:e6:aa:a9:c5:c0:f9:b5:f4:e3:11:44:10:4b:ce:17:df:01:c6:26:50:cc:44:c2:03:c9:9c:6b:82",
+    "public/media/projects/plushome/visuals/company-order-manage-960w.webp": "fb:d2:54:f5:cf:4b:06:22:ae:0e:11:cb:27:ca:2f:65:fb:ba:2b:32:1c:0a:da:e1:7b:e4:10:ec:d3:76:e7:25",
+    "public/media/projects/plushome/visuals/company-order-manage-480w.webp": "3b:dd:bf:9f:c5:57:c5:f4:9d:c8:ba:34:b6:b3:54:ba:52:b9:cb:29:18:88:48:22:5a:73:ff:23:c1:72:01:5c",
+    "public/media/projects/plushome/visuals/interior-consult-manage.webp": "18:6d:a7:28:a7:64:82:ed:97:25:97:39:56:e6:60:b8:92:fc:bb:c0:90:8e:f0:4b:78:de:b9:37:19:26:a1:a7",
+    "public/media/projects/plushome/visuals/interior-consult-manage-960w.webp": "d5:38:46:08:03:e5:b4:58:82:70:fe:65:67:a3:6e:b0:4a:48:07:d5:01:8e:d9:be:1b:d2:aa:bd:8f:39:57:3d",
+    "public/media/projects/plushome/visuals/interior-consult-manage-480w.webp": "da:46:b4:d0:81:e8:c6:cf:57:5a:a6:49:24:09:6f:0a:a5:01:a1:5e:08:d5:27:a1:a1:5c:fb:1c:16:01:cf:6d",
+    "public/media/projects/plushome/visuals/quote-pdf.webp": "dc:44:7a:ca:f1:31:69:98:32:52:8e:db:11:c1:53:8d:b8:5a:a4:97:a7:bf:2a:79:e9:cb:6d:b9:b1:38:d7:c1",
+    "public/media/projects/plushome/visuals/quote-pdf-960w.webp": "16:fc:2c:dd:23:60:8d:cf:03:9a:05:36:d3:96:32:85:8d:57:b6:5f:14:00:bf:a0:2b:c1:4f:da:02:d4:c9:a1",
+    "public/media/projects/plushome/visuals/quote-pdf-480w.webp": "af:ba:03:e2:9d:29:2d:e2:4d:9e:45:8c:99:80:e6:ed:58:f4:fd:d2:c7:01:89:35:04:fa:30:9d:b7:2f:cc:a3"
   }
 }
