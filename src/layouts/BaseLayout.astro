@@ -50,6 +50,17 @@ const personSchema = {
     <meta name="color-scheme" content="light dark" />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- 본문 폰트는 CSS 를 파싱해야 발견되므로 요청이 늦다. 첫 진입에서 fallback 의
+         차단 구간 안에 받으려면 HTML 파싱 시점에 요청을 시작해야 한다.
+         crossorigin 은 폰트가 CORS 모드로 받아지기 때문에 필요하다. 빼면 preload 와
+         실제 요청이 서로 다른 캐시 항목이 되어 81KB 를 두 번 받는다. -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/pretendard-subset/PretendardVariable.subset.woff2"
+      crossorigin
+    />
     <meta property="og:locale" content="ko_KR" />
     <meta property="og:type" content={type} />
     <meta property="og:title" content={title} />

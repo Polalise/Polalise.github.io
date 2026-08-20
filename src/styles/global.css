@@ -72,11 +72,19 @@
    THIRD_PARTY_NOTICES.md 참고. 디스플레이용 Paperlogy 는 같은 이유로 이미 제거했다.
    디렉터리 이름을 배포본과 다르게 둔 이유: Windows 는 대소문자를 구분하지 않아
    pretendard/ 를 만들면 원본이 있는 Pretendard/ 와 같은 폴더가 되고, 대소문자를 구분하는
-   GitHub Pages 에서 경로가 어긋나 404 로 조용히 시스템 폰트로 떨어진다. */
+   GitHub Pages 에서 경로가 어긋나 404 로 조용히 시스템 폰트로 떨어진다.
+
+   font-display 는 optional 이 아니라 fallback 이다. optional 은 차단 구간 100ms 만 주고
+   swap 구간이 없어서, 그 안에 못 받으면 그 페이지 조회 내내 폰트를 버린다. 서브셋이
+   81KB 인데다 CSS 를 파싱해야 요청이 시작되므로 캐시가 빈 첫 진입에서는 100ms 를 거의
+   넘긴다. 그래서 처음 들어오면 시스템 폰트로 보이고 새로고침하면 정상으로 보였다.
+   fallback 은 같은 100ms 차단 뒤 3초의 swap 구간을 줘서 늦게 도착해도 반영한다.
+   BaseLayout 의 preload 가 요청을 CSS 와 같은 시점으로 당기므로 대개 차단 구간 안에
+   끝나고, 늦어도 3초 안에 교체된다. */
 @font-face {
   font-family: "Pretendard Variable";
   font-style: normal;
-  font-display: optional;
+  font-display: fallback;
   font-weight: 400 800;
   src: url("/fonts/pretendard-subset/PretendardVariable.subset.woff2") format("woff2-variations");
 }
