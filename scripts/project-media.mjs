@@ -37,7 +37,8 @@ const SCREEN_PROJECTS = new Set([
   "hajacheck",
   "ml-economics-answers",
   "deep-learning-sleep",
-  "plushome"
+  "plushome",
+  "advanced-project"
 ]);
 const MEDIA_MANIFEST_VERSION = 5;
 export const PROJECT_DETAIL_MEDIA = Object.freeze({
@@ -71,6 +72,13 @@ export const PROJECT_DETAIL_MEDIA = Object.freeze({
     { id: "company-order-manage", source: "company-order-manage.png" },
     { id: "interior-consult-manage", source: "interior-consult-manage.png" },
     { id: "quote-pdf", source: "quote-pdf.png" }
+  ],
+  // 담당 범위를 탐색 -> 상세 -> 내 활동 순으로 잇는다.
+  // 화면의 매물·회원은 캡처용으로 시드한 더미 데이터이며 실제 이용자 기록이 아니다.
+  "advanced-project": [
+    { id: "map-search", source: "map-search.png" },
+    { id: "property-detail", source: "property-detail.png" },
+    { id: "mypage", source: "mypage.png" }
   ]
 });
 // SCREEN_PROJECTS 대표 커버의 원본 이미지·오버레이 문구. machine-learning-oil·bmi-calculator는
@@ -118,6 +126,14 @@ const SCREEN_EVIDENCE = Object.freeze({
     title: "실제 기업 회원 대시보드",
     desktopSubtitle: "상품·주문·리뷰·문의·교환환불·쿠폰 관리와 통계",
     mobileSubtitle: "기업 회원 주문 관리",
+    mobilePosition: "north"
+  },
+  // 정량 성과가 없는 프로젝트라 오버레이는 역할·범위 문구로만 쓴다.
+  "advanced-project": {
+    input: path.join(projectRoot, "source", "project-visuals", "advanced-project", "map-search.png"),
+    title: "실제 지도 기반 매물 탐색",
+    desktopSubtitle: "지도 마커와 목록을 조건 필터로 함께 좁히는 탐색 화면",
+    mobileSubtitle: "지도와 목록을 함께 좁히는 탐색",
     mobilePosition: "north"
   }
 });
