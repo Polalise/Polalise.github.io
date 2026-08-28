@@ -73,6 +73,17 @@
   --space-xl: 2rem;
   --space-2xl: 3rem;
   --space-3xl: 4.5rem;
+  /* 유동 간격 primitive (DSN-20260829-001). clamp(min, vw, max) 로 반응형 레이아웃 리듬을
+     보존한다. 정적 --space-* 로 스냅하지 않는다. max 기준 아래로 곡선을 흡수했다.
+     간격은 테마 불변이라 다크 재정의가 없다. */
+  --space-flow-2xs: clamp(1.35rem, 2.5vw, 2rem);
+  --space-flow-xs: clamp(1.5rem, 3vw, 2.75rem);
+  --space-flow-sm: clamp(2rem, 4vw, 3.5rem);
+  --space-flow-md: clamp(2.5rem, 5vw, 4.5rem);
+  --space-flow-lg: clamp(3rem, 6vw, 5.5rem);
+  --space-flow-xl: clamp(4rem, 8vw, 7rem);
+  --space-flow-2xl: clamp(3rem, 8vw, 8rem);
+  --space-flow-3xl: clamp(3rem, 10vw, 10rem);
   color-scheme: light;
 }
 
@@ -304,7 +315,7 @@ button {
 .site-header nav {
   display: flex;
   align-items: center;
-  gap: clamp(1rem, 3vw, 2.4rem);
+  gap: var(--space-flow-xs);
 }
 
 .site-header nav a,
@@ -382,7 +393,7 @@ button {
 }
 
 .page-shell {
-  padding-block: clamp(5rem, 10vw, 9rem);
+  padding-block: var(--space-flow-2xl);
 }
 
 .section {
@@ -392,9 +403,9 @@ button {
 .section-head {
   display: grid;
   grid-template-columns: minmax(10rem, .55fr) 1.45fr;
-  gap: clamp(2rem, 8vw, 8rem);
+  gap: var(--space-flow-2xl);
   align-items: start;
-  margin-bottom: clamp(3rem, 7vw, 6rem);
+  margin-bottom: var(--space-flow-lg);
 }
 
 .eyebrow,
@@ -468,8 +479,8 @@ button {
   display: grid;
   grid-template-columns: minmax(0, 1.03fr) minmax(20rem, .97fr);
   align-items: center;
-  gap: clamp(3rem, 7vw, 7.5rem);
-  padding-block: clamp(4rem, 8vw, 7rem);
+  gap: var(--space-flow-xl);
+  padding-block: var(--space-flow-xl);
 }
 
 .hero-copy {
@@ -634,7 +645,7 @@ button {
 
 .metric-item {
   min-width: 0;
-  padding: clamp(1.35rem, 2.6vw, 2.1rem);
+  padding: var(--space-flow-2xs);
 }
 
 .metric-item + .metric-item {
@@ -689,7 +700,7 @@ button {
 .featured-grid {
   display: grid;
   grid-template-columns: 1.35fr .65fr;
-  gap: clamp(1.5rem, 4vw, 4rem);
+  gap: var(--space-flow-md);
   align-items: start;
 }
 
@@ -916,7 +927,7 @@ button {
    규칙적인 2열 grid 로 바꾸고 행 간격은 섹션 간격(144px)보다 작게 잡는다. */
 .tier-grid {
   display: grid;
-  gap: clamp(3.25rem, 5vw, 5rem) clamp(2.5rem, 3.5vw, 3.5rem);
+  gap: var(--space-flow-md) var(--space-flow-sm);
   align-items: start;
 }
 
@@ -934,7 +945,7 @@ button {
 .tier-grid--featured .project-card--wide .project-card__link {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
-  gap: clamp(2rem, 4vw, 3.5rem);
+  gap: var(--space-flow-sm);
   align-items: center;
 }
 
@@ -963,7 +974,7 @@ button {
 .project-card--supporting .project-card__link {
   display: grid;
   grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr);
-  gap: clamp(2rem, 7vw, 7rem);
+  gap: var(--space-flow-xl);
   align-items: center;
 }
 
@@ -979,7 +990,7 @@ button {
 .project-card--compact .project-card__link {
   display: grid;
   grid-template-columns: minmax(11rem, .8fr) minmax(0, 1.2fr);
-  gap: clamp(1.25rem, 3vw, 2.5rem);
+  gap: var(--space-flow-xs);
   align-items: start;
 }
 
@@ -1046,10 +1057,10 @@ button {
 .page-intro {
   display: grid;
   grid-template-columns: 1.2fr .8fr;
-  gap: clamp(2rem, 8vw, 8rem);
+  gap: var(--space-flow-2xl);
   align-items: end;
-  padding-top: clamp(5rem, 10vw, 9rem);
-  padding-bottom: clamp(4rem, 8vw, 7rem);
+  padding-top: var(--space-flow-2xl);
+  padding-bottom: var(--space-flow-xl);
 }
 
 .page-intro h1 {
@@ -1100,13 +1111,13 @@ button {
    제목과 본문 크기는 그대로 두고 위아래 여백만 줄인다.
    1440px 실측 484.6px 에서 415.8px 로 약 14% 줄어드는 값이다. */
 .resume-intro {
-  padding-top: clamp(4rem, 7.6vw, 7.5rem);
-  padding-bottom: clamp(3rem, 5.4vw, 5.5rem);
+  padding-top: var(--space-flow-xl);
+  padding-bottom: var(--space-flow-lg);
 }
 
 .projects-intro {
-  padding-top: clamp(4.5rem, 9vw, 8rem);
-  padding-bottom: clamp(3.5rem, 7vw, 6rem);
+  padding-top: var(--space-flow-2xl);
+  padding-bottom: var(--space-flow-lg);
 }
 
 .tier-divider {
@@ -1124,15 +1135,15 @@ button {
 }
 
 .detail-hero {
-  padding-top: clamp(4rem, 8vw, 7rem);
+  padding-top: var(--space-flow-xl);
 }
 
 .detail-head {
   display: grid;
   grid-template-columns: minmax(0, 1.3fr) minmax(18rem, .7fr);
-  gap: clamp(2rem, 8vw, 8rem);
+  gap: var(--space-flow-2xl);
   align-items: end;
-  padding-bottom: clamp(3rem, 6vw, 5rem);
+  padding-bottom: var(--space-flow-lg);
 }
 
 .detail-title {
@@ -1199,7 +1210,7 @@ button {
 .detail-content {
   display: grid;
   grid-template-columns: minmax(12rem, .52fr) minmax(0, 1.48fr);
-  gap: clamp(3rem, 10vw, 10rem);
+  gap: var(--space-flow-3xl);
   align-items: start;
 }
 
@@ -1331,20 +1342,20 @@ button {
 .resume-layout {
   display: grid;
   grid-template-columns: minmax(13rem, .52fr) minmax(0, 1.48fr);
-  gap: clamp(3rem, 10vw, 10rem);
+  gap: var(--space-flow-3xl);
 }
 
 .project-gallery {
-  padding-top: clamp(2rem, 5vw, 4.5rem);
-  padding-bottom: clamp(4rem, 9vw, 8rem);
+  padding-top: var(--space-flow-md);
+  padding-bottom: var(--space-flow-2xl);
   border-top: 1px solid var(--line);
 }
 
 .project-gallery__head {
   display: grid;
   grid-template-columns: minmax(12rem, .52fr) minmax(0, 1.48fr);
-  column-gap: clamp(3rem, 10vw, 10rem);
-  margin-bottom: clamp(2rem, 5vw, 4rem);
+  column-gap: var(--space-flow-3xl);
+  margin-bottom: var(--space-flow-md);
 }
 
 .project-gallery__head .eyebrow {
@@ -1367,7 +1378,7 @@ button {
 .project-gallery__grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: clamp(2rem, 5vw, 4.5rem) clamp(1rem, 3vw, 2.2rem);
+  gap: var(--space-flow-md) var(--space-flow-2xs);
 }
 
 .project-visual {
@@ -1469,7 +1480,7 @@ button {
 /* 가이드 28·29절 - 섹션 리듬용 구간. 배경이 바뀌는 구간은 경계선을 갖지 않는다.
    .page-shell 의 세로 여백은 구간이 대신 갖는다. */
 .resume-band {
-  padding-block: clamp(2.5rem, 4vw, 3.5rem);
+  padding-block: var(--space-flow-sm);
 }
 
 .resume-band > .page-shell {
@@ -1509,7 +1520,7 @@ button {
   display: grid;
   grid-template-columns: 10rem 1fr;
   gap: var(--space-xl);
-  padding: clamp(2rem, 3vw, 2.75rem) 0;
+  padding: var(--space-flow-xs) 0;
   border-top: 1px solid var(--line);
 }
 
@@ -1568,7 +1579,7 @@ button {
 /* 가이드 21~27절 : Compact Project Row.
    카드가 아니라 얇은 괘선으로 구분하고, 프로젝트마다 대표 근거 한 줄을 같은 위치에 둔다. */
 .resume-work__row {
-  padding-block: clamp(1.4rem, 2.2vw, 1.9rem);
+  padding-block: var(--space-flow-2xs);
   border-bottom: 1px solid var(--line);
 }
 
@@ -1681,7 +1692,7 @@ button {
 /* 가이드 31~33절 - chip 대신 번호와 분류로 위계를 만든다. */
 .resume-skills {
   display: grid;
-  gap: clamp(1.35rem, 2.5vw, 1.75rem);
+  gap: var(--space-flow-2xs);
 }
 
 .resume-skill {
@@ -1767,10 +1778,10 @@ button {
 .d2-hero__inner {
   display: grid;
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  column-gap: clamp(2rem, 4vw, 3.5rem);
-  row-gap: clamp(2.5rem, 5vw, 4rem);
+  column-gap: var(--space-flow-sm);
+  row-gap: var(--space-flow-md);
   align-items: center;
-  padding-block: clamp(3.5rem, 7vw, 6.5rem) clamp(3rem, 5vw, 4.5rem);
+  padding-block: var(--space-flow-xl) var(--space-flow-md);
 }
 
 /* 히어로 제목은 레이아웃 모드마다 기준 폭이 달라 clamp 하나로 처리할 수 없다.
@@ -1870,7 +1881,7 @@ button {
 /* 가이드 5절 - 섹션 사이가 끊겨 보이지 않게 112~128px 범위로 좁힌다.
    이전에는 위아래 각 96px 이라 섹션 간 192px 이었다. */
 .d2-section {
-  padding-block: clamp(2.75rem, 4vw, 4rem);
+  padding-block: var(--space-flow-md);
 }
 
 /* 가이드 9절 - 흰 배경만 이어지지 않도록 아주 옅은 배경으로 리듬을 만든다.
@@ -1897,7 +1908,7 @@ button {
 
 .d2-section__head {
   max-width: 44rem;
-  margin-bottom: clamp(2rem, 4vw, 3.25rem);
+  margin-bottom: var(--space-flow-sm);
 }
 
 .d2-section__head h2 {
@@ -1921,7 +1932,7 @@ button {
 .d2-explorer {
   display: grid;
   grid-template-columns: minmax(0, 32fr) minmax(0, 68fr);
-  gap: clamp(1.5rem, 3vw, 2.75rem);
+  gap: var(--space-flow-xs);
   align-items: start;
 }
 
@@ -2026,9 +2037,9 @@ button {
 .d2-panel {
   display: grid;
   grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-  gap: clamp(1.5rem, 3vw, 2.5rem);
+  gap: var(--space-flow-xs);
   align-items: start;
-  padding: clamp(1.35rem, 2.5vw, 2rem);
+  padding: var(--space-flow-2xs);
   border: 1px solid var(--line);
   border-radius: var(--radius-card);
   background: var(--paper);
@@ -2165,7 +2176,7 @@ button {
    카드나 이미지를 쓰지 않고 여백과 타이포그래피만으로 처리한다.
    위아래가 모두 흰 배경이라 경계선 대신 넉넉한 여백으로 구분한다. */
 .d2-statement {
-  padding-block: clamp(4.5rem, 8vw, 8rem);
+  padding-block: var(--space-flow-2xl);
   border-top-color: transparent;
 }
 
@@ -2199,9 +2210,9 @@ button {
 .d2-case {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: clamp(2rem, 4vw, 3.5rem);
+  gap: var(--space-flow-sm);
   align-items: center;
-  margin-bottom: clamp(2.5rem, 4vw, 3.5rem);
+  margin-bottom: var(--space-flow-sm);
 }
 
 .d2-case__body h2 {
@@ -2262,11 +2273,11 @@ button {
 .d2-principles {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(1.25rem, 2.5vw, 2rem);
+  gap: var(--space-flow-2xs);
 }
 
 .d2-principle {
-  padding: clamp(1.35rem, 2.5vw, 1.9rem);
+  padding: var(--space-flow-2xs);
   border: 1px solid var(--line);
   border-radius: var(--radius-card);
   background: var(--paper);
@@ -2322,9 +2333,9 @@ button {
 .d2-contact {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: clamp(1.5rem, 3vw, 2.5rem);
+  gap: var(--space-flow-xs);
   align-items: center;
-  padding: clamp(1.75rem, 3.5vw, 3rem);
+  padding: var(--space-flow-xs);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--paper);
