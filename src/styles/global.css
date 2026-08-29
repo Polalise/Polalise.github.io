@@ -248,6 +248,9 @@ button {
   top: .75rem;
   left: .75rem;
   z-index: 100;
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
   padding: var(--space-sm) var(--space-md);
   transform: translateY(-180%);
   border-radius: .35rem;
