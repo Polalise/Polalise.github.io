@@ -353,8 +353,7 @@ button {
   transform-origin: left;
 }
 
-.site-header nav a[aria-current="page"],
-.wordmark[aria-current="page"] {
+.site-header nav a[aria-current="page"] {
   font-weight: var(--weight-heavy);
 }
 
@@ -2486,7 +2485,7 @@ button {
   .site-header nav a {
     min-width: 2.75rem;
     padding-inline: var(--space-3xs);
-    font-size: clamp(.62rem, 2.8vw, .75rem);
+    font-size: var(--t-small);
     line-height: var(--lh-tight);
     text-align: center;
   }

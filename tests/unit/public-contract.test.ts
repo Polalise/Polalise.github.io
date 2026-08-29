@@ -113,6 +113,13 @@ describe("public project contract", () => {
     expect(resume).toContain('id="experience"');
     expect(resume).not.toContain("resume-sidebar");
     expect(header).toContain("aria-current");
+    expect(header).toContain('class="wordmark"');
+    expect(header).not.toMatch(/<a\s+class="wordmark"/);
+    expect(header).toContain('<a href="/" aria-current={isHome ? "page" : undefined}>소개</a>');
+    expect(header).toContain('<a href="/projects/" aria-current={isProjects ? "page" : undefined}>프로젝트</a>');
+    expect(header).toContain('<a href="/resume/" aria-current={isResume ? "page" : undefined}>이력서</a>');
+    expect(header).not.toContain("대표 사례");
+    expect(header).not.toContain("전체 프로젝트");
     for (const label of ["이메일", "GitHub", "PDF 이력서", "오픈소스 고지"]) expect(footer).toContain(label);
   });
 

@@ -134,6 +134,59 @@ test.describe("static route contract", () => {
   });
 });
 
+test.describe("global navigation information architecture", () => {
+  const currentLabelByRoute = [
+    { route: "/", currentLabel: "소개" },
+    { route: "/projects/", currentLabel: "프로젝트" },
+    { route: "/projects/hajacheck/", currentLabel: "프로젝트" },
+    { route: "/projects/ml-economics-answers/", currentLabel: "프로젝트" },
+    { route: "/resume/", currentLabel: "이력서" },
+    { route: "/404.html", currentLabel: undefined }
+  ];
+
+  for (const { route, currentLabel } of currentLabelByRoute) {
+    test(`${route} exposes one unambiguous top-level location`, async ({ page }) => {
+      await page.goto(route, { waitUntil: "domcontentloaded" });
+
+      const header = page.locator(".site-header");
+      const wordmark = header.locator(".wordmark");
+      await expect(wordmark).toHaveText(/Polalise/);
+      await expect(wordmark).not.toHaveAttribute("href");
+      await expect(wordmark).not.toHaveAttribute("role", "link");
+      await expect(wordmark).not.toHaveAttribute("tabindex");
+
+      const links = header.locator('nav[aria-label="주요 탐색"] a');
+      await expect(links).toHaveCount(3);
+      await expect(links).toHaveText(["소개", "프로젝트", "이력서"]);
+      await expect(links.nth(0)).toHaveAttribute("href", "/");
+      await expect(links.nth(1)).toHaveAttribute("href", "/projects/");
+      await expect(links.nth(2)).toHaveAttribute("href", "/resume/");
+
+      if (currentLabel) {
+        await expect(header.locator('nav a[aria-current="page"]')).toHaveCount(1);
+        await expect(header.locator('nav a[aria-current="page"]')).toHaveText(currentLabel);
+      } else {
+        await expect(header.locator('nav a[aria-current="page"]')).toHaveCount(0);
+      }
+    });
+  }
+
+  test("keyboard traversal skips the wordmark and follows the visual navigation order", async ({ page }) => {
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+    await page.locator("body").click({ position: { x: 1, y: 1 } });
+
+    const expectedFocus = ["소개", "프로젝트", "이력서", "다크 모드로 전환"];
+    for (const label of expectedFocus) {
+      await page.keyboard.press("Tab");
+      const focusedLabel = await page.evaluate(() => {
+        const element = document.activeElement;
+        return element?.getAttribute("aria-label") || element?.textContent?.trim();
+      });
+      expect(focusedLabel).toBe(label);
+    }
+  });
+});
+
 test.describe("responsive themes and accessibility", () => {
   for (const width of viewportWidths) {
     for (const mode of displayModes) {
