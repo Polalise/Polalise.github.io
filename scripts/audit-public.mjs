@@ -462,6 +462,46 @@ export async function validateSourcePrivacy(root) {
   return errors;
 }
 
+const RESUME_SNAPSHOT_REL = "scripts/resume/resume-snapshot.json";
+
+function squeezeWhitespace(text) {
+  return text.replace(/\s+/g, "");
+}
+
+/**
+ * 최신성 게이트 (DSN-20260829-004 ADR-007).
+ * build_resume.mjs 가 생성 시 함께 쓴 resume-snapshot.json 의 keyStrings 가
+ * 커밋된 resume.pdf 텍스트에 전부 있는지 검사한다. pdfjs 추출이 줄바꿈마다
+ * 공백을 넣으므로 양쪽에서 공백을 제거해 비교한다.
+ * 이력서 본문 자체와의 대조(원본 sha256)는 부모 저장소 scripts/verify_gui_release.py 가 한다.
+ */
+export async function auditResumeSnapshot(root, resumeText) {
+  const errors = [];
+  const snapshotPath = path.join(root, "scripts", "resume", "resume-snapshot.json");
+  let snapshot;
+  try {
+    snapshot = JSON.parse(await readFile(snapshotPath, "utf8"));
+  } catch {
+    return [`${RESUME_SNAPSHOT_REL}: missing or unparseable (run npm run resume:build)`];
+  }
+
+  const keyStrings = Array.isArray(snapshot.keyStrings) ? snapshot.keyStrings : [];
+  if (keyStrings.length === 0) {
+    errors.push(`${RESUME_SNAPSHOT_REL}: no keyStrings recorded (run npm run resume:build)`);
+    return errors;
+  }
+
+  const squeezed = squeezeWhitespace(resumeText);
+  for (const keyString of keyStrings) {
+    if (!squeezed.includes(squeezeWhitespace(keyString))) {
+      errors.push(
+        `public/resume/resume.pdf is stale: "${keyString}" is missing (regenerate with npm run resume:build)`
+      );
+    }
+  }
+  return errors;
+}
+
 export async function validatePublicAssets(root) {
   const errors = [];
   const publicDirectory = path.join(root, "public");
@@ -488,6 +528,7 @@ export async function validatePublicAssets(root) {
         const resumeText = await extractPdfText(resumePath);
         if (!resumeText.trim()) errors.push("public resume PDF has no selectable text");
         errors.push(...auditText(resumeText, "public/resume/resume.pdf text"));
+        errors.push(...(await auditResumeSnapshot(root, resumeText)));
       } catch (error) {
         const detail = error instanceof Error ? error.message : "unknown extraction error";
         errors.push(`public resume PDF text extraction failed: ${detail}`);

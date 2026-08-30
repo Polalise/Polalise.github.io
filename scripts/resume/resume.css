@@ -1,0 +1,256 @@
+/* 공개 이력서 PDF (RPDF-DOC) - 문서형 멤버.
+   색 / 타입 / 간격 토큰의 원본은 부모 저장소 assets/css/theme.css ::root 다
+   (덱 / PDF surface, 디자인_시스템.md 4.2). 서브모듈 경계상 @import 이 불가해
+   값을 그대로 재선언한다. 값이 4.2 와 어긋나면 4.2 를 원본으로 이 파일을 고친다.
+   component-local (--rail-w, --doc-margin-*) 는 디자인_시스템.md 4.5 에 등록한다.
+   본문은 인쇄 밀도로 조정한 값이며 (제출본 9개 섹션 전량 수용) pt 단위를 쓴다. */
+
+:root {
+  --paper: #F2F0EA;
+  --paper-deep: #E7E4DB;
+  --ink: #14110F;
+  --ink-mute: #6B655C;
+  --ink-faint: #A8A196;
+  --rule: #CFC9BD;
+  --accent: #C2410C;
+  --font-sans: "Pretendard", "Pretendard Variable", "Apple SD Gothic Neo", "Malgun Gothic", "\B9D1\C740 \ACE0\B515", system-ui, -apple-system, sans-serif;
+  --lh-tight: 1.12;
+  --lh-snug: 1.28;
+  --lh-body: 1.34;
+  --hair: 1px;
+  --bar: 4px;
+
+  /* component-local (디자인_시스템.md 4.5) */
+  --rail-w: 24mm;
+  --doc-margin-x: 17mm;
+  --doc-margin-top: 15mm;
+  --doc-margin-bottom: 14mm;
+}
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 8.25pt;
+  line-height: var(--lh-body);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  text-rendering: optimizeLegibility;
+  word-break: keep-all;
+}
+
+.page {
+  padding: var(--doc-margin-top) var(--doc-margin-x) var(--doc-margin-bottom);
+}
+
+@media print {
+  .page {
+    padding: 0;
+  }
+}
+
+/* 헤더 */
+.rhead {
+  break-after: avoid;
+  margin-bottom: 3.5mm;
+}
+
+.rhead__name {
+  margin: 0;
+  font-size: 25pt;
+  font-weight: 700;
+  line-height: var(--lh-tight);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.rhead__tick {
+  width: 34mm;
+  height: var(--bar);
+  margin: 2.2mm 0;
+  background: var(--accent);
+}
+
+.rhead__role {
+  margin: 0 0 1.8mm;
+  font-size: 11pt;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.rhead__contact {
+  font-size: 8pt;
+  color: var(--ink-mute);
+}
+
+.rhead__contact a {
+  color: var(--ink-mute);
+  text-decoration: none;
+}
+
+.rhead__contact .sep {
+  padding: 0 1.6mm;
+  color: var(--ink-faint);
+}
+
+/* 섹션: 좁은 좌측 라벨 레일 + 헤어라인 괘선 + 우측 본문 */
+.rsection {
+  display: grid;
+  grid-template-columns: var(--rail-w) 1fr;
+  column-gap: 4mm;
+  margin-top: 2.2mm;
+  padding-top: 2.2mm;
+  border-top: var(--hair) solid var(--rule);
+}
+
+.rsection:first-of-type {
+  margin-top: 0;
+}
+
+.rsection__label {
+  break-inside: avoid;
+  position: relative;
+  padding-left: 4.6mm;
+  font-size: 7.5pt;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+
+.rsection__label::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 3mm;
+  height: 2px;
+  background: var(--accent);
+}
+
+.rsection__body {
+  min-width: 0;
+}
+
+.rsection__body > :first-child {
+  margin-top: 0;
+}
+
+.rsection__body h3 {
+  margin: 1.8mm 0 0.5mm;
+  font-size: 9pt;
+  font-weight: 700;
+  line-height: var(--lh-snug);
+  color: var(--ink);
+  break-after: avoid;
+}
+
+.rsection__body p {
+  margin: 0 0 0.9mm;
+  orphans: 2;
+  widows: 2;
+}
+
+.rsection__body p.meta {
+  margin-bottom: 0.6mm;
+  font-size: 7.75pt;
+  color: var(--ink-mute);
+}
+
+.rsection__body p.bracket {
+  margin-top: 1.6mm;
+  margin-bottom: 0.6mm;
+  font-weight: 600;
+  color: var(--ink);
+  break-after: avoid;
+}
+
+.rsection__body ul,
+.rsection__body ol {
+  margin: 0 0 1.2mm;
+  padding-left: 0;
+}
+
+.rsection__body li {
+  margin: 0 0 0.3mm;
+}
+
+.rsection__body ul {
+  list-style: none;
+}
+
+.rsection__body ul > li {
+  position: relative;
+  padding-left: 3mm;
+}
+
+.rsection__body ul > li::before {
+  content: "-";
+  position: absolute;
+  left: 0;
+  color: var(--ink-mute);
+}
+
+.rsection__body ol {
+  padding-left: 4.4mm;
+}
+
+.rsection__body ol > li {
+  padding-left: 0.6mm;
+}
+
+.rsection__body a {
+  color: var(--accent);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.rsection__body .tags {
+  margin: 0 0 0.6mm;
+  line-height: 1.9;
+}
+
+.rsection__body .tag {
+  display: inline-block;
+  margin: 0 0.8mm 0.4mm 0;
+  padding: 0.2mm 1.4mm;
+  font-size: 7.75pt;
+  color: var(--ink);
+  background: var(--paper-deep);
+  border-radius: 1px;
+}
+
+.rsection__body .backlink {
+  margin-top: 1.8mm;
+  font-size: 8pt;
+  color: var(--ink-mute);
+}
+
+.rsection__body .backlink a {
+  color: var(--ink-mute);
+}
+
+.backlink {
+  margin-top: 3mm;
+  padding-top: 2.4mm;
+  border-top: var(--hair) solid var(--rule);
+  font-size: 8pt;
+  color: var(--ink-mute);
+}
+
+.backlink a {
+  color: var(--ink-mute);
+  text-decoration: none;
+}

@@ -8,6 +8,7 @@
     "check": "cross-env ASTRO_TELEMETRY_DISABLED=1 astro check",
     "build": "npm run media:check && npm run check && cross-env ASTRO_TELEMETRY_DISABLED=1 astro build && node scripts/audit-public.mjs",
     "preview": "cross-env ASTRO_TELEMETRY_DISABLED=1 astro preview",
+    "resume:build": "node scripts/build_resume.mjs",
     "test": "vitest run",
     "test:browser": "playwright test",
     "test:lighthouse": "npm run build && node scripts/lighthouse-check.mjs",
