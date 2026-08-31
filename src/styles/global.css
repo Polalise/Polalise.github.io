@@ -32,7 +32,10 @@
      --line-control 은 컨트롤 전용이다. --line 은 구분선용이라 옅은 값을 유지한다. */
   --accent-hover: #0f55c8;
   --accent-active: #0d49ac;
-  --line-control: #8892a6;
+  /* --line-control 은 ghost 버튼·테마 토글의 유일한 어포던스라 WCAG 1.4.11(비텍스트 3:1) 대상이다.
+     이전 #8892a6 은 흰 배경 3.13:1, 옅은 tint 면(--surface-subtle·--surface-accent) 위 2.96:1 로
+     미달이었다. 3.4~3.6:1 로 낮춰 모든 라이트 표면에서 3:1 을 넘긴다 (DSN-20260829-003 A7). */
+  --line-control: #7e8799;
   --focus-ring: #2477ff;
   --max-width: 90rem;
   --gutter: clamp(1.15rem, 4vw, 3rem);
@@ -84,6 +87,15 @@
   --space-flow-xl: clamp(4rem, 8vw, 7rem);
   --space-flow-2xl: clamp(3rem, 8vw, 8rem);
   --space-flow-3xl: clamp(3rem, 10vw, 10rem);
+  /* 모션 primitive (DSN-20260829-003 F3). duration 과 easing 을 분리한다. 값은 기존 리터럴
+     (.18s·.2s·.25s·.7s, ease, reveal 곡선) 을 그대로 정규화한 것이라 체감 모션은 불변이다.
+     테마 불변이라 다크 재정의가 없다. reduced-motion 은 아래 @media 블록이 전역으로 끈다. */
+  --dur-fast: .18s;
+  --dur-base: .2s;
+  --dur-slow: .25s;
+  --dur-reveal: .7s;
+  --ease-out: ease;
+  --ease-emphasized: cubic-bezier(.2, .75, .2, 1);
   color-scheme: light;
 }
 
@@ -106,7 +118,9 @@
      accent 와 accent-bright 가 같은 값이라 채운 버튼에 포커스하면 링이 면과 같은 색이었다. */
   --accent-hover: #80b2ff;
   --accent-active: #91bcff;
-  --line-control: #5a6474;
+  /* 라이트와 같은 이유(WCAG 1.4.11). 이전 #5a6474 는 --paper-strong·--surface-accent 위
+     2.88~2.91:1 로 미달이었다. #626c7d 로 밝혀 모든 다크 표면에서 3.25:1 이상이다. */
+  --line-control: #626c7d;
   --focus-ring: #edeff3;
   --shadow: 0 20px 50px rgb(0 0 0 / 45%);
   --shadow-card: 0 8px 24px rgb(0 0 0 / 25%);
@@ -171,6 +185,10 @@ html {
   color: var(--ink);
   font-family: var(--font-sans);
   scroll-behavior: smooth;
+  /* DSN-20260829-003 A4 (WCAG 2.4.11). sticky 헤더(.header-inner min-height 4.5rem +
+     1px 경계)가 skip-link·인페이지 앵커 이동 후 포커스 대상을 가렸다. 스크롤 컨테이너에서
+     헤더 높이만큼 상단 패딩을 확보한다. */
+  scroll-padding-top: 5rem;
   text-rendering: optimizeLegibility;
 }
 
@@ -222,6 +240,12 @@ button {
   outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
   border-radius: 2px;
+}
+
+/* DSN-20260829-003 A4. skip-link 이 <main tabindex="-1"> 에 프로그램적 포커스를 옮긴다.
+   키보드 이동이 아니므로 링을 그리지 않는다. ID 선택자라 위 :focus-visible 보다 우선한다. */
+#main-content:focus {
+  outline: none;
 }
 
 /* 시각적으로는 감추고 보조기술에는 남긴다. display:none 과 visibility:hidden 은 낭독되지 않는다.
@@ -347,7 +371,7 @@ button {
   transform: scaleX(0);
   transform-origin: right;
   background: var(--accent);
-  transition: transform .25s ease;
+  transition: transform var(--dur-slow) var(--ease-out);
 }
 
 .site-header nav a:hover::after,
@@ -372,7 +396,7 @@ button {
   background: transparent;
   color: var(--ink);
   cursor: pointer;
-  transition: transform .2s ease, background .2s ease, border-color .2s ease, color .2s ease;
+  transition: transform var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
 }
 
 .theme-toggle:hover {
@@ -429,22 +453,6 @@ button {
 .section-index,
 .detail-kicker {
   color: var(--accent);
-}
-
-.line-unit {
-  display: inline-block;
-  white-space: nowrap;
-}
-
-.line-unit-wide {
-  display: contents;
-}
-
-@media (min-width: 48rem) {
-  .line-unit-wide {
-    display: inline-block;
-    white-space: nowrap;
-  }
 }
 
 /* Paperlogy 를 제거하고 본문·제목을 한 계열로 통일하면서 행간을 다시 잡았다.
@@ -554,7 +562,7 @@ button {
   font-weight: var(--weight-bold);
   letter-spacing: .012em;
   text-decoration: none;
-  transition: transform .2s ease, background .2s ease, border-color .2s ease, color .2s ease;
+  transition: transform var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
 }
 
 .button[data-icon="down"] {
@@ -583,7 +591,7 @@ button {
 .button__icon svg {
   width: 1rem;
   height: 1rem;
-  transition: transform .2s ease;
+  transition: transform var(--dur-base) var(--ease-out);
 }
 
 .button:hover .button__icon svg,
@@ -680,10 +688,12 @@ button {
   line-height: var(--lh-tight);
 }
 
+/* DSN-20260829-003 F1. "개인 결과"/"팀 전체" 는 한글이라 §3.4 화면 하한(12px 초과)을
+   지키려면 --t-small(13px) 이어야 한다. Latin 전용 라벨(dt "Role" 등)은 --t-caption 유지. */
 .metric-item span {
   font-family: var(--font-mono);
   color: var(--ink-soft);
-  font-size: var(--t-caption);
+  font-size: var(--t-small);
   text-transform: uppercase;
 }
 
@@ -742,7 +752,7 @@ button {
 /* 가이드 20절 - 모션은 보조 요소다. 카드는 180ms 안에 2px 만 뜨고,
    이미지는 확대를 거의 느끼지 못할 정도로만 준다. */
 .project-card__visual {
-  transition: transform .18s ease, box-shadow .18s ease;
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .project-card__link:hover .project-card__visual {
@@ -754,7 +764,7 @@ button {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform .25s ease;
+  transition: transform var(--dur-slow) var(--ease-out);
 }
 
 .project-card__link:hover .project-card__visual img {
@@ -768,7 +778,7 @@ button {
 /* 프로젝트 페이지 가이드 32·33절 - 블록 전체가 이미 하나의 링크다.
    제목 색 전환과 화면 테두리 강조까지만 더하고 scale·큰 이동은 쓰지 않는다. */
 .project-card h3 {
-  transition: color .18s ease;
+  transition: color var(--dur-fast) var(--ease-out);
 }
 
 .project-card__link:hover h3 {
@@ -877,12 +887,13 @@ button {
   word-break: keep-all;
 }
 
+/* DSN-20260829-003 F1. "대표 근거" 는 한글이라 --t-small(13px). */
 .project-card__evidence span {
   display: block;
   margin-bottom: var(--space-3xs);
   color: var(--accent);
   font-family: var(--font-mono);
-  font-size: var(--t-caption);
+  font-size: var(--t-small);
   font-weight: var(--weight-bold);
   letter-spacing: var(--tracking-wide);
   line-height: var(--lh-snug);
@@ -905,7 +916,7 @@ button {
 }
 
 .text-link span {
-  transition: transform .2s ease;
+  transition: transform var(--dur-base) var(--ease-out);
 }
 
 /* 13.11 절. 이전에는 hover 에만 반응했다. 키보드 사용자도 같은 신호를 받아야 한다. */
@@ -973,39 +984,19 @@ button {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+/* DSN-20260829-003 A10 (WCAG 1.3.2 / 2.4.3). 이전에는 DOM 이 "이미지 → 설명" 인데
+   CSS order 로 뒤집어 설명이 왼쪽에 오면서 읽기·포커스 순서가 시각 순서와 어긋났다.
+   order 를 없애고 열 순서를 뒤집는다. 넓은 이미지가 DOM·시각 모두 첫 번째(왼쪽),
+   좁은 설명이 두 번째(오른쪽). 이미지 강조와 큰 간격은 그대로다. */
 .project-card--supporting .project-card__link {
   display: grid;
-  grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr);
+  grid-template-columns: minmax(0, 1.22fr) minmax(0, .78fr);
   gap: var(--space-flow-xl);
   align-items: center;
 }
 
-.project-card--supporting .project-card__visual {
-  order: 2;
-}
-
 .project-card--supporting .project-card__body {
-  order: 1;
   padding-top: 0;
-}
-
-.project-card--compact .project-card__link {
-  display: grid;
-  grid-template-columns: minmax(11rem, .8fr) minmax(0, 1.2fr);
-  gap: var(--space-flow-xs);
-  align-items: start;
-}
-
-.project-card--compact .project-card__body {
-  padding-top: var(--space-3xs);
-}
-
-.project-card--compact .project-card__visual {
-  aspect-ratio: 4 / 3;
-}
-
-.project-card--compact h3 {
-  font-size: var(--t-display-sm);
 }
 
 .project-card--supporting h3 {
@@ -1045,7 +1036,7 @@ button {
 .tech-list span {
   padding: var(--space-2xs) var(--space-sm);
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   color: var(--ink-soft);
   font-size: var(--t-small);
   text-decoration: none;
@@ -1122,6 +1113,7 @@ button {
   padding-bottom: var(--space-flow-lg);
 }
 
+/* DSN-20260829-003 F1. "대표 사례"·"보조 및 아카이브" 등 한글이라 --t-small(13px). */
 .tier-divider {
   grid-column: 1 / -1;
   display: flex;
@@ -1130,7 +1122,7 @@ button {
   border-bottom: 1px solid var(--line);
   color: var(--ink-soft);
   font-family: var(--font-mono);
-  font-size: var(--t-caption);
+  font-size: var(--t-small);
   font-weight: var(--weight-semibold);
   margin: 0;
   text-transform: uppercase;
@@ -1177,6 +1169,9 @@ button {
 .detail-facts dd {
   margin: var(--space-2xs) 0 0;
   font-weight: var(--weight-bold);
+  /* DSN-20260829-003 A8 (WCAG 1.4.10). 긴 한글 role 문자열이 320px 트랙에서
+     끊기지 않으면 그리드를 밀어 가로 스크롤이 생긴다. keep-all fallback. */
+  overflow-wrap: anywhere;
 }
 
 .detail-cover {
@@ -1341,10 +1336,10 @@ button {
   font-size: 3rem;
 }
 
+/* DSN-20260829-003 F5. 2열 기본값(grid-template-columns·gap)은 모든 마크업이
+   .resume-layout--single 로 덮어써 죽은 규칙이었다. display 만 남긴다. */
 .resume-layout {
   display: grid;
-  grid-template-columns: minmax(13rem, .52fr) minmax(0, 1.48fr);
-  gap: var(--space-flow-3xl);
 }
 
 .project-gallery {
@@ -1420,11 +1415,12 @@ button {
   padding-top: var(--space-md);
 }
 
+/* DSN-20260829-003 F1. "개인 구현·분석"/"팀 산출물" 은 한글이라 --t-small(13px). */
 .project-visual figcaption span {
   grid-row: 1 / span 2;
   color: var(--accent);
   font-family: var(--font-mono);
-  font-size: var(--t-caption);
+  font-size: var(--t-small);
   font-weight: var(--weight-bold);
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
@@ -1497,24 +1493,6 @@ button {
 .resume-band > .page-shell > .resume-section:first-child {
   padding-top: 0;
   border-top: 0;
-}
-
-.resume-sidebar {
-  align-self: start;
-  padding: var(--space-lg);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-}
-
-.resume-sidebar strong {
-  display: block;
-  font-size: var(--t-title);
-}
-
-.resume-sidebar p {
-  color: var(--ink-soft);
-  line-height: var(--lh-body);
 }
 
 /* 가이드 34절 - 섹션 사이 리듬을 48~64px 로 잡는다. 2rem 고정은 넓은 화면에서 평평했다. */
@@ -1614,7 +1592,7 @@ button {
   min-height: 2.75rem;
   align-items: center;
   text-decoration: none;
-  transition: color .2s ease;
+  transition: color var(--dur-base) var(--ease-out);
 }
 
 .resume-work__head h3 a:hover {
@@ -1870,7 +1848,7 @@ button {
   display: inline-block;
   margin-right: var(--space-xs);
   padding: var(--space-3xs) var(--space-xs);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--accent-soft);
   color: var(--accent);
   font-family: var(--font-mono);
@@ -1960,7 +1938,7 @@ button {
   color: inherit;
   cursor: pointer;
   text-align: left;
-  transition: background .18s ease, color .18s ease;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
 }
 
 .d2-explorer__item:last-child {
@@ -1997,7 +1975,7 @@ button {
 
 .d2-explorer__arrow {
   color: var(--ink-soft);
-  transition: transform .18s ease, color .18s ease;
+  transition: transform var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
 }
 
 .d2-explorer__item:hover {
@@ -2055,11 +2033,12 @@ button {
   min-width: 0;
 }
 
+/* DSN-20260829-003 F1. "{번호} / {카테고리}" 의 카테고리가 전부 한글이라 --t-small(13px). */
 .d2-panel__kicker {
   margin: 0;
   color: var(--accent);
   font-family: var(--font-mono);
-  font-size: var(--t-caption);
+  font-size: var(--t-small);
   font-weight: var(--weight-bold);
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
@@ -2111,6 +2090,9 @@ button {
   font-size: var(--t-body-sm);
   line-height: var(--lh-body);
   word-break: keep-all;
+  /* DSN-20260829-003 A8 (WCAG 1.4.10). 긴 한글 role/period 값이 320px 에서
+     트랙을 밀지 않도록 keep-all fallback. */
+  overflow-wrap: anywhere;
 }
 
 .d2-tags {
@@ -2127,7 +2109,7 @@ button {
 .d2-tags li {
   padding: var(--space-3xs) var(--space-xs);
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   color: var(--ink-soft);
   font-size: var(--t-small);
 }
@@ -2422,7 +2404,7 @@ button {
 .reveal-ready [data-reveal] {
   opacity: 0;
   transform: translateY(2rem);
-  transition: opacity .7s ease, transform .7s cubic-bezier(.2, .75, .2, 1);
+  transition: opacity var(--dur-reveal) var(--ease-out), transform var(--dur-reveal) var(--ease-emphasized);
 }
 
 .reveal-ready [data-reveal][data-visible="true"] {
@@ -2551,14 +2533,8 @@ button {
     grid-template-columns: 1fr;
   }
 
-  .project-card--supporting .project-card__link,
-  .project-card--compact .project-card__link {
+  .project-card--supporting .project-card__link {
     grid-template-columns: 1fr;
-  }
-
-  .project-card--supporting .project-card__visual,
-  .project-card--supporting .project-card__body {
-    order: initial;
   }
 
   .project-card__visual {
