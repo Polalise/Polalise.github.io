@@ -21,7 +21,9 @@ const htmlRoutes = [
   "/404.html"
 ];
 
-const viewportWidths = [390, 768, 1440];
+// DSN-20260829-003 A8 (WCAG 1.4.10). body{overflow-x:hidden} 이 넘침을 은폐할 수 있어
+// 320px 최소 뷰포트를 매트릭스에 넣어 실제 reflow 를 검증한다.
+const viewportWidths = [320, 390, 768, 1440];
 const displayModes = [
   { name: "light", theme: "light", colorScheme: "light" as const, reducedMotion: "no-preference" as const },
   { name: "dark", theme: "dark", colorScheme: "dark" as const, reducedMotion: "no-preference" as const },
@@ -175,7 +177,9 @@ test.describe("global navigation information architecture", () => {
     await page.goto("/", { waitUntil: "domcontentloaded" });
     await page.locator("body").click({ position: { x: 1, y: 1 } });
 
-    const expectedFocus = ["소개", "프로젝트", "이력서", "다크 모드로 전환"];
+    // DSN-20260829-003 A2. 테마 토글은 가시 텍스트 "다크 모드" 고정 + aria-pressed 로만
+    // 상태를 알린다. 이전의 행동형 이름("...로 전환")·aria-label 은 제거됐다.
+    const expectedFocus = ["소개", "프로젝트", "이력서", "다크 모드"];
     for (const label of expectedFocus) {
       await page.keyboard.press("Tab");
       const focusedLabel = await page.evaluate(() => {
@@ -241,16 +245,25 @@ test.describe("responsive themes and accessibility", () => {
     await expectVisibleKeyboardFocus(page);
   });
 
-  test("theme control persists the selected theme", async ({ page }) => {
+  // DSN-20260829-003 A2 (WCAG 4.1.2 / 4.1.3). 토글의 이름은 "다크 모드" 로 고정이고
+  // 켜짐/꺼짐은 aria-pressed 로만 알린다. 행동형 이름·aria-label·상시 aria-live 는 제거됐다.
+  test("theme control persists the selected theme and toggles only aria-pressed", async ({ page }) => {
     await page.goto("/", { waitUntil: "networkidle" });
     await page.evaluate(() => localStorage.setItem("portfolio-theme", "light"));
     await page.reload({ waitUntil: "networkidle" });
-    await page.locator(".theme-toggle").click();
+    const toggle = page.locator(".theme-toggle");
+    await expect(toggle).toHaveText("다크 모드");
+    await expect(toggle).toHaveAttribute("aria-pressed", "false");
+    await expect(toggle).not.toHaveAttribute("aria-label", /.+/);
+    await expect(toggle).not.toHaveAttribute("aria-live", /.+/);
+    await toggle.click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-    await expect(page.locator(".theme-toggle")).toHaveAttribute("aria-label", "라이트 모드로 전환");
+    await expect(toggle).toHaveAttribute("aria-pressed", "true");
+    await expect(toggle).toHaveText("다크 모드");
     expect(await page.evaluate(() => localStorage.getItem("portfolio-theme"))).toBe("dark");
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    await expect(page.locator(".theme-toggle")).toHaveAttribute("aria-pressed", "true");
   });
 
   // Design 02 로 정보 구조를 바꾸면서 이전 계약(섹션 4개, 히어로 이미지 0개, 높이 6,500px)을
@@ -262,7 +275,10 @@ test.describe("responsive themes and accessibility", () => {
     // 6개에서 7개로 늘었다. 개선 가이드 16절의 대형 문장 구간을 사례 연구와 Selected Works
     // 사이에 넣었다. 이 구간은 제목 대신 aria-label 로 이름을 갖는다.
     await expect(page.locator("main > section")).toHaveCount(7);
-    await expect(page.locator('main > section[aria-label="설계 관점"]')).toHaveCount(1);
+    // DSN-20260829-003 A9. 장식 pull-quote 섹션은 aria-label 로 region 랜드마크를
+    // 만들지 않는다. 섹션 자체는 그대로 있으므로 클래스로 존재를 확인한다.
+    await expect(page.locator("main > section.d2-statement")).toHaveCount(1);
+    await expect(page.locator('main > section.d2-statement[aria-label]')).toHaveCount(0);
     for (const id of ["work", "featured", "about", "contact"]) {
       await expect(page.locator(`main section#${id}`)).toHaveCount(1);
     }
@@ -283,7 +299,19 @@ test.describe("responsive themes and accessibility", () => {
     const cards = page.locator("main .project-card");
     await expect(cards).toHaveCount(9);
     for (let index = 0; index < 9; index += 1) {
-      await expect(cards.nth(index).locator("a[href]")).toHaveCount(1);
+      const card = cards.nth(index);
+      await expect(card.locator("a[href]")).toHaveCount(1);
+      // DSN-20260829-003 A1 (WCAG 2.4.4 / 1.3.1). 카드 링크의 접근 이름은 제목 하나로
+      // 고정된다. aria-labelledby 가 가리키는 h3 가 링크 안이 아니라 링크와 나란히 있고,
+      // 링크 이름 = 그 h3 텍스트다.
+      const link = card.locator("a.project-card__link");
+      const headingId = await link.getAttribute("aria-labelledby");
+      expect(headingId, "project-card__link must be named by its heading").toBeTruthy();
+      const heading = card.locator(`#${headingId}`);
+      await expect(heading).toHaveCount(1);
+      const headingText = ((await heading.textContent()) ?? "").trim();
+      expect(headingText.length).toBeGreaterThan(0);
+      expect(((await link.getAttribute("aria-label")) ?? "").trim()).toBe("");
     }
     await expect(page.locator('main a[href^="/projects/"]')).toHaveCount(9);
   });
@@ -496,7 +524,12 @@ test.describe("responsive themes and accessibility", () => {
     for (let index = 0; index < 4; index += 1) {
       const row = rows.nth(index);
       await expect(row.locator(".resume-work__proof")).toHaveCount(1);
-      await expect(row.locator("a.resume-work__link")).toHaveCount(1);
+      // DSN-20260829-003 A5 (WCAG 2.4.4). 한 행에 같은 URL 로 가는 링크는 제목 하나뿐이다.
+      // "사례 보기 →" 는 비링크 span 으로 남아 시각 어포던스만 제공한다.
+      await expect(row.locator("a[href]")).toHaveCount(1);
+      await expect(row.locator("a.resume-work__link")).toHaveCount(0);
+      await expect(row.locator("span.resume-work__link")).toHaveCount(1);
+      await expect(row.locator(".resume-work__head h3 a")).toHaveCount(1);
       expect((await row.locator(".resume-work__proof").innerText()).trim().length).toBeGreaterThan(1);
     }
 
@@ -558,6 +591,40 @@ test.describe("responsive themes and accessibility", () => {
         await expect(link.locator(".sr-only"), route).toHaveText("(새 창)");
         await expect(link.locator(".button__icon svg"), route).toHaveCount(1);
       }
+
+      // DSN-20260829-003 A6 (WCAG 3.2.4). 푸터의 새 창 링크(GitHub·PDF 이력서)도
+      // 같은 자원이 사이트 다른 곳과 동일하게 "(새 창)" 안내를 붙여 일관되게 연다.
+      const footerExternal = page.locator('.site-footer a[target="_blank"]');
+      const footerCount = await footerExternal.count();
+      expect(footerCount, `${route} footer has no external link`).toBeGreaterThan(0);
+      for (let index = 0; index < footerCount; index += 1) {
+        const link = footerExternal.nth(index);
+        await expect(link, `${route} footer`).toHaveAttribute("rel", /noreferrer/);
+        await expect(link.locator(".sr-only"), `${route} footer`).toHaveText("(새 창)");
+      }
     }
+  });
+
+  // DSN-20260829-003 A4 (WCAG 2.4.11 / 2.4.1). skip-link 는 body 의 첫 요소이고
+  // #main-content 를 가리킨다. 활성화하면 포커스가 실제로 <main id="main-content"> 로
+  // 옮겨가고(프로그램적 포커스라 링 없음), 헤더 가림은 html{scroll-padding-top} 이 막는다.
+  test("skip link is the first body element and moves focus to the main landmark", async ({ page }) => {
+    await page.goto("/", { waitUntil: "networkidle" });
+    const skip = page.locator(".skip-link");
+    await expect(skip).toHaveAttribute("href", "#main-content");
+    expect(await page.evaluate(() => document.body.firstElementChild?.classList.contains("skip-link"))).toBe(true);
+
+    await skip.focus();
+    await expect(skip).toBeFocused();
+    await page.keyboard.press("Enter");
+
+    const focus = await page.evaluate(() => {
+      const el = document.activeElement as HTMLElement | null;
+      return { id: el?.id ?? "", tag: el?.tagName ?? "", outline: el ? getComputedStyle(el).outlineStyle : "" };
+    });
+    expect(focus.id).toBe("main-content");
+    expect(focus.tag).toBe("MAIN");
+    expect(focus.outline).toBe("none");
+    expect(await page.evaluate(() => getComputedStyle(document.documentElement).scrollPaddingTop)).not.toBe("0px");
   });
 });
