@@ -1,0 +1,19 @@
+---
+/* DSN-20260829-003 A3 (WCAG 3.1.2 Language of Parts).
+   사이트 eyebrow·section-index 라벨은 전부 순수 영문("Problem", "How I work" 등)인데
+   <html lang="ko"> 아래에서 한국어 음성엔진이 한국어 음가로 읽어 발음이 뭉갠다.
+   이 컴포넌트가 lang="en" 을 항상 부여한다.
+   .detail-kicker 는 "{순번} / {한글 카테고리}" 라 영문이 아니므로 이 컴포넌트를 쓰지 않는다. */
+
+interface Props {
+  /** eyebrow = 섹션/문단 kicker (.eyebrow), index = 번호가 붙은 섹션 색인 (.section-index) */
+  variant?: "eyebrow" | "index";
+  class?: string;
+}
+
+const { variant = "eyebrow", class: className } = Astro.props;
+const base = variant === "index" ? "section-index" : "eyebrow";
+const classes = [base, className].filter(Boolean).join(" ");
+---
+
+<p class={classes} lang="en"><slot /></p>

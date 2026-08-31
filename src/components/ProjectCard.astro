@@ -5,17 +5,21 @@ import { projectCoverEvidenceText } from "../lib/media";
 
 interface Props {
   project: CollectionEntry<"projects">;
-  variant?: "wide" | "standard" | "supporting" | "compact";
+  variant?: "wide" | "standard" | "supporting";
   eager?: boolean;
 }
 
 const { project, variant = "standard", eager = false } = Astro.props;
 const { data } = project;
 const coverEvidence = projectCoverEvidenceText(project);
+/* DSN-20260829-003 A1 (WCAG 2.4.4 / 1.3.1). 카드 전체를 감싸는 링크의 접근 이름이
+   메타·요약·지표·근거를 다 이은 40~50단어 blob 이었다. aria-labelledby 로 이름을
+   제목만으로 고정한다(시각·히트 영역·hover 는 그대로). */
+const headingId = `project-card-title-${project.id}`;
 ---
 
 <article class:list={["project-card", `project-card--${variant}`, `tone-${data.cover.tone}`]} data-reveal>
-  <a class="project-card__link" href={`/projects/${project.id}/`}>
+  <a class="project-card__link" href={`/projects/${project.id}/`} aria-labelledby={headingId}>
     <div class="project-card__visual">
       <ProjectCover project={project} context="card" eager={eager} />
     </div>
@@ -24,7 +28,7 @@ const coverEvidence = projectCoverEvidenceText(project);
         <span>{String(data.order).padStart(2, "0")} / {data.category}</span>
         <span>{data.ownership === "personal" ? "개인 프로젝트" : "팀 프로젝트"}</span>
       </div>
-      <h3>{data.displayTitle}</h3>
+      <h3 id={headingId}>{data.displayTitle}</h3>
       <p>{data.summary}</p>
       {data.metrics[0] && (
         <p class="project-card__metric">

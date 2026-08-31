@@ -1,5 +1,6 @@
 ---
 import { projectVisualMedia } from "../lib/media";
+import Eyebrow from "./Eyebrow.astro";
 
 interface Visual {
   id: string;
@@ -20,7 +21,7 @@ const { slug, visuals } = Astro.props;
 {visuals.length > 0 && (
   <section class="project-gallery" aria-labelledby="project-gallery-title">
     <header class="project-gallery__head" data-reveal>
-      <p class="eyebrow">Selected evidence</p>
+      <Eyebrow>Selected evidence</Eyebrow>
       <h2 id="project-gallery-title">화면과 평가 근거</h2>
       <p>실제 구현 화면과 집계 그래프만 선별했습니다. 개인 기여와 팀 전체 산출물은 각 캡션에서 구분합니다.</p>
     </header>

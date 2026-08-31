@@ -8,14 +8,13 @@ interface Metric {
 
 interface Props {
   metrics: Metric[];
-  compact?: boolean;
 }
 
-const { metrics, compact = false } = Astro.props;
+const { metrics } = Astro.props;
 ---
 
 {metrics.length > 0 && (
-  <dl class:list={["metric-rail", { "metric-rail--compact": compact }]}>
+  <dl class="metric-rail">
     {metrics.map((metric) => (
       <div class="metric-item">
         <dt>{metric.label}</dt>
