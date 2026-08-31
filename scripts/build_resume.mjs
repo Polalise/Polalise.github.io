@@ -528,6 +528,8 @@ async function main() {
     await page.evaluate(() => document.fonts.ready);
     await page.emulateMedia({ media: "print" });
     await mkdir(path.dirname(OUTPUT_PATH), { recursive: true });
+    // 여백은 resume.css 의 @page / @page :first 가 정한다 (1쪽 50/110/50/100px,
+    // 2쪽부터 아래 60px). page.pdf 마진은 0 으로 두고 CSS 에 맡긴다.
     await page.pdf({
       path: OUTPUT_PATH,
       format: "A4",
@@ -535,11 +537,7 @@ async function main() {
       preferCSSPageSize: true,
       tagged: true,
       outline: true,
-      displayHeaderFooter: true,
-      headerTemplate: "<div></div>",
-      footerTemplate:
-        '<div style="width:100%;font-size:7pt;color:#9ca3af;padding:0 17mm;text-align:right;"><span class="pageNumber"></span></div>',
-      margin: { top: "15mm", right: "17mm", bottom: "14mm", left: "17mm" }
+      margin: { top: "0", right: "0", bottom: "0", left: "0" }
     });
   } finally {
     await browser.close();

@@ -17,9 +17,15 @@
   --font-sans: "Pretendard", "Pretendard Variable", "Apple SD Gothic Neo", "Malgun Gothic", "\B9D1\C740 \ACE0\B515", system-ui, -apple-system, sans-serif;
 }
 
+/* 페이지 여백: 사용자 지정 (2026-09-01). 1쪽 top 50 / right 110 / bottom 50 / left 100 (px),
+   2쪽부터 아래 여백만 60px. page.pdf() 는 균일 마진만 되므로 CSS @page 로 처리한다. */
 @page {
   size: A4;
-  margin: 0;
+  margin: 50px 110px 60px 100px;
+}
+
+@page :first {
+  margin-bottom: 50px;
 }
 
 * {
@@ -42,13 +48,7 @@ body {
 }
 
 .page {
-  padding: 15mm 17mm 14mm;
-}
-
-@media print {
-  .page {
-    padding: 0;
-  }
+  padding: 0;
 }
 
 a {
@@ -111,30 +111,32 @@ strong {
 /* 요약 카드 5개 */
 .summary {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 2.4mm;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 2mm;
   margin-bottom: 6.5mm;
 }
 
 .card {
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 3mm 3mm 3.4mm;
+  padding: 2.6mm 2.6mm 3mm;
   min-width: 0;
+  overflow: hidden;
 }
 
 .card__label {
-  margin: 0 0 1.6mm;
-  font-size: 7.6pt;
+  margin: 0 0 1.5mm;
+  font-size: 7.4pt;
   color: var(--muted);
 }
 
 .card__value {
   margin: 0;
-  font-size: 9.4pt;
+  font-size: 8.8pt;
   font-weight: 700;
   line-height: 1.35;
   color: var(--text-strong);
+  overflow-wrap: anywhere;
 }
 
 .card__sub {
