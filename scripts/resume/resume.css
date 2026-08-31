@@ -15,13 +15,13 @@
   --accent: #C2410C;
   --font-sans: "Pretendard", "Pretendard Variable", "Apple SD Gothic Neo", "Malgun Gothic", "\B9D1\C740 \ACE0\B515", system-ui, -apple-system, sans-serif;
   --lh-tight: 1.12;
-  --lh-snug: 1.28;
-  --lh-body: 1.34;
+  --lh-snug: 1.3;
+  --lh-body: 1.36;
   --hair: 1px;
   --bar: 4px;
 
   /* component-local (디자인_시스템.md 4.5) */
-  --rail-w: 24mm;
+  --rail-w: 28mm;
   --doc-margin-x: 17mm;
   --doc-margin-top: 15mm;
   --doc-margin-bottom: 14mm;
@@ -43,7 +43,7 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-sans);
-  font-size: 8.25pt;
+  font-size: 8.5pt;
   line-height: var(--lh-body);
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
@@ -109,9 +109,9 @@ body {
 .rsection {
   display: grid;
   grid-template-columns: var(--rail-w) 1fr;
-  column-gap: 4mm;
-  margin-top: 2.2mm;
-  padding-top: 2.2mm;
+  column-gap: 5mm;
+  margin-top: 2.5mm;
+  padding-top: 2.5mm;
   border-top: var(--hair) solid var(--rule);
 }
 
@@ -122,21 +122,20 @@ body {
 .rsection__label {
   break-inside: avoid;
   position: relative;
-  padding-left: 4.6mm;
-  font-size: 7.5pt;
+  padding-left: 4mm;
+  font-size: 9pt;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--ink-mute);
+  letter-spacing: 0.02em;
+  color: var(--ink);
 }
 
 .rsection__label::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 0.5em;
-  width: 3mm;
-  height: 2px;
+  top: 0.15em;
+  width: 2px;
+  height: 3.6mm;
   background: var(--accent);
 }
 
@@ -149,42 +148,65 @@ body {
 }
 
 .rsection__body h3 {
-  margin: 1.8mm 0 0.5mm;
-  font-size: 9pt;
+  margin: 2mm 0 0.7mm;
+  font-size: 10pt;
   font-weight: 700;
   line-height: var(--lh-snug);
+  letter-spacing: -0.006em;
   color: var(--ink);
   break-after: avoid;
 }
 
 .rsection__body p {
-  margin: 0 0 0.9mm;
+  margin: 0 0 0.95mm;
   orphans: 2;
   widows: 2;
 }
 
 .rsection__body p.meta {
   margin-bottom: 0.6mm;
-  font-size: 7.75pt;
+  font-size: 8pt;
   color: var(--ink-mute);
 }
 
 .rsection__body p.bracket {
-  margin-top: 1.6mm;
-  margin-bottom: 0.6mm;
-  font-weight: 600;
+  position: relative;
+  margin-top: 2.2mm;
+  margin-bottom: 0.7mm;
+  padding-left: 3.2mm;
+  font-size: 9.25pt;
+  font-weight: 700;
   color: var(--ink);
   break-after: avoid;
 }
 
+.rsection__body p.bracket::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.32em;
+  width: 1.6mm;
+  height: 1.6mm;
+  background: var(--accent);
+}
+
+.rsection__body p.bracket strong {
+  font-weight: 700;
+}
+
+.rsection__body p.skills-line {
+  margin: 0 0 1.4mm;
+  color: var(--ink);
+}
+
 .rsection__body ul,
 .rsection__body ol {
-  margin: 0 0 1.2mm;
+  margin: 0 0 1.4mm;
   padding-left: 0;
 }
 
 .rsection__body li {
-  margin: 0 0 0.3mm;
+  margin: 0 0 0.35mm;
 }
 
 .rsection__body ul {

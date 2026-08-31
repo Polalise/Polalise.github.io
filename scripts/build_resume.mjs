@@ -127,13 +127,37 @@ function inline(raw) {
   return out;
 }
 
+/* 나의 스킬: 제출본의 백틱 3줄을 공개 웹 이력서와 같은 3그룹 라벨 + 인라인 텍스트로.
+   pill 벽을 피하고 사이트 Skills(01 제품 구현 / 02 AI와 데이터 / 03 협업과 품질)와 통일한다. */
+const SKILL_GROUPS = ["01 제품 구현", "02 AI와 데이터", "03 협업과 품질"];
+function renderSkills(text) {
+  const lines = text
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .slice(0, 3);
+  const parts = [];
+  lines.forEach((line, index) => {
+    const tokens = [...line.matchAll(/`([^`]+)`/g)].map((m) => escapeHtml(m[1]));
+    if (!tokens.length) return;
+    parts.push(`<h3>${escapeHtml(SKILL_GROUPS[index] || `그룹 ${index + 1}`)}</h3>`);
+    parts.push(`<p class="skills-line">${tokens.join(" · ")}</p>`);
+  });
+  return parts.join("\n");
+}
+
 /* 한 섹션 본문(마크다운 조각)을 HTML 로 변환한다.
-   dropBareLinks: 간략 소개의 끝 URL 불릿은 헤더 연락처와 겹치므로 버린다. */
-function renderBlock(text, { dropBareLinks = false } = {}) {
+   dropBareLinks: 간략 소개의 끝 URL 불릿은 헤더 연락처와 겹치므로 버린다.
+   dropObservation: 공개본 압축 - "배포 후 관측" 측정 문단은 포트폴리오 블록과
+   경험 섹션에 중복되므로 공개 PDF 에서는 뺀다 (제출본 원본은 유지).
+   collapseOrdered: 경험 섹션의 번호 개인 프로젝트는 포트폴리오에 상세가 있으므로
+   각 항목당 앞 2개 불릿만 남긴다 (제목 + 핵심 2줄). */
+function renderBlock(text, { dropBareLinks = false, dropObservation = false, collapseOrdered = false } = {}) {
   const lines = text.split(/\r?\n/);
   const parts = [];
   let para = [];
   let listTag = null;
+  let sinceOrdered = -1;
 
   const flushPara = () => {
     if (para.length) {
@@ -164,10 +188,17 @@ function renderBlock(text, { dropBareLinks = false } = {}) {
       continue;
     }
 
+    if (dropObservation && /^-?\s*배포 후 관측[\s:]/.test(line)) {
+      flushPara();
+      closeList();
+      continue;
+    }
+
     const heading = line.match(/^#{3,4}\s+(.+)$/);
     if (heading) {
       flushPara();
       closeList();
+      sinceOrdered = -1;
       parts.push(`<h3>${inline(heading[1])}</h3>`);
       continue;
     }
@@ -187,6 +218,7 @@ function renderBlock(text, { dropBareLinks = false } = {}) {
     if (boldOnly) {
       flushPara();
       closeList();
+      sinceOrdered = -1;
       parts.push(`<p class="meta">${inline(boldOnly[1])}</p>`);
       continue;
     }
@@ -195,6 +227,7 @@ function renderBlock(text, { dropBareLinks = false } = {}) {
     if (bracket) {
       flushPara();
       closeList();
+      sinceOrdered = -1;
       const rest = bracket[2] ? ` ${inline(bracket[2])}` : "";
       parts.push(`<p class="bracket"><strong>${escapeHtml(bracket[1])}</strong>${rest}</p>`);
       continue;
@@ -203,8 +236,16 @@ function renderBlock(text, { dropBareLinks = false } = {}) {
     const ordered = line.match(/^(\d+)\.\s+(.+)$/);
     if (ordered) {
       flushPara();
-      openList("ol");
-      parts.push(`<li>${inline(ordered[2])}</li>`);
+      closeList();
+      sinceOrdered = 0;
+      if (collapseOrdered) {
+        // 압축 모드에서 번호 항목은 포트폴리오로 가는 짧은 포인터다. 번호 대신
+        // 다른 소제목과 같은 tick 붙은 소제목으로 렌더해 "1. 1. 1." 반복을 없앤다.
+        parts.push(`<p class="bracket"><strong>${inline(ordered[2])}</strong></p>`);
+      } else {
+        openList("ol");
+        parts.push(`<li>${inline(ordered[2])}</li>`);
+      }
       continue;
     }
 
@@ -212,6 +253,8 @@ function renderBlock(text, { dropBareLinks = false } = {}) {
     if (bullet) {
       const content = bullet[1].trim();
       if (dropBareLinks && /^https?:\/\/\S+$/.test(content)) continue;
+      if (collapseOrdered && sinceOrdered >= 2) continue;
+      if (sinceOrdered >= 0) sinceOrdered += 1;
       flushPara();
       openList("ul");
       parts.push(`<li>${inline(content)}</li>`);
@@ -251,7 +294,15 @@ export function parseSubmitted(rawMd) {
     if (careerTotal) {
       bodyHtml += `<p class="meta">${escapeHtml(careerTotal[1])}</p>\n`;
     }
-    bodyHtml += renderBlock(body, { dropBareLinks: title === "간략 소개" });
+    if (title === "나의 스킬") {
+      bodyHtml += renderSkills(body);
+    } else {
+      bodyHtml += renderBlock(body, {
+        dropBareLinks: title === "간략 소개",
+        dropObservation: title.startsWith("경험") || title.startsWith("포트폴리오"),
+        collapseOrdered: title.startsWith("경험")
+      });
+    }
     sections.push({ label: spec.label, html: bodyHtml });
   }
   return { version, sections };
