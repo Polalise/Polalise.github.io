@@ -194,6 +194,13 @@ const principles = [
         </div>
 
         <div class="d2-explorer__stage">
+          {/* DSN-20260831-002 A13. 스크립트 없이는 탭 패널 2~4 가 계속 hidden 이다.
+              전체 내용의 대체 경로(/projects/)를 무JS 사용자에게 알린다. */}
+          <noscript>
+            <p class="d2-explorer__noscript">
+              스크립트가 꺼져 있어 첫 항목만 표시됩니다. 나머지는 <a href="/projects/">전체 프로젝트 목록</a>에서 볼 수 있습니다.
+            </p>
+          </noscript>
           {explorerEntries.map((entry, index) => (
             <div
               role="tabpanel"

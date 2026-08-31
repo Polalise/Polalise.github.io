@@ -129,8 +129,11 @@ const socialCover = projectCoverMedia(project.id).og;
             <p>{data.limitation}</p>
           </section>
 
+          {/* DSN-20260831-002 A12 (WCAG 1.3.1/2.4.6). 자체 가시 heading 없이 마크다운 h2 를
+              감싸는 구간이라 aria-label 로 region 랜드마크를 만들지 않는다. 마크다운 h2 가
+              이 구간의 이름이 된다. A9 의 .d2-statement 처리와 같은 이유. */}
           {project.body?.trim() && (
-            <section class="story-block prose detail-notes" aria-label="추가 설명" data-reveal>
+            <section class="story-block prose detail-notes" data-reveal>
               <Content />
             </section>
           )}

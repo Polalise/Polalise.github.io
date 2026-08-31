@@ -2013,6 +2013,14 @@ button {
   color: var(--accent);
 }
 
+/* DSN-20260831-002 A13. 무JS 안내. 스크립트가 있으면 <noscript> 자체가 렌더되지 않는다. */
+.d2-explorer__noscript {
+  margin: 0 0 var(--space-md);
+  color: var(--ink-soft);
+  font-size: var(--t-small);
+  line-height: var(--lh-body);
+}
+
 /* 명세 96절 QA - 제품 화면이 작아 보이지 않도록 미리보기 열을 더 넓게 잡는다. */
 .d2-panel {
   display: grid;
