@@ -26,11 +26,22 @@ metrics: []
 links:
   repository: "https://github.com/Polalise/Project_Final"
 cover:
-  kind: "workflow"
+  kind: "product"
   tone: "ink"
-  alt: "마이페이지에서 찜, 신고, 거래 목록과 리뷰 이력을 관리하는 사용자 흐름"
+  alt: "예시 계정의 프로필, 회원 등급과 찜 정보를 보여주는 거래 서비스 마이페이지 실행 화면"
   evidence:
     source: "role"
+visuals:
+  - id: "mypage"
+    alt: "왼쪽 계정 메뉴와 오른쪽 프로필, 회원 등급, 찜 횟수 및 최근 찜한 물품을 보여주는 실제 마이페이지"
+    caption: "내 정보와 최근 찜한 물품을 확인하는 마이페이지"
+    scope: "personal"
+    evidence: "격리된 실행 사본에서 예시 계정으로 로그인한 화면입니다. 계정과 활동은 캡처용 합성 데이터이며 실제 이용자 기록이 아닙니다"
+  - id: "likes"
+    alt: "예시 계정이 찜한 두 물품의 이미지, 이름, 가격과 날짜가 카드로 표시된 실행 화면"
+    caption: "계정 메뉴에서 이동해 조회한 찜 목록"
+    scope: "personal"
+    evidence: "원본 JSP와 Oracle 조회를 사용했습니다. 상품은 캡처용 예시이며 이미지는 원본 프로젝트의 기본 이미지입니다"
 ---
 
 ## 사용자 활동을 한 계정 흐름으로 묶었습니다

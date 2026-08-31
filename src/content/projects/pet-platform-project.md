@@ -31,12 +31,17 @@ metrics: []
 links:
   repository: "https://github.com/Polalise/pet_platform_project"
 cover:
-  kind: "architecture"
+  kind: "product"
   tone: "accent"
-  alt: "Servlet 요청 처리, JSP 화면과 Oracle 데이터 저장을 연결한 Java 웹 구조"
+  alt: "검색 조건과 유기동물 카드, 마우스를 올린 카드의 이름과 상세 조회 버튼이 보이는 실제 게시판"
   evidence:
-    source: "action"
-    index: 0
+    source: "role"
+visuals:
+  - id: "abandoned-list"
+    alt: "유기동물 게시판에서 예시 동물 카드에 마우스를 올려 이름, 나이, 품종과 자세히보기 버튼을 펼친 실행 화면"
+    caption: "조건 검색과 카드 상세 조회를 제공하는 유기동물 게시판"
+    scope: "personal"
+    evidence: "격리된 실행 사본의 Servlet/JSP와 Oracle 조회 화면입니다. 동물 정보는 캡처용 예시이며 사진은 원본 프로젝트의 기본 이미지를 사용했습니다"
 ---
 
 ## Servlet과 JSP로 구성한 통합 서비스

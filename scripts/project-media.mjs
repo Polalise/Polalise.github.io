@@ -38,7 +38,9 @@ const SCREEN_PROJECTS = new Set([
   "ml-economics-answers",
   "deep-learning-sleep",
   "plushome",
-  "advanced-project"
+  "advanced-project",
+  "pet-platform-project",
+  "project-final"
 ]);
 const MEDIA_MANIFEST_VERSION = 5;
 export const PROJECT_DETAIL_MEDIA = Object.freeze({
@@ -79,6 +81,13 @@ export const PROJECT_DETAIL_MEDIA = Object.freeze({
     { id: "map-search", source: "map-search.png" },
     { id: "property-detail", source: "property-detail.png" },
     { id: "mypage", source: "mypage.png" }
+  ],
+  "pet-platform-project": [
+    { id: "abandoned-list", source: "abandoned-list.png" }
+  ],
+  "project-final": [
+    { id: "mypage", source: "mypage.png" },
+    { id: "likes", source: "likes.png" }
   ]
 });
 // SCREEN_PROJECTS 대표 커버의 원본 이미지·오버레이 문구. machine-learning-oil·bmi-calculator는
@@ -134,6 +143,22 @@ const SCREEN_EVIDENCE = Object.freeze({
     title: "실제 지도 기반 매물 탐색",
     desktopSubtitle: "지도 마커와 목록을 조건 필터로 함께 좁히는 탐색 화면",
     mobileSubtitle: "지도와 목록을 함께 좁히는 탐색",
+    mobilePosition: "north"
+  },
+  "pet-platform-project": {
+    input: path.join(projectRoot, "source", "project-visuals", "pet-platform-project", "abandoned-list.png"),
+    title: "실제 유기동물 게시판",
+    ogFit: "contain",
+    desktopSubtitle: "이름·나이·품종 검색과 상세 조회 · 캡처용 예시 데이터",
+    mobileSubtitle: "유기동물 검색 · 예시 데이터",
+    mobilePosition: "north"
+  },
+  "project-final": {
+    input: path.join(projectRoot, "source", "project-visuals", "project-final", "mypage.png"),
+    title: "실제 거래 서비스 마이페이지",
+    ogFit: "contain",
+    desktopSubtitle: "내 정보와 찜한 물품 확인 · 캡처용 예시 계정",
+    mobileSubtitle: "내 정보와 찜 목록 · 예시 계정",
     mobilePosition: "north"
   }
 });
@@ -399,7 +424,9 @@ export async function buildProjectMedia(root=projectRoot){
     const ext=SCREEN_PROJECTS.has(slug)?"png":"svg";
     const destination=path.join(publicRoot,slug); await mkdir(destination,{recursive:true});
     for(const [name,spec] of Object.entries(PROJECT_MEDIA_VARIANTS)){
-      const source=path.join(sourceRoot,slug,`${spec.source}.${ext}`); let pipeline=sharp(source).resize(spec.width,spec.height,{fit:spec.fit??"fill",position:"centre"});
+      const source=path.join(sourceRoot,slug,`${spec.source}.${ext}`);
+      const fit=name==="cover-og.webp"?(SCREEN_EVIDENCE[slug]?.ogFit??spec.fit):spec.fit;
+      let pipeline=sharp(source).resize(spec.width,spec.height,{fit:fit??"fill",position:"centre",background:palette.white});
       pipeline=SCREEN_PROJECTS.has(slug)?pipeline.webp({quality:84,effort:6}):pipeline.webp({lossless:true,effort:6});
       // Always rewrite generated outputs so mtime-based freshness remains meaningful
       // after the generator itself changes, even when encoded bytes are identical.
