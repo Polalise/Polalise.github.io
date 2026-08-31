@@ -2253,47 +2253,33 @@ button {
   word-break: keep-all;
 }
 
-/* 일하는 방식 : 명세 50~53절 */
+/* 일하는 방식 : 명세 50~53절.
+   DSN-20260831-001 (SITEAUDIT-M0 F7) - 균일 3-카드 그리드를 번호 매긴 세로 리스트로
+   재구성한다. 항목 테두리/배경/radius 와 아이콘 칩을 제거하고, .d2-statement 와 같은
+   "여백·번호·괘선·타이포그래피" 언어로 통일한다. */
 .d2-principles {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-flow-2xs);
+  gap: 0;
+  max-width: 48rem;
 }
 
 .d2-principle {
-  padding: var(--space-flow-2xs);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-card);
-  background: var(--paper);
+  display: grid;
+  grid-template-columns: clamp(3rem, 6vw, 4.5rem) minmax(0, 1fr);
+  column-gap: var(--space-lg);
+  padding-block: var(--space-flow-sm);
+  border-top: 1px solid var(--line);
 }
 
-/* 3영역 개선 가이드 2.4~2.9 절 - 카드 크기와 테두리는 그대로 두고
-   번호 / 제목 / 본문의 크기와 행간만 올려 "덜 채운 카드" 인상을 없앤다.
-   번호는 순서를 알리는 보조 요소이므로 제목보다 강해지지 않게 둔다. */
+/* 번호는 왼쪽 레일에서 순서 리듬을 잡는다. 크되 --ink-soft + 일반 굵기라
+   제목(--t-subhead)보다 시각 무게가 크지 않다. */
 .d2-principle__num {
-  display: block;
+  grid-row: span 2;
+  align-self: start;
   color: var(--ink-soft);
   font-family: var(--font-mono);
-  font-size: var(--t-body-sm);
-  font-weight: var(--weight-bold);
-  line-height: var(--lh-tight);
-}
-
-.d2-principle__icon {
-  display: grid;
-  width: 2.4rem;
-  height: 2.4rem;
-  margin: var(--space-md) 0 var(--space-md);
-  place-items: center;
-  /* 컨트롤이 아니라 장식 사각형이지만 같은 4px 언어를 쓰게 둔다 (13.15 절 결정). */
-  border-radius: var(--radius-control);
-  background: var(--accent-soft);
-  color: var(--accent);
-}
-
-.d2-principle__icon svg {
-  width: 1.35rem;
-  height: 1.35rem;
+  font-size: var(--t-display-sm);
+  line-height: 1;
 }
 
 .d2-principle h3 {
@@ -2367,14 +2353,6 @@ button {
     margin-top: var(--space-lg);
   }
 
-  .d2-principles {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .d2-principle:last-child {
-    grid-column: 1 / -1;
-  }
-
   .d2-case__media {
     order: 2;
   }
@@ -2385,11 +2363,19 @@ button {
 }
 
 @media (max-width: 47.99rem) {
-  .d2-principles,
   .d2-case__split {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  /* 좁은 폭에서는 번호 레일을 제목 위로 올려 세로로 쌓는다. */
+  .d2-principle {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--space-sm);
+  }
+
+  .d2-principle__num {
+    grid-row: auto;
+  }
 
   /* 13.10 절. 이전에는 이 규칙이 히어로와 연락처에만 걸려 이력서·상세·404 의 같은 버튼이
      모바일에서 다르게 늘어났다. 이제 모든 묶음에 한 번에 적용된다.
