@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Button from "../../components/Button.astro";
+import Eyebrow from "../../components/Eyebrow.astro";
 import { getProjects } from "../../lib/projects";
 
 const projects = await getProjects();
@@ -35,7 +36,7 @@ const workRows = selected.map((project) => {
 >
   <header class="page-shell page-intro resume-intro">
     <div data-reveal>
-      <p class="eyebrow">Public resume</p>
+      <Eyebrow>Public resume</Eyebrow>
       <h1><span>유병현</span> <span>AI 연동형 풀스택 개발자</span></h1>
     </div>
     <div data-reveal>
@@ -53,7 +54,7 @@ const workRows = selected.map((project) => {
   <section class="section resume-band" aria-label="프로필과 경력">
     <div class="page-shell resume-layout resume-layout--single">
       <section class="resume-section" data-reveal>
-        <h2>Profile</h2>
+        <h2 lang="en">Profile</h2>
         <div class="resume-entry">
           <h3>구현과 검증을 하나의 개발 흐름으로 봅니다.</h3>
           <p>웹 개발 실무 1년 4개월 동안 반복 업무 자동화와 조회 성능 개선을 경험했습니다. 이후 LLM 서비스 계약, 누수 없는 모델 평가, 비교 실험을 프로젝트로 확장했습니다.</p>
@@ -63,7 +64,7 @@ const workRows = selected.map((project) => {
       {/* 가이드 15~20절 - KPI 카드를 만들지 않고 문장 안의 실제 수치만 visual anchor 로 올린다.
           수치는 홈 지표와 같은 값을 쓴다 (1년 4개월 / 30분 이상 / 약 2.0초에서 1.6초). */}
       <section class="resume-section" id="experience" data-reveal>
-        <h2>Experience</h2>
+        <h2 lang="en">Experience</h2>
         <div class="resume-entry">
           <h3>LKSYS</h3>
           <p class="resume-entry__role">웹 개발 · 실무 <b>1년 4개월</b></p>
@@ -82,15 +83,18 @@ const workRows = selected.map((project) => {
   <section class="resume-band resume-band--subtle" aria-label="대표 프로젝트">
     <div class="page-shell resume-layout resume-layout--single">
       <section class="resume-section" data-reveal>
-        <h2>Selected work</h2>
+        <h2 lang="en">Selected work</h2>
         <div class="resume-work">
           {workRows.map((row) => (
             <article class="resume-work__row">
               <div class="resume-work__head">
                 <h3><a href={`/projects/${row.id}/`}>{row.title}</a></h3>
-                <a class="text-link resume-work__link" href={`/projects/${row.id}/`} aria-label={`${row.title} 사례 보기`}>
+                {/* DSN-20260829-003 A5 (WCAG 2.4.4). 같은 URL 로 가는 인접 링크가 2개였다.
+                    제목 <h3><a> 만 링크로 두고, "사례 보기 →" 는 시각적 어포던스로만 남긴다
+                    (비링크 span, 보조기술에서 숨김; 제목 링크가 이미 같은 목적지다). */}
+                <span class="text-link resume-work__link" aria-hidden="true">
                   사례 보기 <span aria-hidden="true">→</span>
-                </a>
+                </span>
               </div>
               <p class="resume-work__meta">{row.meta}</p>
               <p class="resume-work__desc">{row.summary}</p>
@@ -116,7 +120,7 @@ const workRows = selected.map((project) => {
     <div class="page-shell resume-layout resume-layout--single">
       {/* 가이드 31~33절 - 기술을 chip 으로 바꾸지 않고 분류와 목록의 위계만 세운다. */}
       <section class="resume-section" data-reveal>
-        <h2>Skills</h2>
+        <h2 lang="en">Skills</h2>
         <div class="resume-skills">
           <div class="resume-skill">
             <span class="resume-skill__num" aria-hidden="true">01</span>
@@ -139,7 +143,7 @@ const workRows = selected.map((project) => {
       {/* 가이드 37~41절 - 페이지를 끝까지 읽은 사용자가 바로 문서로 넘어가게 한다.
           히어로의 버튼 묶음을 반복하지 않고 문장 하나와 텍스트 링크만 둔다. */}
       <section class="resume-section resume-cta" data-reveal>
-        <h2>PDF resume</h2>
+        <h2 lang="en">PDF resume</h2>
         <div class="resume-entry">
           <h3>더 자세한 경력과 프로젝트 역할은 PDF 이력서에서 확인할 수 있습니다.</h3>
           <p>이 페이지는 핵심 경력과 대표 근거만 요약합니다. 담당 업무 범위와 기간은 문서에 정리했습니다.</p>

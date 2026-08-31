@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import MetricRail from "../components/MetricRail.astro";
 import Button from "../components/Button.astro";
+import Eyebrow from "../components/Eyebrow.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import { getProjects } from "../lib/projects";
 import { projectVisualMedia } from "../lib/media";
@@ -71,7 +72,7 @@ for (const [offset, project] of [hajaCheck, mlEconomics, machineLearningOil].ent
     ],
     stack: project.data.technologies.slice(0, 5),
     href: `/projects/${project.id}/`,
-    hrefLabel: `${project.data.displayTitle} 사례 자세히 보기`,
+    hrefLabel: `${project.data.displayTitle} 사례 보기`,
     media: visual ? projectVisualMedia(project.id, visual.id) : undefined,
     mediaAlt: visual?.alt,
     mediaCaption: visual?.caption
@@ -91,7 +92,7 @@ explorerEntries.push({
   ],
   stack: [],
   href: "/projects/",
-  hrefLabel: "전체 프로젝트 목록 보기",
+  hrefLabel: "전체 프로젝트",
   list: otherProjects.map((project) => ({
     title: project.data.displayTitle,
     category: project.data.category
@@ -130,7 +131,7 @@ const principles = [
   <section class="d2-hero" aria-labelledby="hero-title">
     <div class="page-shell d2-hero__inner">
       <div class="d2-hero__copy">
-        <p class="eyebrow">AI connected full stack developer</p>
+        <Eyebrow>AI connected full stack developer</Eyebrow>
         <h1 id="hero-title"><span class="d2-line">화면부터 DB·AI까지</span> <span class="d2-line">직접 설계합니다<span class="d2-dot">.</span></span></h1>
         <p class="d2-hero__lead">
           프론트엔드와 API, 데이터베이스 스키마와 AI 연동까지 같은 기준으로 설계하고 검증합니다.
@@ -168,7 +169,7 @@ const principles = [
   <section class="section d2-section d2-section--subtle" id="work" aria-labelledby="work-title">
     <div class="page-shell">
       <div class="d2-section__head" data-reveal>
-        <p class="section-index">01 / Selected projects</p>
+        <Eyebrow variant="index">01 / Selected projects</Eyebrow>
         <h2 id="work-title">무엇을 맡고, 어떻게 해결했는지 보여드립니다</h2>
         <p>실제 화면, 담당 범위, 검증 근거를 프로젝트별로 정리했습니다.</p>
       </div>
@@ -225,7 +226,7 @@ const principles = [
                 )}
 
                 <a class="text-link" href={entry.href} aria-label={entry.hrefLabel}>
-                  {entry.list ? "전체 프로젝트" : "사례 자세히 보기"} <span aria-hidden="true">→</span>
+                  {entry.list ? "전체 프로젝트" : "사례 보기"} <span aria-hidden="true">→</span>
                 </a>
               </div>
 
@@ -285,7 +286,7 @@ const principles = [
           )}
 
           <div class="d2-case__body" data-reveal>
-            <p class="section-index">02 / Case study</p>
+            <Eyebrow variant="index">02 / Case study</Eyebrow>
             <h2 id="case-title">{hajaCheck.data.displayTitle}</h2>
             <p class="d2-case__lead">{hajaCheck.data.summary}</p>
 
@@ -312,7 +313,9 @@ const principles = [
 
   {/* 가이드 16절. 사례 연구의 "AI 분석 -> 사람 확정" 에서 다음 절의 "모델 결과 -> 검증" 으로
       넘어가는 다리 역할이다. 카드도 이미지도 없이 여백과 큰 타이포그래피만 쓴다. */}
-  <section class="section d2-section d2-statement" aria-label="설계 관점">
+  {/* DSN-20260829-003 A9 (WCAG 1.3.1). 장식 pull-quote 라 aria-label 로 region
+      랜드마크를 만들지 않는다(heading 도 없음). 섹션·시각·카피는 그대로다. */}
+  <section class="section d2-section d2-statement">
     <div class="page-shell">
       <p class="d2-statement__text" data-reveal>
         <span class="d2-line">기술이 답을 대신하기보다,</span>
@@ -324,7 +327,7 @@ const principles = [
   <section class="section d2-section d2-section--subtle" aria-labelledby="selected-title">
     <div class="page-shell">
       <div class="d2-section__head" data-reveal>
-        <p class="section-index">03 / Selected works</p>
+        <Eyebrow variant="index">03 / Selected works</Eyebrow>
         <h2 id="selected-title">구현보다 먼저 검증 기준을 세웁니다</h2>
       </div>
       <div class="featured-grid featured-grid--pair">
@@ -338,7 +341,7 @@ const principles = [
   <section class="section d2-section" id="about" aria-labelledby="principles-title">
     <div class="page-shell">
       <div class="d2-section__head" data-reveal>
-        <p class="section-index">04 / How I work</p>
+        <Eyebrow variant="index">04 / How I work</Eyebrow>
         <h2 id="principles-title">결과를 믿을 수 있는 구조를 만듭니다</h2>
       </div>
       <div class="d2-principles" data-reveal>
@@ -381,7 +384,7 @@ const principles = [
         <div class="button-row d2-contact__actions">
           <Button href="https://github.com/Polalise">GitHub</Button>
           <Button variant="ghost" href="mailto:qudgus182@naver.com">이메일</Button>
-          <Button variant="ghost" href="/resume/resume.pdf">PDF 이력서</Button>
+          <Button variant="ghost" href="/resume/resume.pdf">PDF 이력서 보기</Button>
         </div>
       </div>
     </div>

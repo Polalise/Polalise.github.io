@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ProjectCard from "../../components/ProjectCard.astro";
+import Eyebrow from "../../components/Eyebrow.astro";
 import { getProjects } from "../../lib/projects";
 
 const projects = await getProjects();
@@ -15,7 +16,7 @@ const archive = projects.filter((project) => project.data.tier === "archive");
 >
   <header class="page-shell page-intro projects-intro">
     <div data-reveal>
-      <p class="eyebrow">Selected work and archive</p>
+      <Eyebrow>Selected work and archive</Eyebrow>
       <h1>프로젝트를 결과가 아닌 판단의 흐름으로.</h1>
     </div>
     <div data-reveal>
@@ -38,7 +39,8 @@ const archive = projects.filter((project) => project.data.tier === "archive");
   <section class="section" aria-labelledby="supporting-list-title">
     <div class="page-shell">
       <h2 class="tier-divider" id="supporting-list-title"><span>주요 풀스택 사례</span><span>04</span></h2>
-      <div class="tier-grid tier-grid--single">
+      {/* DSN-20260829-003 F5. tier-grid--single 은 대응 CSS 규칙이 없는 no-op 이라 제거. */}
+      <div class="tier-grid">
         {supporting.map((project) => <ProjectCard project={project} variant="supporting" />)}
       </div>
     </div>
