@@ -1,19 +1,19 @@
 /**
- * 공개, 개인정보 안전 A4 이력서 PDF 를 만든다 (RPDF-DOC / 후보 C1).
+ * 공개, 개인정보 안전 A4 이력서 PDF 를 만든다 (RPDF-SARAMIN).
  *
- * 로컬 전용 도구다 (DSN-20260829-004 ADR-007). CI 는 이 스크립트를 실행하지 않고
- * 커밋된 public/resume/resume.pdf 를 그대로 서빙한다. 이유:
- *   - GitHub Pages Actions 의 build 잡에는 브라우저 설치 스텝이 없다.
- *   - CI 체크아웃은 서브모듈 단독이라 ../content/docs 가 없다.
+ * 로컬 전용 도구다 (DSN-20260829-004 ADR-007, DSN-20260901-002 계승). CI 는 이 스크립트를
+ * 실행하지 않고 커밋된 public/resume/resume.pdf 를 그대로 서빙한다.
  *
  * 실행:  node scripts/build_resume.mjs   (= npm run resume:build)
  *
+ * 양식: example/이력서_템플릿.pdf (사람인 포털 표준 이력서 export) 모양을 모방한다 -
+ * 흰 배경 + 블루 액센트 + 회색, 상단 5카드 요약 행, 2열 항목, 아웃라인 pill 스킬 칩,
+ * 섹션 제목 하단 하????라인. 덱 / PDF §4.2 팔레트(웜 페이퍼 / 번트 오렌지)는 쓰지 않는다.
+ *
  * 내용 원본은 부모 저장소 content/docs/유병현_이력서_제출본.md (단일 진실) 다.
- * 이름 / 포지셔닝 한 줄 / 연락처 3개만 상수이며 (신원 / 감사 계약 상수),
- * 나머지 본문은 전부 제출본을 파싱해 채운다.
+ * 이름 / 포지셔닝 / 연락처 3개 / 상태 pill 만 상수이며, 나머지는 전부 제출본을 파싱해 채운다.
  *
  * 파이프라인: HTML + 시스템 Chrome/Edge page.pdf() (Playwright). export_pdf.py 와 동일 관용구.
- * theme.css 4.2 덱 토큰은 scripts/resume/resume.css 가 재선언한다 (문서형 멤버, 디자인_시스템.md 4.5).
  *
  * 생성물:
  *   - public/resume/resume.pdf
@@ -45,28 +45,18 @@ const FONT_DIR = path.join(
 );
 
 /* 신원 / 감사 계약 상수. 연락처는 audit-public.mjs 의 approvedEmail 과 공개 사이트에
-   이미 노출된 값만 쓴다. 전화 / 주소 / 생년월일은 넣지 않는다 (AI_ACTION.md 4.3). */
+   이미 노출된 값만 쓴다. 전화 / 주소 / 생년월일 / 성별 / 나이는 넣지 않는다 (AI_ACTION.md 4.3). */
 const NAME = "유병현";
+const STATUS_PILL = "신입";
 const ROLE_LINE = "AI 연동형 풀스택 개발자";
 const CONTACT = [
   { label: "qudgus182@naver.com", href: "mailto:qudgus182@naver.com" },
   { label: "github.com/Polalise", href: "https://github.com/Polalise" },
   { label: "polalise.github.io", href: "https://polalise.github.io" }
 ];
-const BACKLINK = { label: "polalise.github.io/resume/", href: "https://polalise.github.io/resume/" };
 
-/* 렌더할 섹션과 좌측 레일 라벨 (제출본 구조 순서, 한글 라벨). */
-const SECTION_LABELS = [
-  { match: (t) => t === "간략 소개", label: "소개" },
-  { match: (t) => t === "핵심 역량", label: "핵심 역량" },
-  { match: (t) => t === "나의 스킬", label: "스킬" },
-  { match: (t) => t === "학력", label: "학력" },
-  { match: (t) => t.startsWith("경력") && !t.startsWith("경력기술서"), label: "경력" },
-  { match: (t) => t === "경력기술서", label: "경력기술서" },
-  { match: (t) => t.startsWith("경험"), label: "경험·활동·교육" },
-  { match: (t) => t.startsWith("포트폴리오"), label: "포트폴리오" },
-  { match: (t) => t === "기타", label: "기타" }
-];
+const LINK_ICON =
+  '<span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10.5 13.5a4 4 0 0 0 5.7 0l2.3-2.3a4 4 0 0 0-5.7-5.7l-1.2 1.2"/><path d="M13.5 10.5a4 4 0 0 0-5.7 0l-2.3 2.3a4 4 0 0 0 5.7 5.7l1.2-1.2"/></svg></span>';
 
 /* PDF 에 반드시 남아야 하는 사실 계약. 최신성 게이트가 이 목록으로 검사한다.
    제출본 구조가 바뀌어 아래 문자열이 원본에서 사라지면 빌드가 실패하니 함께 갱신한다. */
@@ -107,58 +97,25 @@ function fail(message) {
 }
 
 function escapeHtml(text) {
-  return text
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
+  return text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
 
-/* 인라인 서식: 링크 -> URL -> 굵게 -> 백틱 태그. escape 후 적용한다. */
+/* 인라인 서식: 링크 -> URL -> 굵게 -> 백틱. escape 후 적용한다. */
 function inline(raw) {
   let out = escapeHtml(raw);
-  out = out.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, (_m, label, href) => {
-    return `<a href="${href}">${label}</a>`;
-  });
-  out = out.replace(/(?<!["=])\b(https?:\/\/[^\s<)]+[^\s<).,])/g, (url) => {
-    return `<a href="${url}">${url}</a>`;
-  });
+  out = out.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, (_m, label, href) => `<a href="${href}">${label}</a>`);
+  out = out.replace(/(?<!["=])\b(https?:\/\/[^\s<)]+[^\s<).,])/g, (url) => `<a href="${url}">${url}</a>`);
   out = out.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  out = out.replace(/`([^`]+)`/g, '<span class="tag">$1</span>');
+  out = out.replace(/`([^`]+)`/g, "<span class=\"tag\">$1</span>");
   return out;
 }
 
-/* 나의 스킬: 제출본의 백틱 3줄을 공개 웹 이력서와 같은 3그룹 라벨 + 인라인 텍스트로.
-   pill 벽을 피하고 사이트 Skills(01 제품 구현 / 02 AI와 데이터 / 03 협업과 품질)와 통일한다. */
-const SKILL_GROUPS = ["01 제품 구현", "02 AI와 데이터", "03 협업과 품질"];
-function renderSkills(text) {
-  const lines = text
-    .split(/\r?\n/)
-    .map((l) => l.trim())
-    .filter(Boolean)
-    .slice(0, 3);
-  const parts = [];
-  lines.forEach((line, index) => {
-    const tokens = [...line.matchAll(/`([^`]+)`/g)].map((m) => escapeHtml(m[1]));
-    if (!tokens.length) return;
-    parts.push(`<h3>${escapeHtml(SKILL_GROUPS[index] || `그룹 ${index + 1}`)}</h3>`);
-    parts.push(`<p class="skills-line">${tokens.join(" · ")}</p>`);
-  });
-  return parts.join("\n");
-}
-
-/* 한 섹션 본문(마크다운 조각)을 HTML 로 변환한다.
-   dropBareLinks: 간략 소개의 끝 URL 불릿은 헤더 연락처와 겹치므로 버린다.
-   dropObservation: 공개본 압축 - "배포 후 관측" 측정 문단은 포트폴리오 블록과
-   경험 섹션에 중복되므로 공개 PDF 에서는 뺀다 (제출본 원본은 유지).
-   collapseOrdered: 경험 섹션의 번호 개인 프로젝트는 포트폴리오에 상세가 있으므로
-   각 항목당 앞 2개 불릿만 남긴다 (제목 + 핵심 2줄). */
-function renderBlock(text, { dropBareLinks = false, dropObservation = false, collapseOrdered = false } = {}) {
+/* 한 마크다운 조각을 HTML 로 (문단 / 불릿 / 번호 / [ ] 소제목 / ### 제목). */
+function renderBlock(text) {
   const lines = text.split(/\r?\n/);
   const parts = [];
   let para = [];
   let listTag = null;
-  let sinceOrdered = -1;
-
   const flushPara = () => {
     if (para.length) {
       parts.push(`<p>${inline(para.join(" ").trim())}</p>`);
@@ -181,96 +138,201 @@ function renderBlock(text, { dropBareLinks = false, dropObservation = false, col
 
   for (const rawLine of lines) {
     const line = rawLine.trim();
-
     if (line === "" || line === "---") {
       flushPara();
       closeList();
       continue;
     }
-
-    if (dropObservation && /^-?\s*배포 후 관측[\s:]/.test(line)) {
-      flushPara();
-      closeList();
-      continue;
-    }
-
     const heading = line.match(/^#{3,4}\s+(.+)$/);
     if (heading) {
       flushPara();
       closeList();
-      sinceOrdered = -1;
       parts.push(`<h3>${inline(heading[1])}</h3>`);
       continue;
     }
-
-    const tagLine = line.match(/^(`[^`]+`\s*)+$/);
-    if (tagLine) {
-      flushPara();
-      closeList();
-      const tags = [...line.matchAll(/`([^`]+)`/g)].map(
-        (m) => `<span class="tag">${escapeHtml(m[1])}</span>`
-      );
-      parts.push(`<p class="tags">${tags.join("")}</p>`);
-      continue;
-    }
-
-    const boldOnly = line.match(/^\*\*(.+)\*\*$/);
-    if (boldOnly) {
-      flushPara();
-      closeList();
-      sinceOrdered = -1;
-      parts.push(`<p class="meta">${inline(boldOnly[1])}</p>`);
-      continue;
-    }
-
     const bracket = line.match(/^\[([^\]]+)\](?!\()\s*(.*)$/);
     if (bracket) {
       flushPara();
       closeList();
-      sinceOrdered = -1;
       const rest = bracket[2] ? ` ${inline(bracket[2])}` : "";
       parts.push(`<p class="bracket"><strong>${escapeHtml(bracket[1])}</strong>${rest}</p>`);
       continue;
     }
-
     const ordered = line.match(/^(\d+)\.\s+(.+)$/);
     if (ordered) {
       flushPara();
-      closeList();
-      sinceOrdered = 0;
-      if (collapseOrdered) {
-        // 압축 모드에서 번호 항목은 포트폴리오로 가는 짧은 포인터다. 번호 대신
-        // 다른 소제목과 같은 tick 붙은 소제목으로 렌더해 "1. 1. 1." 반복을 없앤다.
-        parts.push(`<p class="bracket"><strong>${inline(ordered[2])}</strong></p>`);
-      } else {
-        openList("ol");
-        parts.push(`<li>${inline(ordered[2])}</li>`);
-      }
+      openList("ol");
+      parts.push(`<li>${inline(ordered[2])}</li>`);
       continue;
     }
-
     const bullet = line.match(/^[-*]\s+(.+)$/);
     if (bullet) {
-      const content = bullet[1].trim();
-      if (dropBareLinks && /^https?:\/\/\S+$/.test(content)) continue;
-      if (collapseOrdered && sinceOrdered >= 2) continue;
-      if (sinceOrdered >= 0) sinceOrdered += 1;
       flushPara();
       openList("ul");
-      parts.push(`<li>${inline(content)}</li>`);
+      parts.push(`<li>${inline(bullet[1].trim())}</li>`);
       continue;
     }
-
     para.push(line);
   }
-
   flushPara();
   closeList();
   return parts.join("\n");
 }
 
-/* 제출본 마크다운을 파싱한다. 첫 `## ` 이전(이름 h1, 나이 / 성별 줄, 연락처 표,
-   스킬 태그 줄)은 전부 버린다. */
+/* 간략 소개: 문단 + 끝 URL 불릿 3줄을 아이콘 링크 행으로. */
+function renderIntro(text) {
+  const kept = [];
+  const links = [];
+  for (const raw of text.split(/\r?\n/)) {
+    const b = raw.trim().match(/^-\s+(https?:\/\/\S+?)(?:\s+\((.+)\))?$/);
+    if (b) {
+      links.push({ href: b[1].replace(/[.,]$/, ""), note: b[2] || "" });
+      continue;
+    }
+    kept.push(raw);
+  }
+  let html = renderBlock(kept.join("\n"));
+  if (links.length) {
+    html += `<div class="linklist">${links
+      .map(
+        (l) =>
+          `<div class="linkrow">${LINK_ICON}<a href="${l.href}">${escapeHtml(
+            l.href.replace(/^https?:\/\//, "")
+          )}</a>${l.note ? ` <span class="note">${escapeHtml(l.note)}</span>` : ""}</div>`
+      )
+      .join("")}</div>`;
+  }
+  return html;
+}
+
+/* 나의 스킬: 백틱 토큰 전부를 아웃라인 pill 칩으로. */
+function renderSkillsChips(text) {
+  const tokens = [...text.matchAll(/`([^`]+)`/g)].map((m) => m[1]);
+  return `<div class="chips">${tokens.map((t) => `<span class="chip">${escapeHtml(t)}</span>`).join("")}</div>`;
+}
+
+/* 2열 항목 (학력 / 경력 / 경험). **날짜** 줄로 항목을 나눈다.
+   좌: 날짜 + 기간/상태. 우: 기관(굵게) + 역할(회색) + 라벨/불릿. */
+function renderEntries(text) {
+  const entries = [];
+  let cur = null;
+  for (const raw of text.split(/\r?\n/)) {
+    const dateLine = raw.trim().match(/^\*\*(.+)\*\*$/);
+    if (dateLine) {
+      if (cur) entries.push(cur);
+      cur = { meta: dateLine[1].trim(), body: [] };
+      continue;
+    }
+    if (!cur) {
+      if (raw.trim()) cur = { meta: "", body: [raw] };
+      continue;
+    }
+    cur.body.push(raw);
+  }
+  if (cur) entries.push(cur);
+
+  return entries
+    .map((entry) => {
+      const [date, ...durRest] = entry.meta.split(" · ");
+      const dur = durRest.join(" · ");
+      const bodyLines = entry.body.slice();
+      while (bodyLines.length && !bodyLines[0].trim()) bodyLines.shift();
+
+      let titleHtml = "";
+      const first = bodyLines[0] ? bodyLines[0].trim() : "";
+      if (first && !/^[-*[#]/.test(first) && !/^\d+\.\s/.test(first)) {
+        bodyLines.shift();
+        const roleSplit = first.match(/^(.*?)\s+(사원\/팀원.*)$/);
+        const org = roleSplit ? roleSplit[1] : first;
+        const role = roleSplit ? roleSplit[2] : "";
+        titleHtml = `<p class="entry__title">${inline(org)}${
+          role ? `<span class="role">${inline(role)}</span>` : ""
+        }</p>`;
+      }
+
+      const inner = renderBlock(bodyLines.join("\n"));
+      return `<div class="entry">
+  <div class="entry__meta"><span class="date">${escapeHtml(date || "")}</span>${
+        dur ? `<span class="dur">${escapeHtml(dur)}</span>` : ""
+      }</div>
+  <div class="entry__body">${titleHtml}${inner}</div>
+</div>`;
+    })
+    .join("\n");
+}
+
+/* 포트폴리오: **포트폴리오** - {문서명} 블록마다 라벨-값 줄. "배포 후 관측" 문단은 공개본 생략. */
+function renderPortfolio(text) {
+  const KV = /^(작업기간|작업 툴|작업인원|GitHub|배포|시연 영상|작품소개)\s+(.+)$/;
+  const blocks = [];
+  let cur = null;
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.trim();
+    const name = line.match(/^\*\*포트폴리오\*\*\s*-\s*(.+)$/);
+    if (name) {
+      if (cur) blocks.push(cur);
+      cur = { name: name[1], rows: [] };
+      continue;
+    }
+    if (!cur || !line || line === "---" || /^배포 후 관측/.test(line)) continue;
+    const kv = line.match(KV);
+    if (kv) {
+      cur.rows.push([kv[1], kv[2]]);
+      continue;
+    }
+    if (cur.rows.length) cur.rows[cur.rows.length - 1][1] += ` ${line}`;
+  }
+  if (cur) blocks.push(cur);
+
+  return blocks
+    .map(
+      (b) => `<div class="pf">
+  <p class="pf__name"><span class="label">포트폴리오</span>${LINK_ICON}${inline(b.name)}</p>
+  ${b.rows
+    .map(([k, v]) => `<p class="kv"><span class="k">${escapeHtml(k)}</span>${inline(v)}</p>`)
+    .join("\n  ")}
+</div>`
+    )
+    .join("\n");
+}
+
+const SECTIONS = [
+  { match: (t) => t === "간략 소개", title: "간략 소개", render: renderIntro },
+  { match: (t) => t === "핵심 역량", title: "핵심 역량", render: renderBlock },
+  { match: (t) => t === "나의 스킬", title: "나의 스킬", render: renderSkillsChips },
+  { match: (t) => t === "학력", title: "학력", render: renderEntries },
+  {
+    match: (t) => t.startsWith("경력") && !t.startsWith("경력기술서"),
+    title: "경력",
+    total: (t) => t.replace(/^경력\s*/, "").trim(),
+    render: renderEntries
+  },
+  { match: (t) => t === "경력기술서", title: "경력기술서", cls: "desc", render: renderBlock },
+  { match: (t) => t.startsWith("경험"), title: "경험 / 활동 / 교육", render: renderEntries },
+  { match: (t) => t.startsWith("포트폴리오"), title: "포트폴리오 및 기타문서", render: renderPortfolio },
+  { match: (t) => t === "기타", title: "기타", render: renderBlock }
+];
+
+/* 제출본 프리앰블 표에서 요약 카드 값을 뽑는다.
+   | 학력 | ... | / | 경력 | ... | / | 희망연봉 | ... | / | 포트폴리오 | ... | */
+function parseSummaryCards(preamble) {
+  const table = {};
+  for (const m of preamble.matchAll(/^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*$/gm)) {
+    table[m[1].trim()] = m[2].trim();
+  }
+  const eduRaw = table["학력"] || "";
+  const eduSub = eduRaw.match(/\s(졸업|재학|수료|중퇴)\s*$/);
+  return [
+    { label: "학력", value: eduSub ? eduRaw.slice(0, eduSub.index).trim() : eduRaw, sub: eduSub ? eduSub[1] : "" },
+    { label: "직무", value: ROLE_LINE, sub: "" },
+    { label: "경력", value: table["경력"] || "", sub: "" },
+    { label: "희망연봉", value: table["희망연봉"] || "", sub: "" },
+    { label: "포트폴리오", value: table["포트폴리오"] || "", sub: "" }
+  ];
+}
+
+/* 제출본 마크다운을 파싱한다. 첫 `## ` 이전(이름 h1, 성별/나이 줄, 연락처 표, 스킬 태그 줄)은
+   요약 표만 읽고 나머지는 버린다. */
 export function parseSubmitted(rawMd) {
   const versionMatch = rawMd.match(/hiring-document-version:\s*(v[\d.]+)/i);
   const version = versionMatch ? versionMatch[1] : "unknown";
@@ -278,48 +340,50 @@ export function parseSubmitted(rawMd) {
   const md = normalizeForPublic(rawMd);
   const firstHeading = md.indexOf("\n## ");
   if (firstHeading < 0) fail(`${SOURCE_REL} 에서 '## ' 섹션을 찾지 못했습니다`);
-  const rest = md.slice(firstHeading + 1);
 
+  const preamble = md.slice(0, firstHeading);
+  const cards = parseSummaryCards(preamble);
+
+  const rest = md.slice(firstHeading + 1);
   const chunks = rest.split(/\n## /).map((c, i) => (i === 0 ? c.replace(/^## /, "") : c));
   const sections = [];
   for (const chunk of chunks) {
     const nl = chunk.indexOf("\n");
-    const title = (nl < 0 ? chunk : chunk.slice(0, nl)).trim();
+    const rawTitle = (nl < 0 ? chunk : chunk.slice(0, nl)).trim();
     const body = nl < 0 ? "" : chunk.slice(nl + 1).trim();
-    const spec = SECTION_LABELS.find((s) => s.match(title));
+    const spec = SECTIONS.find((s) => s.match(rawTitle));
     if (!spec) continue;
-
-    let bodyHtml = "";
-    const careerTotal = title.match(/^경력\s+(.+)$/);
-    if (careerTotal) {
-      bodyHtml += `<p class="meta">${escapeHtml(careerTotal[1])}</p>\n`;
-    }
-    if (title === "나의 스킬") {
-      bodyHtml += renderSkills(body);
-    } else {
-      bodyHtml += renderBlock(body, {
-        dropBareLinks: title === "간략 소개",
-        dropObservation: title.startsWith("경험") || title.startsWith("포트폴리오"),
-        collapseOrdered: title.startsWith("경험")
-      });
-    }
-    sections.push({ label: spec.label, html: bodyHtml });
+    sections.push({
+      title: spec.title,
+      total: spec.total ? spec.total(rawTitle) : "",
+      cls: spec.cls || "",
+      html: spec.render(body)
+    });
   }
-  return { version, sections };
+  return { version, cards, sections };
 }
 
-function buildHtml({ sections }, css, fontFaces) {
+function buildHtml({ cards, sections }, css, fontFaces) {
   const contactHtml = CONTACT.map((c) => `<a href="${c.href}">${c.label}</a>`).join(
     '<span class="sep">|</span>'
   );
 
+  const cardsHtml = cards
+    .map(
+      (c) => `<div class="card">
+  <p class="card__label">${escapeHtml(c.label)}</p>
+  <p class="card__value">${escapeHtml(c.value)}</p>${
+        c.sub ? `\n  <p class="card__sub">${escapeHtml(c.sub)}</p>` : ""
+      }
+</div>`
+    )
+    .join("\n");
+
   const sectionsHtml = sections
     .map(
-      (s) => `<section class="rsection">
-  <div class="rsection__label">${escapeHtml(s.label)}</div>
-  <div class="rsection__body">
+      (s) => `<section class="section${s.cls ? ` ${s.cls}` : ""}">
+  <h2>${escapeHtml(s.title)}${s.total ? ` <span class="total">${escapeHtml(s.total)}</span>` : ""}</h2>
 ${s.html}
-  </div>
 </section>`
     )
     .join("\n");
@@ -337,13 +401,14 @@ ${css}
 <body>
 <main class="page">
   <header class="rhead">
-    <h1 class="rhead__name">${NAME}</h1>
-    <div class="rhead__tick" aria-hidden="true"></div>
+    <h1 class="rhead__name">${NAME} <span class="rhead__pill">${escapeHtml(STATUS_PILL)}</span></h1>
     <p class="rhead__role">${ROLE_LINE}</p>
     <p class="rhead__contact">${contactHtml}</p>
   </header>
+  <section class="summary">
+${cardsHtml}
+  </section>
 ${sectionsHtml}
-  <p class="backlink">전체 이력과 프로젝트 근거는 <a href="${BACKLINK.href}">${BACKLINK.label}</a> 에서 확인할 수 있습니다.</p>
 </main>
 </body>
 </html>`;
@@ -358,8 +423,9 @@ async function fontFace(family, file, weight) {
       )}).`
     );
   });
-  const base64 = buffer.toString("base64");
-  return `@font-face{font-family:"${family}";src:url("data:font/ttf;base64,${base64}") format("truetype");font-weight:${weight};font-style:normal;font-display:swap;}`;
+  return `@font-face{font-family:"${family}";src:url("data:font/ttf;base64,${buffer.toString(
+    "base64"
+  )}") format("truetype");font-weight:${weight};font-style:normal;font-display:swap;}`;
 }
 
 function stripTags(html) {
@@ -422,6 +488,9 @@ export async function renderResumeHtml({ embedFonts = true } = {}) {
   if (parsed.sections.length < 8) {
     fail(`파싱된 섹션이 ${parsed.sections.length}개뿐입니다. 제출본 구조를 확인하세요.`);
   }
+  if (parsed.cards.some((c) => !c.value)) {
+    fail(`요약 카드 값이 비었습니다: ${JSON.stringify(parsed.cards)}. 제출본 상단 표를 확인하세요.`);
+  }
 
   const css = await readFile(CSS_PATH, "utf8");
   const fontFaces = embedFonts
@@ -439,7 +508,6 @@ export async function renderResumeHtml({ embedFonts = true } = {}) {
     fail(`렌더 결과에 핵심 문자열이 빠졌습니다: ${JSON.stringify(missingInRender)}. 템플릿을 확인하세요.`);
   }
 
-  // 원본 파일 바이트를 그대로 해시한다 (부모 scripts/check_resume_pdf_fresh.py 와 정합).
   const sourceSha256 = createHash("sha256").update(mdBytes).digest("hex");
   return { html, parsed, sourceSha256, plainText: plain };
 }
@@ -470,7 +538,7 @@ async function main() {
       displayHeaderFooter: true,
       headerTemplate: "<div></div>",
       footerTemplate:
-        '<div style="width:100%;font-size:7pt;color:#A8A196;padding:0 17mm;text-align:right;"><span class="pageNumber"></span></div>',
+        '<div style="width:100%;font-size:7pt;color:#9ca3af;padding:0 17mm;text-align:right;"><span class="pageNumber"></span></div>',
       margin: { top: "15mm", right: "17mm", bottom: "14mm", left: "17mm" }
     });
   } finally {
