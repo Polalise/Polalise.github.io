@@ -108,6 +108,13 @@ async function expectMinimumTouchTargets(page: Page) {
   expect(undersized, `undersized touch targets: ${JSON.stringify(undersized)}`).toEqual([]);
 }
 
+async function expectNoAxeViolations(page: Page, label: string) {
+  const accessibility = await new AxeBuilder({ page: page as never })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+    .analyze();
+  expect(accessibility.violations, label).toEqual([]);
+}
+
 test.describe("static route contract", () => {
   for (const route of htmlRoutes) {
     test(`${route} is directly accessible`, async ({ page }) => {
@@ -462,6 +469,30 @@ test.describe("responsive themes and accessibility", () => {
     });
     expect(columns.indexLeft).toBeGreaterThan(columns.bodyRight);
     expect(columns.indexShare).toBeGreaterThan(0.45);
+
+    // 연속 입력은 대기열 없이 마지막 선택을 즉시 반영한다.
+    await page.locator('.d2-explorer__index [role="tab"]').evaluateAll((nodes) => {
+      (nodes[1] as HTMLButtonElement).click();
+      (nodes[2] as HTMLButtonElement).click();
+      (nodes[0] as HTMLButtonElement).click();
+    });
+    await expect(tabs.nth(0)).toHaveAttribute("aria-selected", "true");
+    expect(await visiblePanels()).toBe(1);
+
+    // 현재 탭 재선택은 진입 모션을 다시 만들지 않는다.
+    await page.waitForTimeout(300);
+    await tabs.nth(0).click();
+    expect(await panels.nth(0).evaluate((panel) => panel.getAnimations().length)).toBe(0);
+  });
+
+  test("project explorer skips panel motion when reduced motion is requested", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/", { waitUntil: "networkidle" });
+    const tabs = page.locator('.d2-explorer__index [role="tab"]');
+    const panels = page.locator('.d2-explorer__stage [role="tabpanel"]');
+    await tabs.nth(1).click();
+    await expect(panels.nth(1)).toBeVisible();
+    expect(await panels.nth(1).evaluate((panel) => panel.getAnimations().length)).toBe(0);
   });
 
   test("detail evidence galleries expose responsive images and scope labels", async ({ page }) => {
@@ -480,7 +511,108 @@ test.describe("responsive themes and accessibility", () => {
     // 대시보드와 분석 뷰어는 팀 전체 산출물, 하자 상세는 개인 담당 범위다.
     await expect(page.locator(".project-visual figcaption span")).toHaveText(["팀 산출물", "팀 산출물", "개인 구현·분석"]);
     await expect(page.locator('.project-gallery source[srcset*="-480w.webp"]')).toHaveCount(3);
+    const openLinks = page.locator("[data-image-viewer-trigger]");
+    await expect(openLinks).toHaveCount(3);
+    await expect(openLinks.first()).toHaveAttribute("href", /\/media\/projects\/hajacheck\/visuals\/app-analysis-viewer\.webp$/);
   });
+
+  test("image viewer supports bounded navigation, zoom, pan, swipe, and focus return", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/projects/hajacheck/", { waitUntil: "networkidle" });
+    const triggers = page.locator("[data-image-viewer-trigger]");
+    const dialog = page.locator("[data-image-viewer]");
+    const stage = dialog.locator("[data-viewer-stage]");
+
+    await triggers.first().click();
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator("[data-viewer-close]")).toBeFocused();
+    await expect(stage).toHaveAttribute("data-state", "ready");
+    await expect(dialog.locator("[data-viewer-counter]")).toHaveText("1 / 3");
+    await expect(dialog.locator("[data-viewer-previous]")).toBeDisabled();
+
+    await page.keyboard.press("ArrowRight");
+    await expect(dialog.locator("[data-viewer-counter]")).toHaveText("2 / 3");
+    await expect(stage).toHaveAttribute("data-state", "ready");
+
+    await dialog.locator("[data-viewer-zoom-in]").click();
+    await expect(stage).toHaveAttribute("data-zoomed", "true");
+    await expect(dialog.locator("[data-viewer-pan]")).toBeVisible();
+    const beforePan = await dialog.locator("[data-viewer-image]").getAttribute("style");
+    await page.keyboard.press("ArrowRight");
+    await expect(dialog.locator("[data-viewer-counter]")).toHaveText("2 / 3");
+    await expect(dialog.locator("[data-viewer-image]")).not.toHaveAttribute("style", beforePan ?? "");
+
+    await dialog.locator("[data-viewer-reset]").click();
+    const box = await stage.boundingBox();
+    expect(box).not.toBeNull();
+    if (box) {
+      await page.mouse.move(box.x + box.width * .72, box.y + box.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(box.x + box.width * .28, box.y + box.height / 2, { steps: 5 });
+      await page.mouse.up();
+    }
+    await expect(dialog.locator("[data-viewer-counter]")).toHaveText("3 / 3");
+    await expect(dialog.locator("[data-viewer-next]")).toBeDisabled();
+
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    await expect(triggers.first()).toBeFocused();
+    expect(new URL(page.url()).pathname).toBe("/projects/hajacheck/");
+  });
+
+  test("gallery image links remain usable without JavaScript", async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    await page.goto("/projects/hajacheck/", { waitUntil: "domcontentloaded" });
+    const link = page.locator("[data-image-viewer-trigger]").first();
+    await expect(link).toHaveAttribute("href", /\/media\/projects\/hajacheck\/visuals\/app-analysis-viewer\.webp$/);
+    await link.click();
+    await expect(page).toHaveURL(/\/media\/projects\/hajacheck\/visuals\/app-analysis-viewer\.webp$/);
+    await context.close();
+  });
+
+  test("project gallery print keeps evidence and removes viewer-only controls", async ({ page }) => {
+    await page.goto("/projects/hajacheck/", { waitUntil: "networkidle" });
+    await page.emulateMedia({ media: "print" });
+    await expect(page.locator(".project-visual figcaption").first()).toBeVisible();
+    await expect(page.locator(".project-visual__hint").first()).toBeHidden();
+    await expect(page.locator("[data-image-viewer]")).toBeHidden();
+  });
+
+  for (const width of [320, 390]) {
+    for (const theme of ["light", "dark"] as const) {
+      test(`open image viewer states pass accessibility and touch targets at ${width}px ${theme}`, async ({ page }) => {
+        test.setTimeout(90_000);
+        await page.setViewportSize({ width, height: 844 });
+        await page.emulateMedia({ colorScheme: theme });
+        await page.addInitScript((selectedTheme) => localStorage.setItem("portfolio-theme", selectedTheme), theme);
+        await page.route("**/visuals/app-defect-detail.webp*", (route) => route.abort());
+        await page.goto("/projects/hajacheck/", { waitUntil: "networkidle" });
+        const dialog = page.locator("[data-image-viewer]");
+        const stage = dialog.locator("[data-viewer-stage]");
+
+        await page.locator("[data-image-viewer-trigger]").first().click();
+        await expect(stage).toHaveAttribute("data-state", "ready");
+        await expectNoAxeViolations(page, `${width}px ${theme} viewer ready`);
+        await expectMinimumTouchTargets(page);
+
+        await dialog.locator("[data-viewer-zoom-in]").click();
+        await expect(stage).toHaveAttribute("data-zoomed", "true");
+        await expectNoAxeViolations(page, `${width}px ${theme} viewer zoomed`);
+        await expectMinimumTouchTargets(page);
+
+        await dialog.locator("[data-viewer-reset]").click();
+        await dialog.locator("[data-viewer-next]").click();
+        await expect(stage).toHaveAttribute("data-state", "ready");
+        await dialog.locator("[data-viewer-next]").click();
+        await expect(stage).toHaveAttribute("data-state", "error");
+        await expect(dialog.locator("[data-viewer-retry]")).toBeVisible();
+        await expect(dialog.locator("[data-viewer-direct]")).toHaveAttribute("href", /app-defect-detail\.webp$/);
+        await expectNoAxeViolations(page, `${width}px ${theme} viewer error`);
+        await expectMinimumTouchTargets(page);
+      });
+    }
+  }
 
   test("all mobile controls meet the 44 by 44 target", async ({ page }) => {
     test.setTimeout(60_000);

@@ -101,18 +101,42 @@ const personSchema = {
     <Footer />
     <script>
       const revealItems = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      let observer: IntersectionObserver | null = null;
+
+      const showAll = () => {
+        observer?.disconnect();
+        observer = null;
+        document.documentElement.classList.remove("reveal-ready");
         revealItems.forEach((item) => item.dataset.visible = "true");
-      } else {
-        const observer = new IntersectionObserver((entries) => {
+      };
+
+      const observeRemaining = () => {
+        if (!("IntersectionObserver" in window)) {
+          showAll();
+          return;
+        }
+        document.documentElement.classList.add("reveal-ready");
+        observer?.disconnect();
+        observer = new IntersectionObserver((entries) => {
           entries.forEach((entry) => {
             if (!entry.isIntersecting) return;
             (entry.target as HTMLElement).dataset.visible = "true";
-            observer.unobserve(entry.target);
+            observer?.unobserve(entry.target);
           });
         }, { threshold: 0.14 });
-        revealItems.forEach((item) => observer.observe(item));
-      }
+        revealItems
+          .filter((item) => item.dataset.visible !== "true")
+          .forEach((item) => observer?.observe(item));
+      };
+
+      const applyMotionPreference = () => {
+        if (reducedMotion.matches) showAll();
+        else observeRemaining();
+      };
+
+      applyMotionPreference();
+      reducedMotion.addEventListener("change", applyMotionPreference);
     </script>
   </body>
 </html>

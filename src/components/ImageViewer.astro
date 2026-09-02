@@ -1,0 +1,60 @@
+---
+import "../styles/image-viewer.css";
+---
+
+<dialog class="image-viewer" data-image-viewer aria-labelledby="image-viewer-title" aria-describedby="image-viewer-help">
+  <div class="image-viewer__shell">
+    <header class="image-viewer__header">
+      <div>
+        <p class="image-viewer__eyebrow">Selected evidence</p>
+        <h2 id="image-viewer-title">이미지 확대 보기</h2>
+        <p class="image-viewer__counter" data-viewer-counter aria-live="polite"></p>
+      </div>
+      <button class="image-viewer__control" type="button" data-viewer-close autofocus>닫기 <span aria-hidden="true">×</span></button>
+    </header>
+
+    <div class="image-viewer__toolbar" aria-label="이미지 보기 도구">
+      <div class="image-viewer__nav" data-viewer-navigation>
+        <button class="image-viewer__control" type="button" data-viewer-previous>← 이전</button>
+        <button class="image-viewer__control" type="button" data-viewer-next>다음 →</button>
+      </div>
+      <div class="image-viewer__zoom" aria-label="확대 배율">
+        <button class="image-viewer__control" type="button" data-viewer-zoom-out aria-label="축소">−</button>
+        <output class="image-viewer__scale" data-viewer-scale aria-live="polite">100%</output>
+        <button class="image-viewer__control" type="button" data-viewer-zoom-in aria-label="확대">+</button>
+        <button class="image-viewer__control" type="button" data-viewer-reset>맞춤</button>
+      </div>
+    </div>
+
+    <div class="image-viewer__stage" data-viewer-stage data-state="loading" aria-busy="true">
+      <p class="image-viewer__loading" data-viewer-loading role="status">이미지를 불러오는 중입니다.</p>
+      <div class="image-viewer__error" data-viewer-error hidden>
+        <p role="alert">이미지를 불러오지 못했습니다.</p>
+        <div class="image-viewer__error-actions">
+          <button class="image-viewer__control" type="button" data-viewer-retry>다시 시도</button>
+          <a class="image-viewer__control" data-viewer-direct href="/">공개 이미지 직접 열기</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="image-viewer__pan" data-viewer-pan hidden aria-label="확대 이미지 이동">
+      <button class="image-viewer__control" type="button" data-viewer-pan-y="32" aria-label="위로 이동">↑</button>
+      <button class="image-viewer__control" type="button" data-viewer-pan-x="32" aria-label="왼쪽으로 이동">←</button>
+      <button class="image-viewer__control" type="button" data-viewer-pan-y="-32" aria-label="아래로 이동">↓</button>
+      <button class="image-viewer__control" type="button" data-viewer-pan-x="-32" aria-label="오른쪽으로 이동">→</button>
+    </div>
+
+    <div class="image-viewer__caption" tabindex="0" aria-label="현재 이미지 설명">
+      <span data-viewer-scope></span>
+      <strong data-viewer-caption></strong>
+      <small data-viewer-evidence></small>
+    </div>
+    <p class="sr-only" id="image-viewer-help" data-viewer-help>
+      화면 맞춤에서는 좌우 방향키로 이미지를 탐색합니다. 확대하면 방향키와 이동 버튼으로 이미지 내부를 살펴볼 수 있습니다.
+    </p>
+  </div>
+</dialog>
+
+<script>
+  import "../scripts/image-viewer";
+</script>

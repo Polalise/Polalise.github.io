@@ -382,16 +382,54 @@ const principles = [
   const list = document.querySelector<HTMLElement>(".d2-explorer__index");
   if (list) {
     const tabs = Array.from(list.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+    const panelAnimations = new WeakMap<HTMLElement, Animation>();
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const cssTimeToMilliseconds = (value: string) => {
+      const time = value.trim();
+      if (time.endsWith("ms")) return Number.parseFloat(time);
+      if (time.endsWith("s")) return Number.parseFloat(time) * 1000;
+      return 0;
+    };
 
     const select = (next: number, focus: boolean) => {
+      const current = tabs.findIndex((tab) => tab.getAttribute("aria-selected") === "true");
+      if (current === next) {
+        if (focus) tabs[next]?.focus();
+        return;
+      }
+
       tabs.forEach((tab, index) => {
         const selected = index === next;
         tab.setAttribute("aria-selected", String(selected));
         tab.tabIndex = selected ? 0 : -1;
         const panel = document.getElementById(tab.getAttribute("aria-controls") ?? "");
-        if (panel) panel.hidden = !selected;
+        if (panel) {
+          panelAnimations.get(panel)?.cancel();
+          panel.hidden = !selected;
+        }
       });
       if (focus) tabs[next]?.focus();
+
+      const incomingPanel = document.getElementById(tabs[next]?.getAttribute("aria-controls") ?? "");
+      if (!incomingPanel || reducedMotion.matches) return;
+      const styles = getComputedStyle(incomingPanel);
+      const duration = cssTimeToMilliseconds(styles.getPropertyValue("--dur-slow"));
+      const distance = styles.getPropertyValue("--space-xs").trim();
+      const easing = styles.getPropertyValue("--ease-emphasized").trim();
+      const animation = incomingPanel.animate(
+        [
+          { opacity: 0.64, transform: `translateY(${distance})` },
+          { opacity: 1, transform: "none" }
+        ],
+        { duration, easing }
+      );
+      panelAnimations.set(incomingPanel, animation);
+      const forgetAnimation = () => {
+        if (panelAnimations.get(incomingPanel) === animation) panelAnimations.delete(incomingPanel);
+      };
+      animation.addEventListener("finish", forgetAnimation, { once: true });
+      animation.addEventListener("cancel", forgetAnimation, { once: true });
     };
 
     tabs.forEach((tab, index) => {

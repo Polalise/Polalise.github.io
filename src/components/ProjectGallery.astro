@@ -1,6 +1,7 @@
 ---
 import { projectVisualMedia } from "../lib/media";
 import Eyebrow from "./Eyebrow.astro";
+import ImageViewer from "./ImageViewer.astro";
 
 interface Visual {
   id: string;
@@ -30,10 +31,23 @@ const { slug, visuals } = Astro.props;
         const media = projectVisualMedia(slug, visual.id);
         return (
           <figure class:list={["project-visual", { "project-visual--lead": index === 0 }]} data-reveal>
-            <picture>
-              <source srcset={media.srcset} sizes={index === 0 ? "(min-width: 80rem) 72rem, 92vw" : "(min-width: 64rem) 44vw, 92vw"} type="image/webp" />
-              <img src={media.src} width={media.width} height={media.height} alt={visual.alt} loading="lazy" decoding="async" />
-            </picture>
+            <a
+              class="project-visual__open"
+              href={media.src}
+              aria-label={`${visual.caption} 크게 보기`}
+              data-image-viewer-trigger
+              data-viewer-src={media.src}
+              data-viewer-alt={visual.alt}
+              data-viewer-caption={visual.caption}
+              data-viewer-scope={visual.scope === "personal" ? "개인 구현·분석" : "팀 산출물"}
+              data-viewer-evidence={visual.evidence}
+            >
+              <picture>
+                <source srcset={media.srcset} sizes={index === 0 ? "(min-width: 80rem) 72rem, 92vw" : "(min-width: 64rem) 44vw, 92vw"} type="image/webp" />
+                <img src={media.src} width={media.width} height={media.height} alt={visual.alt} loading="lazy" decoding="async" />
+              </picture>
+              <span class="project-visual__hint" aria-hidden="true">확대 보기 ↗</span>
+            </a>
             <figcaption>
               <span>{visual.scope === "personal" ? "개인 구현·분석" : "팀 산출물"}</span>
               <strong>{visual.caption}</strong>
@@ -43,5 +57,6 @@ const { slug, visuals } = Astro.props;
         );
       })}
     </div>
+    <ImageViewer />
   </section>
 )}
