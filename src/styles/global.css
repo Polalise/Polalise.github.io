@@ -1126,6 +1126,95 @@ a.text-link:focus-visible,
   padding-top: var(--space-flow-xl);
 }
 
+/* DSN-20260902-001. 긴 사례의 문제→판단→결과→근거를 같은 위치에서 재탐색한다. */
+.project-route {
+  position: sticky;
+  z-index: 10;
+  top: 4.75rem;
+  border-block: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.project-route__inner {
+  display: grid;
+  grid-template-columns: minmax(8rem, .52fr) minmax(0, 1.48fr);
+  gap: var(--space-flow-3xl);
+  align-items: center;
+  padding-block: 0;
+}
+
+.project-route__label {
+  margin: 0;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.project-route ol {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.project-route a {
+  position: relative;
+  display: flex;
+  min-height: 3.25rem;
+  gap: var(--space-xs);
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-soft);
+  font-size: var(--t-body-sm);
+  font-weight: var(--weight-bold);
+  text-decoration: none;
+  transition: color var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out);
+}
+
+.project-route a::after {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: var(--accent);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-slow) var(--ease-emphasized);
+}
+
+.project-route a span {
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  font-weight: var(--weight-semibold);
+}
+
+.project-route a[aria-current="location"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.project-route a[aria-current="location"]::after {
+  transform: scaleX(1);
+}
+
+.project-route a[aria-current="location"] span {
+  color: var(--accent);
+}
+
+#problem,
+#decisions,
+#results,
+#evidence {
+  scroll-margin-top: 10rem;
+}
+
 .detail-head {
   display: grid;
   grid-template-columns: minmax(0, 1.3fr) minmax(18rem, .7fr);
@@ -1269,8 +1358,9 @@ a.text-link:focus-visible,
 
 .metric-evidence article {
   display: grid;
-  grid-template-columns: minmax(8rem, .55fr) 1.45fr;
+  grid-template-columns: 3.5rem minmax(7rem, .45fr) minmax(0, 1.55fr);
   gap: var(--space-md);
+  align-items: start;
   padding: var(--space-md) 0;
   border-bottom: 1px solid var(--line);
 }
@@ -1285,20 +1375,73 @@ a.text-link:focus-visible,
   font-size: var(--t-title);
 }
 
-.metric-evidence p {
+.evidence-id {
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wide);
+}
+
+.metric-evidence article > div > span:first-child {
+  display: block;
+  font-weight: var(--weight-bold);
+  line-height: var(--lh-snug);
+}
+
+.scope-badge {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: var(--space-xs);
+  padding: var(--space-3xs) var(--space-xs);
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius-pill);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  font-weight: var(--weight-semibold);
+  line-height: var(--lh-snug);
+}
+
+.evidence-disclosure {
+  margin-top: var(--space-sm);
+  color: var(--ink-soft);
+}
+
+.evidence-disclosure summary {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--ink-soft);
+  font-size: var(--t-small);
+  font-weight: var(--weight-bold);
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: .25em;
+  cursor: pointer;
+}
+
+.evidence-disclosure[open] summary {
+  color: var(--accent);
+}
+
+.evidence-disclosure p,
+.evidence-disclosure small {
+  display: block;
+  max-width: 44rem;
+  margin: var(--space-xs) 0 0;
+  color: var(--ink-soft);
+  font-size: var(--t-small);
+  line-height: var(--lh-body);
+  overflow-wrap: anywhere;
+}
+
+.metric-evidence article > div {
   margin: 0;
   font-size: var(--t-body);
   overflow-wrap: break-word;
   text-wrap: pretty;
   word-break: keep-all;
-}
-
-.metric-evidence small {
-  display: block;
-  margin-top: var(--space-2xs);
-  color: var(--ink-soft);
-  overflow-wrap: anywhere;
-  word-break: normal;
 }
 
 .next-project {
@@ -1404,20 +1547,18 @@ a.text-link:focus-visible,
 
 .project-visual figcaption {
   display: grid;
-  grid-template-columns: minmax(7.5rem, auto) 1fr;
+  grid-template-columns: 3.5rem minmax(0, 1fr);
   gap: var(--space-2xs) var(--space-md);
   padding-top: var(--space-md);
 }
 
-/* DSN-20260829-003 F1. "개인 구현·분석"/"팀 산출물" 은 한글이라 --t-small(13px). */
-.project-visual figcaption span {
-  grid-row: 1 / span 2;
-  color: var(--accent);
-  font-family: var(--font-mono);
-  font-size: var(--t-small);
-  font-weight: var(--weight-bold);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
+.project-visual figcaption .evidence-id {
+  grid-row: 1 / span 3;
+  padding-top: var(--space-3xs);
+}
+
+.project-visual figcaption .scope-badge {
+  margin-top: 0;
 }
 
 .project-visual figcaption strong {
@@ -1425,9 +1566,9 @@ a.text-link:focus-visible,
   line-height: var(--lh-snug);
 }
 
-.project-visual figcaption small {
-  color: var(--ink-soft);
-  line-height: var(--lh-body);
+.project-visual figcaption .evidence-disclosure {
+  grid-column: 2;
+  margin-top: 0;
 }
 
 @media (max-width: 48rem) {
@@ -1452,10 +1593,15 @@ a.text-link:focus-visible,
     display: block;
   }
 
+  .project-visual figcaption .scope-badge,
   .project-visual figcaption strong,
-  .project-visual figcaption small {
+  .project-visual figcaption .evidence-disclosure {
     display: block;
     margin-top: var(--space-2xs);
+  }
+
+  .project-visual figcaption .scope-badge {
+    display: inline-flex;
   }
 }
 
@@ -2187,24 +2333,27 @@ a.text-link:focus-visible,
   font-style: normal;
 }
 
-/* 사례 연구 : 명세 37~43절 */
-.d2-case {
+/* DSN-20260902-001. 대표작 전체를 다시 소개하지 않고, 실제 설계 결정 하나를
+   번호·연결선·상태 전이로 설명한다. 이 evidence route 가 사이트의 고유 장치다. */
+.decision-trace__head {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: var(--space-flow-sm);
-  align-items: center;
-  margin-bottom: var(--space-flow-sm);
+  grid-template-columns: minmax(12rem, .52fr) minmax(0, 1.48fr);
+  gap: var(--space-flow-3xl);
+  align-items: start;
 }
 
-.d2-case__body h2 {
-  margin: var(--space-sm) 0 var(--space-sm);
-  font-size: var(--t-display-lg);
+.decision-trace__head h2 {
+  margin: 0;
+  font-size: var(--t-display-xl);
   letter-spacing: var(--tracking-tight);
   line-height: var(--lh-tight);
+  text-wrap: balance;
+  word-break: keep-all;
 }
 
-.d2-case__lead {
-  margin: 0;
+.decision-trace__head p:last-child {
+  max-width: 48rem;
+  margin: var(--space-md) 0 0;
   color: var(--ink-soft);
   font-size: var(--t-body-lg);
   line-height: var(--lh-relaxed);
@@ -2212,42 +2361,81 @@ a.text-link:focus-visible,
   word-break: keep-all;
 }
 
-.d2-case__split {
+.decision-trace__steps {
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--space-lg);
-  margin-top: var(--space-lg);
-  padding-top: var(--space-lg);
-  border-top: 1px solid var(--line);
+  margin: var(--space-flow-md) 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.d2-case__split h3 {
-  margin: 0 0 var(--space-xs);
+.decision-trace__steps::before {
+  position: absolute;
+  top: 1.375rem;
+  right: 2rem;
+  left: 2rem;
+  height: 1px;
+  background: var(--line-strong);
+  content: "";
+  transform-origin: left;
+  transition: transform var(--dur-reveal) var(--ease-emphasized);
+}
+
+.decision-trace__steps li {
+  position: relative;
+  min-width: 0;
+}
+
+.decision-trace__code {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  width: 2.75rem;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-control);
+  background: var(--paper);
   color: var(--accent);
   font-family: var(--font-mono);
-  font-size: var(--t-caption);
-  font-weight: var(--weight-bold);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-}
-
-.d2-case__split p {
-  margin: 0;
-  font-size: var(--t-body);
-  line-height: var(--lh-body);
-  text-wrap: pretty;
-  word-break: keep-all;
-}
-
-.d2-case__limit {
-  margin: var(--space-lg) 0 0;
-  padding-left: var(--space-sm);
-  border-left: 2px solid var(--accent);
-  color: var(--ink-soft);
   font-size: var(--t-small);
-  line-height: var(--lh-body);
+  font-weight: var(--weight-bold);
+}
+
+.decision-trace__steps h3 {
+  margin: var(--space-md) 0 var(--space-xs);
+  font-size: var(--t-subhead);
+  line-height: var(--lh-heading);
+  text-wrap: balance;
+  word-break: keep-all;
+}
+
+.decision-trace__steps p {
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: var(--lh-relaxed);
   text-wrap: pretty;
   word-break: keep-all;
+}
+
+.decision-trace__link {
+  margin-top: var(--space-flow-sm);
+}
+
+.reveal-ready .decision-trace[data-reveal]:not([data-visible="true"]) .decision-trace__steps::before {
+  transform: scaleX(0);
+}
+
+.reveal-ready .decision-trace[data-reveal]:not([data-visible="true"]) .decision-trace__steps li {
+  opacity: 0;
+  transform: translateY(var(--space-sm));
+}
+
+.decision-trace__steps li {
+  transition: opacity var(--dur-reveal) var(--ease-out), transform var(--dur-reveal) var(--ease-emphasized);
 }
 
 /* 일하는 방식 : 명세 50~53절.
@@ -2339,7 +2527,6 @@ a.text-link:focus-visible,
   .d2-hero__inner,
   .d2-explorer,
   .d2-panel,
-  .d2-case,
   .d2-contact {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -2350,8 +2537,13 @@ a.text-link:focus-visible,
     margin-top: var(--space-lg);
   }
 
-  .d2-case__media {
-    order: 2;
+  .decision-trace__head {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-lg);
+  }
+
+  .decision-trace__steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .d2-contact__actions {
@@ -2360,8 +2552,34 @@ a.text-link:focus-visible,
 }
 
 @media (max-width: 47.99rem) {
-  .d2-case__split {
+  .decision-trace__steps {
     grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-lg);
+    margin-top: var(--space-flow-sm);
+  }
+
+  .decision-trace__steps::before {
+    top: 1.5rem;
+    right: auto;
+    bottom: 1.5rem;
+    left: 1.375rem;
+    width: 1px;
+    height: auto;
+    transform-origin: top;
+  }
+
+  .reveal-ready .decision-trace[data-reveal]:not([data-visible="true"]) .decision-trace__steps::before {
+    transform: scaleY(0);
+  }
+
+  .decision-trace__steps li {
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    gap: var(--space-md);
+  }
+
+  .decision-trace__steps h3 {
+    margin-top: 0;
   }
 
   /* 좁은 폭에서는 번호 레일을 제목 위로 올려 세로로 쌓는다. */
@@ -2528,6 +2746,25 @@ a.text-link:focus-visible,
   .detail-aside {
     position: static;
   }
+
+  .project-route {
+    top: 4rem;
+  }
+
+  .project-route__inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .project-route__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
 
 @media (max-width: 47.99rem) {
@@ -2646,6 +2883,26 @@ a.text-link:focus-visible,
     grid-template-columns: 1fr;
   }
 
+  .project-route__inner {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .project-route__inner::-webkit-scrollbar {
+    display: none;
+  }
+
+  .project-route ol {
+    grid-template-columns: repeat(4, minmax(5rem, 1fr));
+    min-width: 20rem;
+  }
+
+  .project-route a {
+    min-height: 3rem;
+    gap: var(--space-2xs);
+  }
+
   .detail-facts div:nth-child(even) {
     padding-left: 0;
   }
@@ -2692,11 +2949,18 @@ a.text-link:focus-visible,
     opacity: 1;
     transform: none;
   }
+
+  .decision-trace__steps::before,
+  .decision-trace__steps li {
+    opacity: 1;
+    transform: none !important;
+  }
 }
 
 @media print {
   .site-header,
   .site-footer,
+  .project-route,
   .image-viewer,
   .project-visual__hint,
   .resume-actions,

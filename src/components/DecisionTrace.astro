@@ -1,0 +1,44 @@
+---
+interface Step {
+  code: string;
+  title: string;
+  body: string;
+}
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  description: string;
+  steps: Step[];
+  href: string;
+  hrefLabel: string;
+}
+
+const { eyebrow, title, description, steps, href, hrefLabel } = Astro.props;
+---
+
+<div class="decision-trace" data-reveal>
+  <header class="decision-trace__head">
+    <p class="eyebrow eyebrow--index" lang="en">{eyebrow}</p>
+    <div>
+      <h2 id="decision-trace-title">{title}</h2>
+      <p>{description}</p>
+    </div>
+  </header>
+
+  <ol class="decision-trace__steps">
+    {steps.map((step) => (
+      <li>
+        <span class="decision-trace__code" aria-hidden="true">{step.code}</span>
+        <div>
+          <h3>{step.title}</h3>
+          <p>{step.body}</p>
+        </div>
+      </li>
+    ))}
+  </ol>
+
+  <a class="text-link decision-trace__link" href={href}>
+    {hrefLabel} <span aria-hidden="true">→</span>
+  </a>
+</div>

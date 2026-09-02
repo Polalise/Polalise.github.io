@@ -5,6 +5,7 @@ import ProjectCover from "../../components/ProjectCover.astro";
 import ProjectGallery from "../../components/ProjectGallery.astro";
 import Button from "../../components/Button.astro";
 import Eyebrow from "../../components/Eyebrow.astro";
+import ProjectSectionNav from "../../components/ProjectSectionNav.astro";
 import { getProjects } from "../../lib/projects";
 import { projectCoverMedia } from "../../lib/media";
 
@@ -78,6 +79,8 @@ const socialCover = projectCoverMedia(project.id).og;
       </div>
     </header>
 
+    <ProjectSectionNav projectTitle={data.displayTitle} />
+
     <section class="section" aria-label="프로젝트 상세 내용">
       <div class="page-shell detail-content">
         <aside class="detail-aside" data-reveal>
@@ -88,13 +91,13 @@ const socialCover = projectCoverMedia(project.id).og;
         </aside>
 
         <div class="detail-story">
-          <section class="story-block" data-reveal>
+          <section class="story-block" id="problem" data-reveal>
             <Eyebrow>Problem</Eyebrow>
             <h2>해결하려던 문제</h2>
             <p>{data.problem}</p>
           </section>
 
-          <section class="story-block" data-reveal>
+          <section class="story-block" id="decisions" data-reveal>
             <Eyebrow>Decision and action</Eyebrow>
             <h2>판단과 실행</h2>
             <ul>
@@ -102,7 +105,7 @@ const socialCover = projectCoverMedia(project.id).og;
             </ul>
           </section>
 
-          <section class="story-block" data-reveal>
+          <section class="story-block" id="results" data-reveal>
             <Eyebrow>Outcome</Eyebrow>
             <h2>확인된 결과</h2>
             <ul>
@@ -110,13 +113,18 @@ const socialCover = projectCoverMedia(project.id).og;
             </ul>
             {data.metrics.length > 0 && (
               <div class="metric-evidence">
-                {data.metrics.map((metric) => (
+                {data.metrics.map((metric, index) => (
                   <article>
+                    <span class="evidence-id" aria-hidden="true">E{String(index + 1).padStart(2, "0")}</span>
                     <strong>{metric.value}</strong>
-                    <p>
+                    <div>
                       <span>{metric.label}</span>
-                      <small>{metric.scope === "personal" ? "개인 결과" : "팀 전체"} · {metric.evidence}</small>
-                    </p>
+                      <small class="scope-badge">{metric.scope === "personal" ? "개인 결과" : "팀 전체"}</small>
+                      <details class="evidence-disclosure">
+                        <summary>근거 보기</summary>
+                        <p>{metric.evidence}</p>
+                      </details>
+                    </div>
                   </article>
                 ))}
               </div>

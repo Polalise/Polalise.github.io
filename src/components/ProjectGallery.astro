@@ -20,11 +20,11 @@ const { slug, visuals } = Astro.props;
 ---
 
 {visuals.length > 0 && (
-  <section class="project-gallery" aria-labelledby="project-gallery-title">
+  <section class="project-gallery" id="evidence" aria-labelledby="project-gallery-title">
     <header class="project-gallery__head" data-reveal>
       <Eyebrow>Selected evidence</Eyebrow>
       <h2 id="project-gallery-title">화면과 평가 근거</h2>
-      <p>실제 구현 화면과 집계 그래프만 선별했습니다. 개인 기여와 팀 전체 산출물은 각 캡션에서 구분합니다.</p>
+      <p>화면마다 기여 범위를 먼저 표시하고, 자세한 출처는 근거 보기를 펼쳐 확인할 수 있습니다.</p>
     </header>
     <div class="project-gallery__grid">
       {visuals.map((visual, index) => {
@@ -49,9 +49,13 @@ const { slug, visuals } = Astro.props;
               <span class="project-visual__hint" aria-hidden="true">확대 보기 ↗</span>
             </a>
             <figcaption>
-              <span>{visual.scope === "personal" ? "개인 구현·분석" : "팀 산출물"}</span>
+              <span class="evidence-id" aria-hidden="true">V{String(index + 1).padStart(2, "0")}</span>
+              <small class="scope-badge">{visual.scope === "personal" ? "개인 구현·분석" : "팀 산출물"}</small>
               <strong>{visual.caption}</strong>
-              <small>근거: {visual.evidence}</small>
+              <details class="evidence-disclosure">
+                <summary>근거 보기</summary>
+                <small>{visual.evidence}</small>
+              </details>
             </figcaption>
           </figure>
         );

@@ -420,6 +420,33 @@ test.describe("responsive themes and accessibility", () => {
     expect(await heroImage.evaluate((node) => (node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   });
 
+  test("home replaces the repeated case study with an evidence-backed decision trace", async ({ page }) => {
+    await page.goto("/", { waitUntil: "networkidle" });
+    const trace = page.locator(".decision-trace");
+    await expect(trace).toHaveCount(1);
+    await expect(trace.locator("ol > li")).toHaveCount(4);
+    await expect(trace.locator("h3")).toHaveText([
+      "의도만 구조화",
+      "서버에서 정규화",
+      "권한과 필터 적용",
+      "기록 가능한 결과"
+    ]);
+    await expect(trace).toContainText("동일 질의에 동일 결과");
+    await expect(page.locator(".d2-case")).toHaveCount(0);
+
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.reload({ waitUntil: "networkidle" });
+    const reducedStates = await page.locator(".decision-trace__steps").evaluate((steps) => ({
+      lineTransform: getComputedStyle(steps, "::before").transform,
+      items: Array.from(steps.children).map((item) => ({
+        opacity: getComputedStyle(item).opacity,
+        transform: getComputedStyle(item).transform
+      }))
+    }));
+    expect(reducedStates.lineTransform).toBe("none");
+    expect(reducedStates.items.every((item) => item.opacity === "1" && item.transform === "none")).toBe(true);
+  });
+
   test("project explorer is operable by pointer and keyboard with one panel at a time", async ({ page }) => {
     await page.goto("/", { waitUntil: "networkidle" });
     const tabs = page.locator('.d2-explorer__index [role="tab"]');
@@ -430,7 +457,8 @@ test.describe("responsive themes and accessibility", () => {
     const visiblePanels = async () =>
       panels.evaluateAll((nodes) => nodes.filter((node) => !(node as HTMLElement).hidden).length);
     expect(await visiblePanels()).toBe(1);
-    await expect(tabs.nth(0)).toHaveAttribute("aria-selected", "true");
+    await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "true");
+    await expect(panels.nth(1)).toBeVisible();
 
     // 클릭 선택
     await tabs.nth(2).click();
@@ -495,6 +523,31 @@ test.describe("responsive themes and accessibility", () => {
     expect(await panels.nth(1).evaluate((panel) => panel.getAnimations().length)).toBe(0);
   });
 
+  test("project detail exposes a working evidence route and progressive evidence", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/projects/hajacheck/", { waitUntil: "networkidle" });
+    const route = page.locator('[data-project-route]');
+    const links = route.locator('a[href^="#"]');
+    await expect(links).toHaveCount(4);
+    await expect(links).toHaveText(["01문제", "02판단", "03결과", "04근거"]);
+    await expect(links.nth(0)).toHaveAttribute("aria-current", "location");
+    expect(await route.evaluate((node) => node.getBoundingClientRect().height)).toBeLessThanOrEqual(52);
+
+    for (const id of ["problem", "decisions", "results", "evidence"]) {
+      await expect(page.locator(`#${id}`)).toHaveCount(1);
+    }
+
+    await links.nth(2).click();
+    await expect(page).toHaveURL(/#results$/);
+    await expect(links.nth(2)).toHaveAttribute("aria-current", "location");
+
+    const metricEvidence = page.locator(".metric-evidence .evidence-disclosure").first();
+    await expect(metricEvidence).not.toHaveAttribute("open", "");
+    await metricEvidence.locator("summary").click();
+    await expect(metricEvidence).toHaveAttribute("open", "");
+    await expect(metricEvidence.locator("p")).not.toBeEmpty();
+  });
+
   test("detail evidence galleries expose responsive images and scope labels", async ({ page }) => {
     await page.goto("/projects/hajacheck/", { waitUntil: "networkidle" });
     const images = page.locator(".project-gallery .project-visual img");
@@ -509,7 +562,9 @@ test.describe("responsive themes and accessibility", () => {
     });
     expect(await images.evaluateAll((nodes) => nodes.every((node) => (node as HTMLImageElement).naturalWidth > 0))).toBe(true);
     // 대시보드와 분석 뷰어는 팀 전체 산출물, 하자 상세는 개인 담당 범위다.
-    await expect(page.locator(".project-visual figcaption span")).toHaveText(["팀 산출물", "팀 산출물", "개인 구현·분석"]);
+    await expect(page.locator(".project-visual figcaption .scope-badge")).toHaveText(["팀 산출물", "팀 산출물", "개인 구현·분석"]);
+    await expect(page.locator(".project-visual figcaption .evidence-id")).toHaveText(["V01", "V02", "V03"]);
+    await expect(page.locator(".project-visual figcaption .evidence-disclosure[open]")).toHaveCount(0);
     await expect(page.locator('.project-gallery source[srcset*="-480w.webp"]')).toHaveCount(3);
     const openLinks = page.locator("[data-image-viewer-trigger]");
     await expect(openLinks).toHaveCount(3);
@@ -529,6 +584,15 @@ test.describe("responsive themes and accessibility", () => {
     await expect(stage).toHaveAttribute("data-state", "ready");
     await expect(dialog.locator("[data-viewer-counter]")).toHaveText("1 / 3");
     await expect(dialog.locator("[data-viewer-previous]")).toBeDisabled();
+    await expect(dialog.locator("[data-viewer-pan]")).toBeHidden();
+    await expect(dialog.locator("[data-viewer-evidence-details]")).not.toHaveAttribute("open", "");
+    const fitLayout = await dialog.evaluate((node) => {
+      const stageBox = node.querySelector("[data-viewer-stage]")!.getBoundingClientRect();
+      const captionBox = node.querySelector(".image-viewer__caption")!.getBoundingClientRect();
+      return { stageBottom: stageBox.bottom, captionTop: captionBox.top, captionBottom: captionBox.bottom };
+    });
+    expect(fitLayout.captionTop).toBeGreaterThanOrEqual(fitLayout.stageBottom - 1);
+    expect(fitLayout.captionBottom).toBeLessThanOrEqual(844);
 
     await page.keyboard.press("ArrowRight");
     await expect(dialog.locator("[data-viewer-counter]")).toHaveText("2 / 3");
@@ -537,6 +601,10 @@ test.describe("responsive themes and accessibility", () => {
     await dialog.locator("[data-viewer-zoom-in]").click();
     await expect(stage).toHaveAttribute("data-zoomed", "true");
     await expect(dialog.locator("[data-viewer-pan]")).toBeVisible();
+    await expect(dialog.locator("[data-viewer-pan]")).not.toHaveAttribute("open", "");
+    await dialog.locator("[data-viewer-pan] > summary").click();
+    await expect(dialog.locator("[data-viewer-pan]")).toHaveAttribute("open", "");
+    await expect(dialog.locator("[data-viewer-pan] button")).toHaveCount(4);
     const beforePan = await dialog.locator("[data-viewer-image]").getAttribute("style");
     await page.keyboard.press("ArrowRight");
     await expect(dialog.locator("[data-viewer-counter]")).toHaveText("2 / 3");

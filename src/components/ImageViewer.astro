@@ -37,17 +37,23 @@ import "../styles/image-viewer.css";
       </div>
     </div>
 
-    <div class="image-viewer__pan" data-viewer-pan hidden aria-label="확대 이미지 이동">
-      <button class="image-viewer__control" type="button" data-viewer-pan-y="32" aria-label="위로 이동">↑</button>
-      <button class="image-viewer__control" type="button" data-viewer-pan-x="32" aria-label="왼쪽으로 이동">←</button>
-      <button class="image-viewer__control" type="button" data-viewer-pan-y="-32" aria-label="아래로 이동">↓</button>
-      <button class="image-viewer__control" type="button" data-viewer-pan-x="-32" aria-label="오른쪽으로 이동">→</button>
-    </div>
+    <details class="image-viewer__pan" data-viewer-pan hidden>
+      <summary class="image-viewer__control">이동 도구</summary>
+      <div class="image-viewer__pan-grid" aria-label="확대 이미지 이동">
+        <button class="image-viewer__control" type="button" data-viewer-pan-y="32" aria-label="위로 이동">↑</button>
+        <button class="image-viewer__control" type="button" data-viewer-pan-x="32" aria-label="왼쪽으로 이동">←</button>
+        <button class="image-viewer__control" type="button" data-viewer-pan-y="-32" aria-label="아래로 이동">↓</button>
+        <button class="image-viewer__control" type="button" data-viewer-pan-x="-32" aria-label="오른쪽으로 이동">→</button>
+      </div>
+    </details>
 
     <div class="image-viewer__caption" tabindex="0" aria-label="현재 이미지 설명">
       <span data-viewer-scope></span>
       <strong data-viewer-caption></strong>
-      <small data-viewer-evidence></small>
+      <details class="image-viewer__evidence" data-viewer-evidence-details>
+        <summary>근거 보기</summary>
+        <small data-viewer-evidence></small>
+      </details>
     </div>
     <p class="sr-only" id="image-viewer-help" data-viewer-help>
       화면 맞춤에서는 좌우 방향키로 이미지를 탐색합니다. 확대하면 방향키와 이동 버튼으로 이미지 내부를 살펴볼 수 있습니다.

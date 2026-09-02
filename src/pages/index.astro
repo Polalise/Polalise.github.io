@@ -4,6 +4,7 @@ import MetricRail from "../components/MetricRail.astro";
 import Button from "../components/Button.astro";
 import Eyebrow from "../components/Eyebrow.astro";
 import ProjectCard from "../components/ProjectCard.astro";
+import DecisionTrace from "../components/DecisionTrace.astro";
 import { getProjects } from "../lib/projects";
 import { projectVisualMedia } from "../lib/media";
 
@@ -100,8 +101,30 @@ explorerEntries.push({
 });
 
 const heroEntry = explorerEntries[0];
-const caseVisual = hajaCheck?.data.visuals.find(({ id }) => id === "app-analysis-viewer");
-const caseMedia = caseVisual ? projectVisualMedia("hajacheck", caseVisual.id) : undefined;
+const defaultExplorerIndex = explorerEntries.findIndex(({ id }) => id === "ml-economics-answers");
+
+const decisionSteps = [
+  {
+    code: "D01",
+    title: "의도만 구조화",
+    body: "LLM은 정해진 스키마 안에서 검색 의도만 제안합니다."
+  },
+  {
+    code: "D02",
+    title: "서버에서 정규화",
+    body: "상대 날짜와 수치 조건은 결정적 로직으로 다시 계산합니다."
+  },
+  {
+    code: "D03",
+    title: "권한과 필터 적용",
+    body: "기존 서비스 계약 안에서만 조회되도록 접근 범위를 제한합니다."
+  },
+  {
+    code: "D04",
+    title: "기록 가능한 결과",
+    body: "동일 질의에 동일 결과를 보장해 응답 캐시가 가능한 검색으로 연결합니다."
+  }
+];
 
 // 3영역 개선 가이드 2.8 절. 카드 면적 대비 내용이 적어 비어 보였다. 그래픽을 넣는 대신
 // 각 원칙에 "무엇을 하는가 + 실제로 어떻게 적용하는가" 한 문장씩을 더한다.
@@ -179,9 +202,9 @@ const principles = [
               role="tab"
               id={`explorer-tab-${entry.id}`}
               class="d2-explorer__item"
-              aria-selected={index === 0 ? "true" : "false"}
+              aria-selected={index === defaultExplorerIndex ? "true" : "false"}
               aria-controls={`explorer-panel-${entry.id}`}
-              tabindex={index === 0 ? 0 : -1}
+              tabindex={index === defaultExplorerIndex ? 0 : -1}
             >
               <span class="d2-explorer__num">{entry.index}</span>
               <span class="d2-explorer__name">
@@ -207,7 +230,7 @@ const principles = [
               id={`explorer-panel-${entry.id}`}
               class="d2-panel"
               aria-labelledby={`explorer-tab-${entry.id}`}
-              hidden={index !== 0}
+              hidden={index !== defaultExplorerIndex}
             >
               <div class="d2-panel__body">
                 <p class="d2-panel__kicker">{entry.index} / {entry.subtitle}</p>
@@ -270,47 +293,16 @@ const principles = [
   </section>
 
   {hajaCheck && (
-    <section class="section d2-section" id="featured" aria-labelledby="case-title">
+    <section class="section d2-section" id="featured" aria-labelledby="decision-trace-title">
       <div class="page-shell">
-        <div class="d2-case">
-          {caseMedia && (
-            <figure class="d2-preview d2-case__media" data-reveal>
-              <img
-                src={caseMedia.src}
-                srcset={caseMedia.srcset}
-                sizes="(max-width: 64rem) calc(100vw - 2.3rem), 48vw"
-                width={caseMedia.width}
-                height={caseMedia.height}
-                alt={caseVisual?.alt}
-                loading="lazy"
-                decoding="async"
-              />
-              <figcaption>{caseVisual?.caption}</figcaption>
-            </figure>
-          )}
-
-          <div class="d2-case__body" data-reveal>
-            <Eyebrow variant="index">02 / Case study</Eyebrow>
-            <h2 id="case-title">{hajaCheck.data.displayTitle}</h2>
-            <p class="d2-case__lead">{hajaCheck.data.summary}</p>
-
-            <div class="d2-case__split">
-              <div>
-                <h3>Problem</h3>
-                <p>{hajaCheck.data.problem}</p>
-              </div>
-              <div>
-                <h3>My scope</h3>
-                <p>{hajaCheck.data.role}</p>
-              </div>
-            </div>
-
-            <p class="d2-case__limit">{hajaCheck.data.limitation}</p>
-            <a class="text-link" href="/projects/hajacheck/">HajaCheck 사례 보기 <span aria-hidden="true">→</span></a>
-          </div>
-        </div>
-
-        <MetricRail metrics={hajaCheck.data.metrics} />
+        <DecisionTrace
+          eyebrow="02 / Decision trace"
+          title="AI가 제안하고, 시스템이 검증합니다"
+          description="HajaCheck 자연어 검색에서 확률적인 모델 출력을 서비스 계약 안으로 가져온 한 가지 결정입니다."
+          steps={decisionSteps}
+          href="/projects/hajacheck/"
+          hrefLabel="전체 HajaCheck 사례 보기"
+        />
       </div>
     </section>
   )}

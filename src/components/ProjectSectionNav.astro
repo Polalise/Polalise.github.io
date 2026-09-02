@@ -1,0 +1,61 @@
+---
+interface Props {
+  projectTitle: string;
+}
+
+const { projectTitle } = Astro.props;
+
+const sections = [
+  { id: "problem", code: "01", label: "문제" },
+  { id: "decisions", code: "02", label: "판단" },
+  { id: "results", code: "03", label: "결과" },
+  { id: "evidence", code: "04", label: "근거" }
+];
+---
+
+<nav class="project-route" aria-label={`${projectTitle} 사례 목차`} data-project-route>
+  <div class="page-shell project-route__inner">
+    <p class="project-route__label" lang="en">Evidence route</p>
+    <ol>
+      {sections.map((section, index) => (
+        <li>
+          <a href={`#${section.id}`} aria-current={index === 0 ? "location" : undefined}>
+            <span aria-hidden="true">{section.code}</span>
+            {section.label}
+          </a>
+        </li>
+      ))}
+    </ol>
+  </div>
+</nav>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-project-route]").forEach((nav) => {
+    const links = Array.from(nav.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'));
+    const targets = links
+      .map((link) => document.getElementById(link.hash.slice(1)))
+      .filter((target): target is HTMLElement => Boolean(target));
+
+    const select = (id: string) => {
+      links.forEach((link) => {
+        if (link.hash === `#${id}`) link.setAttribute("aria-current", "location");
+        else link.removeAttribute("aria-current");
+      });
+    };
+
+    links.forEach((link) => link.addEventListener("click", () => select(link.hash.slice(1))));
+
+    if (!("IntersectionObserver" in window)) return;
+    const visible = new Map<string, number>();
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) visible.set(entry.target.id, entry.boundingClientRect.top);
+        else visible.delete(entry.target.id);
+      });
+      const current = [...visible.entries()].sort((a, b) => Math.abs(a[1]) - Math.abs(b[1]))[0];
+      if (current) select(current[0]);
+    }, { rootMargin: "-24% 0px -62%", threshold: [0, .1, .5] });
+    targets.forEach((target) => observer.observe(target));
+  });
+</script>
+

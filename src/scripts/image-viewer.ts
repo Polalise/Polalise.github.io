@@ -42,6 +42,7 @@ document.querySelectorAll<HTMLDialogElement>("[data-image-viewer]").forEach((dia
   const scope = requireElement<HTMLElement>(dialog, "[data-viewer-scope]");
   const caption = requireElement<HTMLElement>(dialog, "[data-viewer-caption]");
   const evidence = requireElement<HTMLElement>(dialog, "[data-viewer-evidence]");
+  const evidenceDetails = requireElement<HTMLDetailsElement>(dialog, "[data-viewer-evidence-details]");
   const direct = requireElement<HTMLAnchorElement>(dialog, "[data-viewer-direct]");
   const closeButton = requireElement<HTMLButtonElement>(dialog, "[data-viewer-close]");
   const previousButton = requireElement<HTMLButtonElement>(dialog, "[data-viewer-previous]");
@@ -89,6 +90,8 @@ document.querySelectorAll<HTMLDialogElement>("[data-image-viewer]").forEach((dia
     resetButton.disabled = zoomIndex === 0 && panX === 0 && panY === 0;
     panControls.hidden = zoom === 1;
     stage.dataset.zoomed = String(zoom > 1);
+    dialog.dataset.zoomed = String(zoom > 1);
+    if (zoom === 1 && panControls instanceof HTMLDetailsElement) panControls.open = false;
   };
 
   const resetZoom = () => {
@@ -126,6 +129,7 @@ document.querySelectorAll<HTMLDialogElement>("[data-image-viewer]").forEach((dia
     scope.textContent = item.scope;
     caption.textContent = item.caption;
     evidence.textContent = `근거: ${item.evidence}`;
+    evidenceDetails.open = false;
     direct.href = item.src;
     updateNavigation();
 
