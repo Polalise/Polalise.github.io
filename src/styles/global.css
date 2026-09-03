@@ -2592,6 +2592,10 @@ a.text-link:focus-visible,
     grid-row: auto;
   }
 
+  .d2-principle h3 {
+    margin-bottom: 0;
+  }
+
   /* 13.10 절. 이전에는 이 규칙이 히어로와 연락처에만 걸려 이력서·상세·404 의 같은 버튼이
      모바일에서 다르게 늘어났다. 이제 모든 묶음에 한 번에 적용된다.
      basis 를 고정하지 않고 auto 로 두는 이유 : 8rem 으로 고정하면 사이트에서 가장 긴 라벨인
